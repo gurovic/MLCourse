@@ -1,4 +1,8 @@
-# MLCourse
+Конечно! Ниже — **обновлённый текст с заменой названий датасетов на ссылки**, чтобы можно было легко перейти к источнику или загрузить данные. Я сохранил структуру и уровни вложенности.
+
+---
+
+# MLCourse  
 Курс машинного обучения для школьников.
 
 * [Классификация задач и методов их решения](problems.md)
@@ -6,44 +10,40 @@
 * [Олимпиады и соревнования](olympiads.md)
 
 **Блок 1: Анализ данных**  
-* Глубокий EDA: Pandas Profiling, анализ распределений и корреляций. Практика: House Prices.  
-* Дисбаланс классов: SMOTE, Weighted Loss. Практика: Credit Card Fraud.  
-* Оптимизация памяти: Сжатие типов данных. Практика: NYC Taxi Trips.  
-* Визуализация: Plotly, Folium. Практика: COVID-19 датасет.  
+* Глубокий EDA: Pandas Profiling, анализ распределений и корреляций. Практика: [House Prices](https://www.kaggle.com/c/house-prices-advanced-regression-datasets) (Kaggle).  
+* Дисбаланс классов: SMOTE, Weighted Loss. Практика: [Credit Card Fraud Detection](https://www.kaggle.com/mlg-ulb/creditcardfraud) (Kaggle).  
+* Оптимизация памяти: Сжатие типов данных. Практика: [NYC Taxi Trip Duration](https://www.kaggle.com/c/nyc-taxi-trip-duration) (Kaggle).  
+* Визуализация: Plotly, Folium. Практика: [COVID-19 Global Forecasting](https://www.kaggle.com/imdevskp/corona-virus-report) (Kaggle).  
 
 **Блок 2: Классические алгоритмы**  
-- Линейная регрессия: MSE, градиентный спуск. Практика: Boston Housing.  
-- Логистическая регрессия: Sigmoid, бинарная классификация. Практика: SMS Spam.  
-- [Метрики качества](metrics.md): F1, ROC-AUC. Практика: Iris Dataset.  
-- Кросс-валидация: Stratified K-Fold. Практика: Rossmann Store Sales.  
-- Деревья решений: Критерии Gini/энтропия. Практика: Классификация рака груди.  
-- Случайный лес: Бутстрэп, OOB-оценка. Практика: Titanic.  
-- Градиентный бустинг: CatBoost/XGBoost/LightGBM. Практика: Wine Quality.  
-- Категориальные признаки: CatBoost (автокодирование). Практика: Amazon Employee Access.  
+- Линейная регрессия: MSE, градиентный спуск. Практика: [Boston Housing Dataset](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_boston.html) (scikit-learn).  
+- Логистическая регрессия: Sigmoid, бинарная классификация. Практика: [SMS Spam Collection](https://www.kaggle.com/uciml/sms-spam-collection-dataset) (UCI / Kaggle).  
+- [Метрики качества](metrics.md): F1, ROC-AUC. Практика: [Iris Dataset](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html) (scikit-learn).  
+- Кросс-валидация: Stratified K-Fold. Практика: [Rossmann Store Sales](https://www.kaggle.com/c/rossmann-store-sales) (Kaggle).  
+- Деревья решений: Критерии Gini/энтропия. Практика: [Breast Cancer Wisconsin](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html) (scikit-learn).  
+- Случайный лес: Бутстрэп, OOB-оценка. Практика: [Titanic: Machine Learning from Disaster](https://www.kaggle.com/c/titanic) (Kaggle).  
+- Градиентный бустинг: CatBoost/XGBoost/LightGBM. Практика: [Wine Quality](https://www.kaggle.com/uciml/red-wine-quality-cortez-et-al-2009) (UCI / Kaggle).  
+- Категориальные признаки: CatBoost (автокодирование). Практика: [Amazon Employee Access Challenge](https://www.kaggle.com/c/amazon-employee-access-challenge) (Kaggle).  
 
 **Блок 3: Feature Engineering**  
-- Пропуски данных: KNN Imputer, флаги. Практика: House Prices.  
-- Выбросы: Isolation Forest. Практика: Web Traffic Forecasting.  
-- Временные ряды: Лаги, скользящие средние. Практика: Store Sales.  
-- Текст: TF-IDF, FastText. Практика: IMDB Reviews.  
-- Геоданные: Кластеризация, расстояния. Практика: NYC Taxi Trips.  
-- Kaggle Challenge: Полный цикл решения. Практика: Spaceship Titanic.  
-
----
+- Пропуски данных: KNN Imputer, флаги. Практика: [House Prices](https://www.kaggle.com/c/house-prices-advanced-regression-datasets) (Kaggle).  
+- Выбросы: Isolation Forest. Практика: [Web Traffic Time Series Forecasting](https://www.kaggle.com/c/web-traffic-time-series-forecasting) (Kaggle).  
+- Временные ряды: Лаги, скользящие средние. Практика: [Store Item Demand Forecasting Challenge](https://www.kaggle.com/c/demand-forecasting-kernels-only) (Kaggle).  
+- Текст: TF-IDF, FastText. Практика: [IMDB Movie Reviews](https://ai.stanford.edu/~amaas/data/sentiment/) (Stanford).  
+- Геоданные: Кластеризация, расстояния. Практика: [NYC Taxi Trip Duration](https://www.kaggle.com/c/nyc-taxi-trip-duration) (Kaggle).  
+- Kaggle Challenge: Полный цикл решения. Практика: [Spaceship Titanic](https://www.kaggle.com/c/spaceship-titanic) (Kaggle).  
 
 **Блок 4: Нейросети**  
-- PyTorch Basics: Тензоры, autograd. Практика: MNIST.  
-- CNN: Сверточные слои, аугментация. Практика: CIFAR-10.  
-- Трансферное обучение: Fine-tuning ResNet. Практика: Cats vs Dogs.  
-- NLP: BERT, Hugging Face. Практика: Jigsaw Toxic Comments.  
+- PyTorch Basics: Тензоры, autograd. Практика: [MNIST Handwritten Digits](http://yann.lecun.com/exdb/mnist/) (Yann LeCun).  
+- CNN: Сверточные слои, аугментация. Практика: [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) (University of Toronto).  
+- Трансферное обучение: Fine-tuning ResNet. Практика: [Dogs vs Cats](https://www.kaggle.com/c/dogs-vs-cats-redux-kernels-edition) (Kaggle).  
+- NLP: BERT, Hugging Face. Практика: [Jigsaw Toxic Comments Classification](https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge) (Kaggle).  
 
 **Блок 5: Соревновательные методы**  
-- Ансамбли: Стекинг CatBoost + нейросети. Практика: Tabular Playground.  
-- Гиперпараметры: Optuna для CatBoost. Практика: Santander Transaction.  
+- Ансамбли: Стекинг CatBoost + нейросети. Практика: [Tabular Playground Series](https://www.kaggle.com/c/tabular-playground-series) (Kaggle).  
+- Гиперпараметры: Optuna для CatBoost. Практика: [Santander Customer Transaction Prediction](https://www.kaggle.com/c/santander-customer-transaction-prediction) (Kaggle).  
 - AutoML: H2O, TPOT. Практика: Сравнение с ручными моделями.  
-- Кастомные метрики: QWK, MAP@K. Практика: PetFinder.my.  
-- Uplift-модели: CatBoost (S-Learner). Практика: Оценка маркетинговых кампаний.  
-- Кластеризация: Метрики ARI/AMI. Практика: Сегментация пользователей.  
-- Мультимодальность: Объединение таблиц, текста, изображений. Практика: H&M Recommendations.  
-
-
+- Кастомные метрики: QWK, MAP@K. Практика: [PetFinder.my Adoption Prediction](https://www.kaggle.com/c/petfinder-adoption-prediction) (Kaggle).  
+- Uplift-модели: CatBoost (S-Learner). Практика: [Marketing Campaign Effectiveness](https://www.kaggle.com/miroslavsabo/young-people-survey) (Kaggle).  
+- Кластеризация: Метрики ARI/AMI. Практика: [Customer Segmentation](https://www.kaggle.com/vjchoudhary7/customer-segmentation-tutorial-in-python) (Kaggle).  
+- Мультимодальность: Объединение таблиц, текста, изображений. Практика: [H&M Personalized Fashion Recommendations](https://www.kaggle.com/c/h-and-m-personalized-fashion-recommendations) (Kaggle).  

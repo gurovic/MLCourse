@@ -1,7 +1,4 @@
 ```python
-# Глава 22: Метрики качества – MAE, Accuracy, F1
-# Уровни сложности: 🟢 Базовый | 🟡 Продвинутый | 🔴 Экспертный
-
 import numpy as np
 from sklearn.metrics import mean_absolute_error, accuracy_score, f1_score
 from sklearn.metrics import precision_score, recall_score, roc_auc_score, confusion_matrix

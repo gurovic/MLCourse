@@ -2,8 +2,8 @@
 Курс машинного обучения для школьников.
 
 **Блок 1: Анализ данных**  
-- Глубокий EDA: Pandas Profiling, анализ распределений и корреляций. Практика: House Prices.  
-- Дисбаланс классов: SMOTE, Weighted Loss. Практика: Credit Card Fraud.  
+[] Глубокий EDA: Pandas Profiling, анализ распределений и корреляций. Практика: House Prices.  
+[] Дисбаланс классов: SMOTE, Weighted Loss. Практика: Credit Card Fraud.  
 - Оптимизация памяти: Сжатие типов данных. Практика: NYC Taxi Trips.  
 - Визуализация: Plotly, Folium. Практика: COVID-19 датасет.  
 

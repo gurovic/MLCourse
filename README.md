@@ -6,7 +6,7 @@
 * [Олимпиады и соревнования](olympiads.md)
 
 **Блок 1: Анализ данных**  
-* [Чтение данных](reading.md)
+* [Чтение данных](010_read.md)
 * Глубокий EDA: Pandas Profiling, анализ распределений и корреляций. Практика: [House Prices](https://www.kaggle.com/c/house-prices-advanced-regression-datasets) (Kaggle).  
 * Дисбаланс классов: SMOTE, Weighted Loss. Практика: [Credit Card Fraud Detection](https://www.kaggle.com/mlg-ulb/creditcardfraud) (Kaggle).  
 * Оптимизация памяти: Сжатие типов данных. Практика: [NYC Taxi Trip Duration](https://www.kaggle.com/c/nyc-taxi-trip-duration) (Kaggle).  
@@ -15,7 +15,7 @@
 **Блок 2: Классические алгоритмы**  
 - Линейная регрессия: MSE, градиентный спуск. Практика: [Boston Housing Dataset](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_boston.html) (scikit-learn).  
 - Логистическая регрессия: Sigmoid, бинарная классификация. Практика: [SMS Spam Collection](https://www.kaggle.com/uciml/sms-spam-collection-dataset) (UCI / Kaggle).  
-- [Метрики качества](metrics.md): F1, ROC-AUC. Практика: [Iris Dataset](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html) (scikit-learn).  
+- [Метрики качества](130_metrics.md): F1, ROC-AUC. Практика: [Iris Dataset](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html) (scikit-learn).  
 - Кросс-валидация: Stratified K-Fold. Практика: [Rossmann Store Sales](https://www.kaggle.com/c/rossmann-store-sales) (Kaggle).  
 - Деревья решений: Критерии Gini/энтропия. Практика: [Breast Cancer Wisconsin](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html) (scikit-learn).  
 - Случайный лес: Бутстрэп, OOB-оценка. Практика: [Titanic: Machine Learning from Disaster](https://www.kaggle.com/c/titanic) (Kaggle).  

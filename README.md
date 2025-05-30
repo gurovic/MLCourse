@@ -16,7 +16,7 @@
 - Линейная регрессия: MSE, градиентный спуск. Практика: [Boston Housing Dataset](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_boston.html) (scikit-learn).  
 - Логистическая регрессия: Sigmoid, бинарная классификация. Практика: [SMS Spam Collection](https://www.kaggle.com/uciml/sms-spam-collection-dataset) (UCI / Kaggle).  
 - [Метрики качества](130_metrics.md): F1, ROC-AUC. Практика: [Iris Dataset](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html) (scikit-learn).  
-- Кросс-валидация: Stratified K-Fold. Практика: [Rossmann Store Sales](https://www.kaggle.com/c/rossmann-store-sales) (Kaggle).  
+- [Кросс-валидация](140_kfold.md): Stratified K-Fold. Практика: [Rossmann Store Sales](https://www.kaggle.com/c/rossmann-store-sales) (Kaggle).  
 - Деревья решений: Критерии Gini/энтропия. Практика: [Breast Cancer Wisconsin](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html) (scikit-learn).  
 - Случайный лес: Бутстрэп, OOB-оценка. Практика: [Titanic: Machine Learning from Disaster](https://www.kaggle.com/c/titanic) (Kaggle).  
 - Градиентный бустинг: CatBoost/XGBoost/LightGBM. Практика: [Wine Quality](https://www.kaggle.com/uciml/red-wine-quality-cortez-et-al-2009) (UCI / Kaggle).  

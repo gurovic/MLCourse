@@ -1,4 +1,4 @@
-# Кросс-валидация  
+# Кросс-валидация (CV)
 
 ```python
 import numpy as np

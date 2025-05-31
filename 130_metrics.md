@@ -5,7 +5,7 @@
 ### 1.1 MAE (Mean Absolute Error)
 **Для регрессии:** Средняя абсолютная ошибка
 ```math
-$$ \text{MAE} = \frac{1}{N}\sum_{i=1}^{N} |\hat{y}_i - y_i| $$
+\text{MAE} = \frac{1}{N}\sum_{i=1}^{N} |\hat{y}_i - y_i| 
 ```
 ```python
 y_true = np.array([3.0, 5.0, 2.5, 7.0])
@@ -20,9 +20,9 @@ print(f"MAE: {mae:.2f}")  # (0.5+0+0.5+1)/4 = 0.5
 
 ### 1.2 Accuracy (Точность)
 **Для классификации:** Доля правильных ответов  
-$$
+```math
 \text{Accuracy} = \frac{\text{TP} + \text{TN}}{\text{TP} + \text{TN} + \text{FP} + \text{FN}}
-$$
+```
 
 ```python
 y_true = [0, 1, 0, 1, 1]
@@ -44,9 +44,9 @@ print(accuracy_score(y_true, y_pred))  # 0.8 → но модель не види
 
 ### 1.3 F1-Score
 **Гармоническое среднее precision и recall:**  
-$$
+```math
 F1 = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
-$$
+```
 
 ```python
 f1 = f1_score(y_true, y_pred)

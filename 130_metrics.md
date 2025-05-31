@@ -4,9 +4,7 @@
 
 ### 1.1 MAE (Mean Absolute Error)
 **Для регрессии:** Средняя абсолютная ошибка  
-$$
-\text{MAE} = \frac{1}{N}\sum_{i=1}^{N} |\hat{y}_i - y_i|
-$$
+$$ \text{MAE} = \frac{1}{N}\sum_{i=1}^{N} |\hat{y}_i - y_i| $$
 
 ```python
 y_true = np.array([3.0, 5.0, 2.5, 7.0])

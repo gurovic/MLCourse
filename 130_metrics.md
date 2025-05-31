@@ -88,9 +88,18 @@ print(f"TN={tn}, FP={fp}, FN={fn}, TP={tp}")
 ```
 
 #### Производные метрики:
-- **Sensitivity (Recall)**: ```math \frac{TP}{TP + FN} ```
-- **Specificity**: ```math \frac{TN}{TN + FP} ```
-- **FPR (False Positive Rate)**: ```math \frac{FP}{FP + TN} ```
+- **Sensitivity (Recall)**:
+```math
+\frac{TP}{TP + FN}
+```
+- **Specificity**:
+```math
+\frac{TN}{TN + FP}
+```
+- **FPR (False Positive Rate)**:
+```math
+\frac{FP}{FP + TN}
+```
 
 ---
 

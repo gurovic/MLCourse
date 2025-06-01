@@ -20,7 +20,7 @@
 - [Деревья решений](150_decision_tree.md): Критерии Gini/энтропия. Практика: [Breast Cancer Wisconsin](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html) (scikit-learn).  
 - Случайный лес: Бутстрэп, OOB-оценка. Практика: [Titanic: Machine Learning from Disaster](https://www.kaggle.com/c/titanic) (Kaggle).  
 - Градиентный бустинг: CatBoost/XGBoost/LightGBM. Практика: [Wine Quality](https://www.kaggle.com/uciml/red-wine-quality-cortez-et-al-2009) (UCI / Kaggle).  
-- Категориальные признаки: CatBoost (автокодирование). Практика: [Amazon Employee Access Challenge](https://www.kaggle.com/c/amazon-employee-access-challenge) (Kaggle).  
+- [Категориальные признаки](180_cat_features.md): CatBoost (автокодирование). Практика: [Amazon Employee Access Challenge](https://www.kaggle.com/c/amazon-employee-access-challenge) (Kaggle).  
 
 **Блок 3: Feature Engineering**  
 - [Пропуски данных](310_drops.md). Практика: [House Prices](https://www.kaggle.com/c/house-prices-advanced-regression-datasets) (Kaggle).  

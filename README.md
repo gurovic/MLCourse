@@ -32,7 +32,7 @@
 - Kaggle Challenge: Полный цикл решения. Практика: [Spaceship Titanic](https://www.kaggle.com/c/spaceship-titanic) (Kaggle).  
 
 **Блок 4: Нейросети**  
-- PyTorch Basics: Тензоры, autograd. Практика: [MNIST Handwritten Digits](http://yann.lecun.com/exdb/mnist/) (Yann LeCun).  
+- [PyTorch Basics](410_pytorch.md): Тензоры, autograd. Практика: [MNIST Handwritten Digits](http://yann.lecun.com/exdb/mnist/) (Yann LeCun).  
 - CNN: Сверточные слои, аугментация. Практика: [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) (University of Toronto).  
 - Трансферное обучение: Fine-tuning ResNet. Практика: [Dogs vs Cats](https://www.kaggle.com/c/dogs-vs-cats-redux-kernels-edition) (Kaggle).  
 - NLP: BERT, Hugging Face. Практика: [Jigsaw Toxic Comments Classification](https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge) (Kaggle).  

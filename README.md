@@ -10,7 +10,7 @@
 * [Глубокий EDA](020_EDA.md): Pandas Profiling, анализ распределений и корреляций. Практика: [House Prices](https://www.kaggle.com/c/house-prices-advanced-regression-datasets) (Kaggle).  
 * [Дисбаланс классов](030_disbalance.md): SMOTE, Weighted Loss. Практика: [Credit Card Fraud Detection](https://www.kaggle.com/mlg-ulb/creditcardfraud) (Kaggle).  
 * [Оптимизация памяти](040_memory.md): Сжатие типов данных. Практика: [NYC Taxi Trip Duration](https://www.kaggle.com/c/nyc-taxi-trip-duration) (Kaggle).  
-* Визуализация: Plotly, Folium. Практика: [COVID-19 Global Forecasting](https://www.kaggle.com/imdevskp/corona-virus-report) (Kaggle).  
+* [Визуализация](050_visual.md): Plotly, Folium. Практика: [COVID-19 Global Forecasting](https://www.kaggle.com/imdevskp/corona-virus-report) (Kaggle).  
 
 **Блок 2: Классические алгоритмы**  
 - Линейная регрессия: MSE, градиентный спуск. Практика: [Boston Housing Dataset](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_boston.html) (scikit-learn).  

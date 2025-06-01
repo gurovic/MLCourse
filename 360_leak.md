@@ -1,4 +1,3 @@
-```python
 # Утечки данных (Data Leakage)  
 
 ---

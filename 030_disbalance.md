@@ -1,6 +1,6 @@
-```python
-# Дисбаланс классов
 
+# Дисбаланс классов
+```python 
 # !pip install pandas numpy scikit-learn imbalanced-learn tensorflow
 ```
 

@@ -13,7 +13,7 @@
 * [Визуализация](050_visual.md): Plotly, Folium. Практика: [COVID-19 Global Forecasting](https://www.kaggle.com/imdevskp/corona-virus-report) (Kaggle).  
 
 **Блок 2: Классические алгоритмы**  
-- Линейная регрессия: MSE, градиентный спуск. Практика: [Boston Housing Dataset](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_boston.html) (scikit-learn).  
+- [Линейная регрессия](110_linreg.md): MSE, градиентный спуск. Практика: [Boston Housing Dataset](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_boston.html) (scikit-learn).  
 - Логистическая регрессия: Sigmoid, бинарная классификация. Практика: [SMS Spam Collection](https://www.kaggle.com/uciml/sms-spam-collection-dataset) (UCI / Kaggle).  
 - [Метрики качества](130_metrics.md): F1, ROC-AUC. Практика: [Iris Dataset](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html) (scikit-learn).  
 - [Кросс-валидация](140_kfold.md): Stratified K-Fold. Практика: [Rossmann Store Sales](https://www.kaggle.com/c/rossmann-store-sales) (Kaggle).  

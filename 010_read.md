@@ -1,10 +1,14 @@
-F# Чтение данных в Pandas для ML  
-## Уровни сложности: 🟢 Базовый | 🟡 Продвинутый | 🔴 Экспертный
+# Чтение данных в Pandas для ML  
 
 ```python
-# !pip install pandas numpy matplotlib seaborn pyarrow fastparquet scipy cudf
+!pip install pandas numpy matplotlib seaborn pyarrow fastparquet scipy cudf
 ```
-
+---
+> ⚠️ How to install cudf for google colab
+```python
+!git clone https://github.com/rapidsai/rapidsai-csp-utils.git
+!python rapidsai-csp-utils/colab/pip-install.py
+```
 ---
 
 ## 🟢 Базовый уровень (Must Know для начинающих)
@@ -66,6 +70,7 @@ df.to_excel('report.xlsx', sheet_name='Data')  # сохранение в Excel
 df.dropna(subset=['important_col'], inplace=True)
 
 # Заполнение пропусков медианой
+df['id'] = pd.to_numeric(df['id'], errors='coerce') # некорректные значения превращаются в NaN
 df.fillna({'age': df['age'].median()}, inplace=True)
 
 # Удаление дубликатов

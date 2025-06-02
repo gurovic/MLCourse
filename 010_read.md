@@ -70,7 +70,7 @@ df.to_excel('report.xlsx', sheet_name='Data')  # сохранение в Excel
 df.dropna(subset=['important_col'], inplace=True)
 
 # Заполнение пропусков медианой
-df['id'] = pd.to_numeric(df['id'], errors='coerce') # некорректные значения превращаются в NaN
+df['age'] = pd.to_numeric(df['age'], errors='coerce') # некорректные значения превращаются в NaN
 df.fillna({'age': df['age'].median()}, inplace=True)
 
 # Удаление дубликатов

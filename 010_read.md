@@ -9,6 +9,27 @@
 !git clone https://github.com/rapidsai/rapidsai-csp-utils.git
 !python rapidsai-csp-utils/colab/pip-install.py
 ```
+
+```python
+import pandas as pd
+import numpy as np
+
+# Создание DataFrame с различными типами данных, пропусками и дубликатами для тестирования кода
+data = {
+    'id': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 2, 3], # Повторяющиеся id
+    'name': ['Иван', 'Петр', 'Анна', 'Мария', 'Сергей', 'Елена', 'Олег', 'Юлия', 'Дмитрий', 'Наталья', 'Петр', 'Анна'], # Повторяющиеся имена
+    'email': ['ivan@example.com', 'petr@example.com', np.nan, 'maria@example.com', 'sergey@example.com', 'elena@example.com', 'oleg@example.com', 'yulia@example.com', 'dmitry@example.com', 'natalya@example.com', 'petr@example.com', np.nan], # Повторяющиеся email и пропуски
+    'value': [100.5, 200.3, 150.0, np.nan, 300.1, 250.8, 180.0, 220.5, 280.9, 190.2, 200.3, 150.0], # Повторяющиеся значения и пропуски
+    'category': ['A', 'B', 'A', 'C', 'B', 'A', 'C', 'B', 'A', 'C', 'B', 'A'],
+    'date_col': pd.to_datetime(['2023-01-01', '2023-01-02', '2023-01-03', '2023-01-04', '2023-01-05', '2023-01-06', '2023-01-07', '2023-01-08', '2023-01-09', '2023-01-10', '2023-01-02', '2023-01-03']) # Повторяющиеся даты
+}
+
+df_demo = pd.DataFrame(data)
+
+# Сохранение DataFrame в CSV файл с нестандартным разделителем и обозначениями пропусков
+df_demo.to_csv('data.csv', sep=';', encoding='utf-8', index=False, na_rep='?')
+
+```
 ---
 
 ## 🟢 Базовый уровень (Must Know для начинающих)
@@ -67,11 +88,11 @@ df.to_excel('report.xlsx', sheet_name='Data')  # сохранение в Excel
 
 ```python
 # Удаление пропусков
-df.dropna(subset=['important_col'], inplace=True)
+df.dropna(subset=['email'], inplace=True)
 
 # Заполнение пропусков медианой
-df['age'] = pd.to_numeric(df['age'], errors='coerce') # некорректные значения превращаются в NaN
-df.fillna({'age': df['age'].median()}, inplace=True)
+df['value'] = pd.to_numeric(df['value'], errors='coerce') # некорректные значения превращаются в NaN
+df.fillna({'age': df['value'].median()}, inplace=True)
 
 # Удаление дубликатов
 df = df.drop_duplicates()

@@ -6,7 +6,7 @@
 * [Олимпиады и соревнования](olympiads.md)
 
 **Блок 1: Анализ данных**  
-* [Чтение данных](010_read.md)
+* [Чтение данных](010_read.ipynb)
 * [Глубокий EDA](020_EDA.md): Pandas Profiling, анализ распределений и корреляций. Практика: [House Prices](https://www.kaggle.com/c/house-prices-advanced-regression-datasets) (Kaggle).  
 * [Дисбаланс классов](030_disbalance.md): SMOTE, Weighted Loss. Практика: [Credit Card Fraud Detection](https://www.kaggle.com/mlg-ulb/creditcardfraud) (Kaggle).  
 * [Оптимизация памяти](040_memory.md): Сжатие типов данных. Практика: [NYC Taxi Trip Duration](https://www.kaggle.com/c/nyc-taxi-trip-duration) (Kaggle).  

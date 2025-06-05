@@ -123,13 +123,7 @@ assert max_corr_pair in [('bill_length_mm', 'body_mass_g'), ('flipper_length_mm'
 
 ---
 
-### Задача 2: Временная декомпозиция
-**Данные:** Датасет `air_quality = pd.read_csv('https://raw.githubusercontent.com/owid/owid-datasets/8e4d0c9/datasets/Air%20pollution%20by%20city%20-%20Fouquet%20%26%20DPCC%20(2011)/Air%20pollution%20by%20city%20-%20Fouquet%20%26%20DPCC%20(2011).csv')`  
-**Задача:** Выделите тренд и сезонность для показателя PM2.5 в Лондоне.
-
----
-
-### Задача 3: 3D-анализ
+### Задача 2: 3D-анализ
 **Данные:** Датасет `iris = sns.load_dataset('iris')`  
 **Задача:** Постройте 3D-график зависимости sepal_length, sepal_width и petal_length с цветом по видам.
 
@@ -139,7 +133,7 @@ assert max_corr_pair in [('bill_length_mm', 'body_mass_g'), ('flipper_length_mm'
 
 ---
 
-### Задача 4: Анализ взаимодействий
+### Задача 3: Анализ взаимодействий
 **Данные:** Датасет `tips = sns.load_dataset('tips')`  
 **Задача:** Найдите комбинацию дня недели и времени, где средние чаевые максимальны.
 
@@ -150,7 +144,7 @@ assert max_corr_pair in [('bill_length_mm', 'body_mass_g'), ('flipper_length_mm'
 
 ---
 
-### Задача 5: Нечисловые корреляции
+### Задача 4: Нечисловые корреляции
 **Данные:** Датасет с категориальными переменными  
 **Задача:** Рассчитайте Cramér’s V для колонок `education_level` и `income_category`.
 
@@ -191,18 +185,8 @@ assert max_corr_pair in [('bill_length_mm', 'body_mass_g'), ('flipper_length_mm'
 
 ---
 
-### Задача 4: Частичные зависимости
-**Данные:** Обученная модель регрессии на housing data  
-**Задача:** Визуализируйте влияние площади дома и возраста на цену через PDP.
 
-```python
-# Ожидаемый вывод: 
-# "Увеличение площади на 50 кв.м → рост цены на $XXk"
-```
-
----
-
-### Задача 5: Автоматический feature engineering
+### Задача 4: Автоматический feature engineering
 **Данные:** Датасет с датой `timestamp` и числовыми метриками  
 **Задача:** Сгенерируйте 5 новых признаков (день недели, квартал и т.д.) и оцените их важность.
 

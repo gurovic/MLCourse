@@ -7,8 +7,10 @@
 
 **Блок 1: Анализ данных**  
 * [Чтение данных](010_read.ipynb)
-* [Глубокий EDA](020_EDA.md): Pandas Profiling, анализ распределений и корреляций. Практика: [House Prices](https://www.kaggle.com/c/house-prices-advanced-regression-datasets) (Kaggle).  
-* [Дисбаланс классов](030_disbalance.md): SMOTE, Weighted Loss. Практика: [Credit Card Fraud Detection](https://www.kaggle.com/mlg-ulb/creditcardfraud) (Kaggle).  
+* [Глубокий EDA](019_EDA.шзнти): Pandas Profiling, анализ распределений и корреляций.
+  * [Задачи](019_EDA_tasks.md)
+  * Практика: [House Prices](https://www.kaggle.com/c/house-prices-advanced-regression-datasets) (Kaggle).  
+* [Дисбаланс классов](030_disbalance.ipynb): SMOTE, Weighted Loss. Практика: [Credit Card Fraud Detection](https://www.kaggle.com/mlg-ulb/creditcardfraud) (Kaggle).  
 * [Оптимизация памяти](040_memory.md): Сжатие типов данных. Практика: [NYC Taxi Trip Duration](https://www.kaggle.com/c/nyc-taxi-trip-duration) (Kaggle).  
 * [Визуализация](050_visual.md): Plotly, Folium. Практика: [COVID-19 Global Forecasting](https://www.kaggle.com/imdevskp/corona-virus-report) (Kaggle).  
 

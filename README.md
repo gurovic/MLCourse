@@ -7,7 +7,7 @@
 
 **Блок 1: Анализ данных**  
 * [Чтение данных](010_read.ipynb)
-* [Глубокий EDA](019_EDA.шзнти): Pandas Profiling, анализ распределений и корреляций.
+* [Глубокий EDA](019_EDA.ipynb): Pandas Profiling, анализ распределений и корреляций.
   * [Задачи](019_EDA_tasks.md)
   * Практика: [House Prices](https://www.kaggle.com/c/house-prices-advanced-regression-datasets) (Kaggle).  
 * [Дисбаланс классов](030_disbalance.ipynb): SMOTE, Weighted Loss. Практика: [Credit Card Fraud Detection](https://www.kaggle.com/mlg-ulb/creditcardfraud) (Kaggle).  

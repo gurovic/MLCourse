@@ -41,8 +41,8 @@ plt.show()
 
 ---
 
-```python
 # Практические задания по Глубокому EDA
+```python
 
 import pandas as pd
 import numpy as np

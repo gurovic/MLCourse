@@ -20,8 +20,6 @@
   * 🔴 Практика: [House Prices](https://www.kaggle.com/c/house-prices-advanced-regression-datasets) (Kaggle).  
 * 🟡 [Дисбаланс классов](030_disbalance.ipynb): SMOTE, Weighted Loss.
   * 🔴 Практика: [Credit Card Fraud Detection](https://www.kaggle.com/mlg-ulb/creditcardfraud) (Kaggle).  
-* 🔴 [Оптимизация памяти](040_memory.md): Сжатие типов данных.
-  * 🔴 Практика: [NYC Taxi Trip Duration](https://www.kaggle.com/c/nyc-taxi-trip-duration) (Kaggle).  
 
 **Блок 2: Классические алгоритмы**  
 * 🔴 [Линейная регрессия](110_linreg.md): MSE, градиентный спуск.
@@ -63,4 +61,8 @@
 - 🔴 Кастомные метрики: QWK, MAP@K. Практика: [PetFinder.my Adoption Prediction](https://www.kaggle.com/c/petfinder-adoption-prediction) (Kaggle).  
 - 🔴 Uplift-модели: CatBoost (S-Learner). Практика: [Marketing Campaign Effectiveness](https://www.kaggle.com/miroslavsabo/young-people-survey) (Kaggle).  
 - 🔴 Кластеризация: Метрики ARI/AMI. Практика: [Customer Segmentation](https://www.kaggle.com/vjchoudhary7/customer-segmentation-tutorial-in-python) (Kaggle).  
-- 🔴 Мультимодальность: Объединение таблиц, текста, изображений. Практика: [H&M Personalized Fashion Recommendations](https://www.kaggle.com/c/h-and-m-personalized-fashion-recommendations) (Kaggle).  
+- 🔴 Мультимодальность: Объединение таблиц, текста, изображений. Практика: [H&M Personalized Fashion Recommendations](https://www.kaggle.com/c/h-and-m-personalized-fashion-recommendations) (Kaggle).
+
+**Дополнительные темы**
+* 🔴 [Оптимизация памяти](040_memory.md): Сжатие типов данных.
+  * 🔴 Практика: [NYC Taxi Trip Duration](https://www.kaggle.com/c/nyc-taxi-trip-duration) (Kaggle).  

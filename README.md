@@ -29,6 +29,7 @@
 * 🟡 [Метрики качества](130_metrics.ipynb): F1, ROC-AUC.
   * 🔴 Практика: [Iris Dataset](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html) (scikit-learn).  
 * 🟡 [Кросс-валидация](140_kfold.ipynb): Stratified K-Fold.
+  * 🔴 [Bias-Variance Tradeoff](140_10_bias_variance.md)
   * 🔴 Практика: [Rossmann Store Sales](https://www.kaggle.com/c/rossmann-store-sales) (Kaggle).  
 * 🟡 [Деревья решений](150_decision_tree.ipynb): Критерии Gini/энтропия.
   * 🔴 Практика: [Breast Cancer Wisconsin](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html) (scikit-learn).  

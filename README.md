@@ -32,7 +32,7 @@
   * 🔴 [Bias-Variance Tradeoff](140_10_bias_variance.md)
   * 🔴 Практика: [Rossmann Store Sales](https://www.kaggle.com/c/rossmann-store-sales) (Kaggle).
 * 🟡 [Ансамблевые методы](145_ensemble.ipynb)
-* 🟡 [Деревья решений](150_decision_tree.ipynb): Критерии Gini/энтропия.
+* 🔴 [Деревья решений](150_decision_tree.ipynb): Критерии Gini/энтропия.
   * 🔴 Практика: [Breast Cancer Wisconsin](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html) (scikit-learn).  
 * 🔴 [Случайный лес](160_random_forest.md): Бутстрэп, OOB-оценка.
   * 🔴 Практика: [Titanic: Machine Learning from Disaster](https://www.kaggle.com/c/titanic) (Kaggle).  

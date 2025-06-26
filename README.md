@@ -35,7 +35,7 @@
   * Практика: Iris Dataset (библиотека sklearn)
   * 🔴 Практика: [Breast Cancer Wisconsin](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html) (scikit-learn).  
 * Градиентный спуск
-* ** ЛИНЕЙНЫЕ МОДЕЛИ **
+* **ЛИНЕЙНЫЕ МОДЕЛИ**
   * 🔴 [Линейная регрессия](110_linreg.md): MSE, градиентный спуск.
     * Практика: Iris Dataset (библиотека sklearn)
     * 🔴 Практика: [Boston Housing Dataset](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_boston.html) (scikit-learn).

@@ -10,6 +10,7 @@
 | **AI Journey Contest (от Сбера)** | [ai-journey.ru](https://ai-journey.ru) | Соревнования для школьников и студентов |
 | **Тинькофф Стартап Аналитика** | [tinkoff.ru](https://www.tinkoff.ru) | Задачи по предсказательной аналитике |
 | **Russian AI Cup** | [russianaicup.ru](https://russianaicup.ru) | Программирование ИИ для игровых задач |
+| Этапы **ВсОШ** | TBD| ??? |
 
 ---
 

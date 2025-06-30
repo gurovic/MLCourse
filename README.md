@@ -28,7 +28,7 @@
 * 🟡 [Дисбаланс классов](030_disbalance.ipynb): SMOTE, Weighted Loss.
   * 🔴 Практика: [Credit Card Fraud Detection](https://www.kaggle.com/mlg-ulb/creditcardfraud) (Kaggle).  
 
-**Блок 2: Вспомогательные темы и приемы**
+**Блок 1.5: Вспомогательные темы и приемы**
 * 🟡 [Предобработка для моделей](107_scaling.ipynb): концепция масштабирования (StandardScaler/MinMaxScaler)
   * Практика: Показать разницу в качестве kNN с масштабированием и без на moons/iris.
 * Градиентный спуск
@@ -49,8 +49,10 @@
   * 🔴 [Логистическая регрессия](120_logreg.md): Sigmoid, бинарная классификация.
     * Практика: Iris Dataset (библиотека sklearn)
     * 🔴 Практика: [SMS Spam Collection](https://www.kaggle.com/uciml/sms-spam-collection-dataset) (UCI / Kaggle).
-* SVM + практика: линейное/нелинейное разделение (например, moons dataset)
-  * 🔴 Практика: [Breast Cancer Wisconsin](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html) (scikit-learn).  
+  * SVM: линейное/нелинейное разделение (например, moons dataset)
+    * *SVM является **линейной** только с линейным ядром*
+    * 🔴 Практика: [Breast Cancer Wisconsin](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html) (scikit-learn).
+  * Перцептрон и однослойные нейросети
 * Naive Bayes
   * Практика: классификация текстов (дублирование SMS Spam Collection)
   * 🔴 Практика: [Breast Cancer Wisconsin](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html) (scikit-learn).  
@@ -103,7 +105,7 @@
 - 🔴 Трансферное обучение: Fine-tuning ResNet. Практика: [Dogs vs Cats](https://www.kaggle.com/c/dogs-vs-cats-redux-kernels-edition) (Kaggle).  
 - 🔴 NLP: BERT, Hugging Face. Практика: [Jigsaw Toxic Comments Classification](https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge) (Kaggle).  
 
-**Блок 7: Соревновательные методы**  
+**Блок 7: Продвинутые соревновательные методы и алгоритмы**  
 - 🔴 Гиперпараметры: Optuna для CatBoost. Практика: [Santander Customer Transaction Prediction](https://www.kaggle.com/c/santander-customer-transaction-prediction) (Kaggle).  
 - 🔴 AutoML: H2O, TPOT. Практика: Сравнение с ручными моделями.  
 - 🔴 Кастомные метрики: QWK, MAP@K. Практика: [PetFinder.my Adoption Prediction](https://www.kaggle.com/c/petfinder-adoption-prediction) (Kaggle).  

@@ -58,7 +58,8 @@
   * 🔴 Практика: [Breast Cancer Wisconsin](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html) (scikit-learn).  
 
 **Блок 3: Валидация и оценка моделей** 
-* 🟡 [Метрики качества](130_metrics.ipynb): F1, ROC-AUC, матрица качества, log_loss 
+* 🟡 [Метрики качества](130_metrics.ipynb): F1, ROC-AUC, матрица качества, log_loss
+  * 🟡 [Metrics vs loss function](130_1_metrics_vs_loss_function.md)
   * 🔴 Практика: [Iris Dataset](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html) (scikit-learn).  
   * Практика: Сравнить метрики на датасете с дисбалансом (Credit Card Fraud).
 * Разделение данных

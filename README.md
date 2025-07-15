@@ -21,7 +21,7 @@
   * 🔴 Практика: COVID-19 или House pricing
 * 🟡 [Визуализация](015_visualization.ipynb): Plotly, Folium.
   * [*Диаграммы с усами*](015_10_boxplot_whiskers.md) 
-  * 🔴 [Задачи](015_visualization_tasks.ipynb)
+  * 🔴 [Задачи](015_visualization_tasks.md)
   * 🔴 Практика: [COVID-19 Global Forecasting](https://www.kaggle.com/imdevskp/corona-virus-report) (Kaggle).  
 * Простая очистка данных: заполнение пропусков и устранение выбросов.
   * Практика: COVID-19 или House pricing

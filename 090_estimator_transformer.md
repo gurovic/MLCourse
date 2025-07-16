@@ -1,4 +1,4 @@
-### Глава: Estimator и Transformer в scikit-learn  
+### Estimator и Transformer в scikit-learn  
 *Основные строительные блоки для предобработки данных и моделирования*
 
 ---

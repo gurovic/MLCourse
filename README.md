@@ -64,7 +64,8 @@
 
 **Блок 3: Валидация и оценка моделей** 
 * 🟡 [Метрики качества](130_metrics.ipynb): F1, ROC-AUC, матрица качества, log_loss
-  * [Что такое ROC-AUC?](135_roc_auc.md)
+  * 🔴 [Что такое ROC-AUC?](135_roc_auc.md)
+  * 🔴 [Что такое R^2?](137_r_2.md)
   * 🟡 [Metrics vs loss function](130_1_metrics_vs_loss_function.md)
   * 🔴 Практика: [Iris Dataset](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html) (scikit-learn).  
   * Практика: Сравнить метрики на датасете с дисбалансом (Credit Card Fraud).

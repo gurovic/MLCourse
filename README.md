@@ -49,13 +49,13 @@
   * 🔴 [Линейная регрессия](110_linreg.md): MSE, градиентный спуск.
     * Практика: Iris Dataset (библиотека sklearn)
     * 🔴 Практика: [Boston Housing Dataset](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_boston.html) (scikit-learn).
-  * 🔴 [Регуляризация](116_regularization.ipynb) (Ridge/Lasso)
+    * 🔴 [Регуляризация](116_regularization.ipynb) (Ridge/Lasso)
     * Практика: прогнозирование цен на жилье.  
   * 🔴 [Логистическая регрессия](120_logreg.md): Sigmoid, бинарная классификация.
     * Практика: Iris Dataset (библиотека sklearn)
     * 🔴 Практика: [SMS Spam Collection](https://www.kaggle.com/uciml/sms-spam-collection-dataset) (UCI / Kaggle).
   * SVM: линейное/нелинейное разделение (например, moons dataset)
-    * *SVM является **линейной** только с линейным ядром*
+    SVM является **линейной** только с линейным ядром*
     * 🔴 Практика: [Breast Cancer Wisconsin](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html) (scikit-learn).
   * Перцептрон и однослойные нейросети
 * Naive Bayes

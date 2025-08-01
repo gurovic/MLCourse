@@ -49,7 +49,7 @@
   * 🔴 [Линейная регрессия](110_linreg.md): MSE, градиентный спуск.
     * Практика: Iris Dataset (библиотека sklearn)
     * 🔴 Практика: [Boston Housing Dataset](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_boston.html) (scikit-learn).
-  * Регуляризация (Ridge/Lasso)
+  * 🔴 [Регуляризация](116_regularization.ipynb) (Ridge/Lasso)
     * Практика: прогнозирование цен на жилье.  
   * 🔴 [Логистическая регрессия](120_logreg.md): Sigmoid, бинарная классификация.
     * Практика: Iris Dataset (библиотека sklearn)

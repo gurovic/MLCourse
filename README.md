@@ -33,7 +33,7 @@
   * Практика: [House Prices](https://www.kaggle.com/c/house-prices-advanced-regression-datasets) (Kaggle)  
 * 🟡 [Дисбаланс классов](030_disbalance.ipynb): SMOTE, Weighted Loss.
   * Практика: [Credit Card Fraud Detection](https://www.kaggle.com/mlg-ulb/creditcardfraud) (Kaggle)
-  * ◯ [Задачи]()
+  * 🔴 [Задачи](030_disbalance_tasks,md)
 
 **Блок 1.5: Вспомогательные темы и приемы**
 * 🟡 [Предобработка для моделей](107_scaling.ipynb): концепция масштабирования (StandardScaler/MinMaxScaler)

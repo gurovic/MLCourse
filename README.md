@@ -69,11 +69,11 @@
   * 🟡 [Metrics vs loss function](130_1_metrics_vs_loss_function.md)
   * 🔴 Практика: [Iris Dataset](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html) (scikit-learn).  
   * Практика: Сравнить метрики на датасете с дисбалансом (Credit Card Fraud).
-* Разделение данных
+* [Разделение данных](138_data_split.ipynb)
 * 🟡 [Кросс-валидация](140_kfold.ipynb): Stratified K-Fold.
   * 🔴 Практика: [Rossmann Store Sales](https://www.kaggle.com/c/rossmann-store-sales) (Kaggle).
 * 🔴 [Bias-Variance Tradeoff](140_10_bias_variance.md)
-* Кривые обучения
+* [Кривые обучения](150_learning_curves.ipynb)
   
 **Блок 4: Ансамбли** 
 * 🟡 [Ансамблевые методы: обзор](145_ensemble.ipynb)

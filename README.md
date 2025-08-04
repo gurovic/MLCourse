@@ -101,8 +101,8 @@
 - 🔴 [Выбросы](320_outliers.md): Isolation Forest. Практика: [Web Traffic Time Series Forecasting](https://www.kaggle.com/c/web-traffic-time-series-forecasting) (Kaggle).  
 - ◯ Категориальные признаки: One-Hot Encoding, Label Encoding, Target Encoding
   -  Практика: House Prices/Amazon Employee. 
-- ◯ Создание признаков: генерация полиномиальных признаков (для линейных моделей), взаимодействие признаков, агрегаты (для реляционных данных), признаки из дат (день недели, месяц).
--   🔴 [Временные ряды](330_time_series.md): Лаги, скользящие средние. Практика: [Store Item Demand Forecasting Challenge](https://www.kaggle.com/c/demand-forecasting-kernels-only) (Kaggle).  
+- 🔴 [Создание признаков](325_creating_features.ipynb): генерация полиномиальных признаков (для линейных моделей), взаимодействие признаков, агрегаты (для реляционных данных), признаки из дат (день недели, месяц).
+- 🔴 [Временные ряды](330_time_series.md): Лаги, скользящие средние. Практика: [Store Item Demand Forecasting Challenge](https://www.kaggle.com/c/demand-forecasting-kernels-only) (Kaggle).  
 - 🔴 [Текст](340_text_feature_engineering.md): TF-IDF, FastText. Практика: [IMDB Movie Reviews](https://ai.stanford.edu/~amaas/data/sentiment/) (Stanford).  
 - 🔴 [Геоданные](350_geo_features.md): Кластеризация, расстояния. Практика: [NYC Taxi Trip Duration](https://www.kaggle.com/c/nyc-taxi-trip-duration) (Kaggle).
 - 🔴 [Утечки данных](360_leak.md)

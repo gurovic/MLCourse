@@ -99,7 +99,7 @@
 **Блок 5: Feature Engineering**  
 - 🔴 [Пропуски данных](310_drops.md). Практика: [House Prices](https://www.kaggle.com/c/house-prices-advanced-regression-datasets) (Kaggle).  
 - 🔴 [Выбросы](320_outliers.md): Isolation Forest. Практика: [Web Traffic Time Series Forecasting](https://www.kaggle.com/c/web-traffic-time-series-forecasting) (Kaggle).  
-- ◯ Категориальные признаки: One-Hot Encoding, Label Encoding, Target Encoding
+- ◯ [Категориальные признаки](323_cat_features.ipynb): One-Hot Encoding, Label Encoding, Target Encoding
   -  Практика: House Prices/Amazon Employee. 
 - 🔴 [Создание признаков](325_creating_features.ipynb): генерация полиномиальных признаков (для линейных моделей), взаимодействие признаков, агрегаты (для реляционных данных), признаки из дат (день недели, месяц).
 - 🔴 [Временные ряды](330_time_series.md): Лаги, скользящие средние. Практика: [Store Item Demand Forecasting Challenge](https://www.kaggle.com/c/demand-forecasting-kernels-only) (Kaggle).  

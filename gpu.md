@@ -1,0 +1,7 @@
+- `pandas` → `%load_ext cudf.pandas`  
+- `polars` → `.collect(engine="gpu")`  
+- `scikit-learn` → `%load_ext cuml.accel`  
+- `xgboost` → `device="cuda"`  
+- `umap` → `%load_ext cuml.accel`  
+- `hdbscan` → `%load_ext cuml.accel`  
+- `networkx` → `%env NX_CUGRAPH_AUTOCONFIG=True`

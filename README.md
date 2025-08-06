@@ -65,6 +65,7 @@
     * Практика: [Breast Cancer Wisconsin](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html) (scikit-learn).
   * 🔴 [Перцептрон и однослойные нейросети](135_perceptron.ipynb)
 * 🔴 [Naive Bayes](140_naive_bayes.ipynb)
+  * [Объяснение без математики](140_naive_bayes_child.md)
   * Практика: классификация текстов (SMS Spam Collection)
   * Практика: [Breast Cancer Wisconsin](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html) (scikit-learn).  
 

@@ -48,6 +48,7 @@
 * 🟡 [kNN](103_knn.ipynb)
   * Практика: Iris Dataset (библиотека sklearn)
 * 🔴 [Деревья решений](150_decision_tree.ipynb): Критерии Gini/энтропия.
+  * 🟡 [Почему мы строим дерево жадно?](150_decision_tree_greedy.md) 
   * Практика: Iris Dataset (библиотека sklearn)
   * 🔴 Практика: [Breast Cancer Wisconsin](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html) (scikit-learn).  
 * **ЛИНЕЙНЫЕ МОДЕЛИ**

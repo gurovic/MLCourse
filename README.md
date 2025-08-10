@@ -98,7 +98,7 @@
     * 🔴 Практика: [Amazon Employee Access Challenge](https://www.kaggle.com/c/amazon-employee-access-challenge) (Kaggle).  
 * 🔴 Стекинг: CatBoost + ...
   * Практика: [Tabular Playground Series](https://www.kaggle.com/c/tabular-playground-series) (Kaggle).  
-* ◯ Интерпретация: Важность признаков (feature importances) для бэггинга и бустинга.
+* 🔴 [Интерпретация: важность признаков](195_feature_importances.ipynb) (feature importances) для бэггинга и бустинга.
   * Практика: House Prices/Wine Quality.
  
 **Блок 5: Feature Engineering**  

@@ -85,7 +85,7 @@
   
 **Блок 4: Ансамбли** 
 * 🟡 [Ансамблевые методы: обзор](145_ensemble.ipynb)
-* ◯ Voting
+* 🔴 [Voting](150_voting.ipynb)
   * Практика: Iris/Titanic.
 * 🔴 [Бэггинг - Случайный лес](160_random_forest.md): Бутстрэп, OOB-оценка.
   * 🔴 Практика: [Titanic: Machine Learning from Disaster](https://www.kaggle.com/c/titanic) (Kaggle), feature importance анализ.  

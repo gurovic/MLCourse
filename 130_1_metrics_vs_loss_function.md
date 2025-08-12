@@ -25,7 +25,7 @@
 | Мультиклассовая классификация | `Categorical Crossentropy` | Для многоклассовой задачи с one-hot кодированием |
 | Регрессия | `Mean Squared Error (MSE)` | Минимизирует среднеквадратичную ошибку |
 
-### Пример:
+### TODO переделать пример под pyTorch Пример:
 ```python
 from tensorflow.keras.losses import BinaryCrossentropy
 

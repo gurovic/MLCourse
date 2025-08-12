@@ -59,7 +59,6 @@ from sklearn.metrics import accuracy_score
 accuracy = accuracy_score(y_true, y_pred)
 ```
 
----
 
 ## Ключевые различия между метрикой и функцией потерь
 

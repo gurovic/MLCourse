@@ -32,7 +32,8 @@ import torch.nn as nn
 # Предполагается, что y_pred и y_true - torch.Tensor
 loss_fn = nn.BCELoss()  # Для вероятностей
 loss_value = loss_fn(y_pred, y_true.float())  # Метки должны быть float```
----
+
+```
 
 ## Что такое метрика?
 

@@ -25,14 +25,13 @@
 | Мультиклассовая классификация | `Categorical Crossentropy` | Для многоклассовой задачи с one-hot кодированием |
 | Регрессия | `Mean Squared Error (MSE)` | Минимизирует среднеквадратичную ошибку |
 
-### TODO переделать пример под pyTorch Пример:
+### Пример:
 ```python
-from tensorflow.keras.losses import BinaryCrossentropy
+import torch.nn as nn
 
-loss_fn = BinaryCrossentropy()
-loss_value = loss_fn(y_true, y_pred)
-```
-
+# Предполагается, что y_pred и y_true - torch.Tensor
+loss_fn = nn.BCELoss()  # Для вероятностей
+loss_value = loss_fn(y_pred, y_true.float())  # Метки должны быть float```
 ---
 
 ## Что такое метрика?

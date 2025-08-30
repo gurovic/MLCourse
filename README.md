@@ -43,6 +43,7 @@
   * 🔴 [Практика](107_scaling_practice.md): Показать разницу в качестве kNN с масштабированием и без на moons/iris.
 * 🔴 [Градиентный спуск](080_gradient_descent.md)
 * 🔴 [Estimator и Transformer](090_estimator_transformer.md) в sklearn
+* Pipeline в sklearn
 
 **Блок 2: Классические алгоритмы**  
 * 🟡 [kNN](103_knn.ipynb)

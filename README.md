@@ -17,7 +17,7 @@
 **Блок 1: Анализ данных**  
 * 🟡 [Чтение данных](010_read.ipynb)
   * 🟡 [Задачи](010_read_tasks.md)
-* 🟡 [Типы данных и их специфика](012_types.ipynb): числовые/категориальные/временные/гео/текст)
+* 🟡 [Типы данных и их специфика](012_types.ipynb): числовые/категориальные/временные/гео/текст
   * 🔴 [Задачи](012_types_tasks.md)
 * 🔴 [Создание синтетических данных](013_create_data.ipynb): numpy.random, sklearn.datasets.make_classification, sklearn.datasets.make_regression, данные для A/B-тестирования
   * 🔴 [Задачи](013_create_data_tasks.md)

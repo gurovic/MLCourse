@@ -69,7 +69,8 @@
   * Практика: Iris Dataset (библиотека sklearn)
   * 🔴 Практика: [Breast Cancer Wisconsin](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html) (scikit-learn).  
 * **ЛИНЕЙНЫЕ МОДЕЛИ**
-  * 🟡 [*Что такое линейные модели?*](108_linear.md) 
+  * 🟡 [*Что такое линейные модели?*](108_linear.md)
+  * 🔴 [*Почему линейные модели до сих пор используются?*](109_why_linear.md)
   * 🔴 [Линейная регрессия](110_linreg.ipynb): MSE, градиентный спуск.
     * Практика: Iris Dataset (библиотека sklearn)
     * Практика: [Boston Housing Dataset](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_boston.html) (scikit-learn).

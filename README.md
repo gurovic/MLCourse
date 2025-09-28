@@ -99,6 +99,7 @@
     * 🔴 [Регуляризация](116_regularization.ipynb) (Ridge/Lasso)
     * Практика: прогнозирование цен на жилье.  
   * 🔴 [Логистическая регрессия](120_logreg.md): Sigmoid, бинарная классификация.
+    * 🟡 [*Почему сигмоида?*](121_why_sigmoid.md)
     * Практика: Iris Dataset (библиотека sklearn)
     * Практика: [SMS Spam Collection](https://www.kaggle.com/uciml/sms-spam-collection-dataset) (UCI / Kaggle).
   * 🔴 [SVM](130_svm.ipynb): линейное/нелинейное разделение

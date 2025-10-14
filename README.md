@@ -103,14 +103,14 @@
   * 🟡 [*Что такое линейные модели?*](108_linear.md)
   * 🔴 [*Почему линейные модели до сих пор используются?*](109_why_linear.md)
   * 🔴 [Линейная регрессия](110_linreg.ipynb): MSE, градиентный спуск.
-    * Практика: [Boston Housing Dataset](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_boston.html) (scikit-learn).
+    * Практика: Boston Housing Dataset
     * 🔴 [Регуляризация](116_regularization.ipynb) (Ridge/Lasso)
     * Практика: прогнозирование цен на жилье.  
   * 🔴 [Логистическая регрессия](120_logreg.md): Sigmoid, бинарная классификация.
     * 🟡 [*Почему сигмоида?*](121_why_sigmoid.md)
     * [Что делать с log(0)](122_log0.md)
-    * Практика: Iris Dataset (библиотека sklearn)
     * Практика: [SMS Spam Collection](https://www.kaggle.com/uciml/sms-spam-collection-dataset) (UCI / Kaggle).
+    * Практика: Iris Dataset (библиотека sklearn)
   * 🔴 [SVM](130_svm.ipynb): линейное/нелинейное разделение
     SVM является **линейной** только с линейным ядром*
     * Практика: [Breast Cancer Wisconsin](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html) (scikit-learn).

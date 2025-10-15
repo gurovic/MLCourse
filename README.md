@@ -112,7 +112,6 @@
   * 🔴 [Логистическая регрессия](120_logreg.md): Sigmoid, бинарная классификация.
     * 🟡 [*Почему сигмоида?*](121_why_sigmoid.md)
     * [Что делать с log(0)](122_log0.md)
-    * Практика: [SMS Spam Collection](https://www.kaggle.com/uciml/sms-spam-collection-dataset) (UCI / Kaggle).
     * Практика: Iris Dataset (библиотека sklearn)
   * 🔴 [SVM](130_svm.ipynb): линейное/нелинейное разделение
     SVM является **линейной** только с линейным ядром*

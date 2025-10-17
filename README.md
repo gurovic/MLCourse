@@ -92,6 +92,7 @@
 * 🟡 [Предобработка для моделей](107_scaling.ipynb): концепция масштабирования (StandardScaler/MinMaxScaler)
   * 🔴 [Практика](107_scaling_practice.md): Показать разницу в качестве kNN с масштабированием и без на moons/iris.
 * 🔴 [Градиентный спуск](080_gradient_descent.md)
+  * [Почему размер батча - степень двойки?](081_batch2.md)
 * 🔴 [Estimator и Transformer](090_estimator_transformer.md) в sklearn
 * Pipeline в sklearn
 

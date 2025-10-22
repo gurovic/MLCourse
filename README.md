@@ -72,7 +72,7 @@
   * 🟡 [Задачи](010_read_tasks.md)
 * 🟡 [Типы данных и их специфика](012_types.ipynb): числовые/категориальные/временные/гео/текст
   * 🔴 [Задачи](012_types_tasks.md)
-* 🔴 [Создание синтетических данных](013_create_data.ipynb): numpy.random, sklearn.datasets.make_classification, sklearn.datasets.make_regression, данные для A/B-тестирования
+* 🔴 [Создание синтетических данных*](013_create_data.ipynb): numpy.random, sklearn.datasets.make_classification, sklearn.datasets.make_regression, данные для A/B-тестирования
   * 🔴 [Задачи](013_create_data_tasks.md)
 * 🔴 [Базовая статистика](016_base_stat.ipynb): описательные статистики, группировка.
   * Практика: COVID-19 или House pricing
@@ -87,7 +87,7 @@
 * 🟡 [Глубокий EDA](019_EDA.ipynb): Pandas Profiling, анализ распределений и корреляций, предварительная гипотеза
   * 🟡 [Задачи](019_EDA_tasks.md)
   * Практика: [House Prices](https://www.kaggle.com/c/house-prices-advanced-regression-datasets) (Kaggle)  
-* 🟡 [Дисбаланс классов](030_disbalance.ipynb): SMOTE, Weighted Loss.
+* 🟡 [Дисбаланс классов*](030_disbalance.ipynb): SMOTE, Weighted Loss.
   * Практика: [Credit Card Fraud Detection](https://www.kaggle.com/mlg-ulb/creditcardfraud) (Kaggle)
   * 🔴 [Задачи](030_disbalance_tasks,md)
 

@@ -119,6 +119,7 @@
 * 🟡 [kNN](103_knn.ipynb)
   * Практика: Iris Dataset (библиотека sklearn)
   * Когда использовать KNN: ускорение алгоритмов, проклятие размерности
+  * [cheatsheet](knn_cheatsheet.html)
 * 🔴 [Деревья решений](150_decision_tree.ipynb): Критерии Gini/энтропия.
   * 🟡 [Почему мы строим дерево жадно?](150_decision_tree_greedy.md) 
   * Практика: Iris Dataset (библиотека sklearn)

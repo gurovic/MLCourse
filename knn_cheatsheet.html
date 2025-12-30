@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>kNN Cheatsheet — 3 колонки</title>
+  <style>
+    @media screen {
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+        color: #333;
+        background: #fafcff;
+        padding: 10px;
+      }
+    }
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      @page {
+        size: A4 landscape;
+        margin: 10mm;
+      }
+    }
+
+    .container {
+      column-count: 3;
+      column-gap: 20px;
+      max-width: 100%;
+    }
+
+    .block {
+      break-inside: avoid; /* не разрывать блок между колонками */
+      margin-bottom: 1.2em;
+      padding: 12px;
+      background: white;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    h1 {
+      font-size: 1.6em;
+      font-weight: 700;
+      color: #1a5fb4;
+      text-align: center;
+      margin: 0 0 8px;
+      column-span: all;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 0.9em;
+      margin-bottom: 12px;
+      column-span: all;
+    }
+
+    h2 {
+      font-size: 1.15em;
+      font-weight: 700;
+      color: #1a5fb4;
+      margin: 0 0 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #e0e7ff;
+    }
+
+    p, ul, ol {
+      font-size: 0.92em;
+      margin: 0.6em 0;
+    }
+
+    ul, ol {
+      padding-left: 18px;
+    }
+
+    li {
+      margin-bottom: 4px;
+    }
+
+    code {
+      font-family: 'Consolas', 'Courier New', monospace;
+      background-color: #f0f4ff;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-size: 0.88em;
+    }
+
+    pre {
+      background-color: #f0f4ff;
+      padding: 8px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 0.84em;
+      margin: 6px 0;
+    }
+
+    pre code {
+      padding: 0;
+      background: none;
+      white-space: pre-wrap;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82em;
+      margin: 6px 0;
+    }
+
+    th {
+      background-color: #e6f0ff;
+      text-align: left;
+      padding: 4px 6px;
+      font-weight: 600;
+    }
+
+    td {
+      padding: 4px 6px;
+      border-bottom: 1px solid #f0f4ff;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f8fbff;
+    }
+
+    .good-vs-bad {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .good-vs-bad div {
+      flex: 1;
+      padding: 6px 8px;
+      border-radius: 4px;
+    }
+
+    .good {
+      background-color: #f0f9f4;
+      border-left: 3px solid #2e8b57;
+    }
+
+    .bad {
+      background-color: #fdf0f2;
+      border-left: 3px solid #d32f2f;
+    }
+
+    .good h3, .bad h3 {
+      margin: 0 0 4px;
+      font-size: 1em;
+      font-weight: 700;
+    }
+
+    .good ul, .bad ul {
+      padding-left: 20px;
+      margin: 0;
+    }
+
+    .good li::before { content: "✅ "; font-weight: bold; }
+    .bad li::before { content: "❌ "; font-weight: bold; }
+
+    blockquote {
+      font-style: italic;
+      margin: 8px 0;
+      padding: 6px 10px;
+      background: #f8fbff;
+      border-left: 2px solid #1a5fb4;
+      font-size: 0.88em;
+    }
+
+    @media print {
+      .container { column-gap: 12px; }
+      .block { box-shadow: none; }
+      code, pre, table { font-size: 0.78em; }
+      h1 { font-size: 1.4em; }
+      h2 { font-size: 1em; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <h1>📘 kNN Cheatsheet</h1>
+  <div class="subtitle">Для начинающих • Без математики • Полный охват идей<br>📅 16 декабря 2025</div>
+
+  <div class="block">
+    <h2>🔷 1. Суть</h2>
+    <ul>
+      <li><strong>Ленивое обучение</strong>: обучение = запоминание</li>
+      <li><strong>Решение по соседям</strong>: ближайшие <code>k</code> объектов из <code>train</code></li>
+      <li><strong>Классификация</strong> → голосование</li>
+      <li><strong>Регрессия</strong> → усреднение (обычное / взвешенное)</li>
+    </ul>
+  </div>
+
+  <div class="block">
+    <h2>🔷 2. Базовый код</h2>
+    <pre><code>from sklearn.neighbors import KNeighborsClassifier
+model = KNeighborsClassifier(
+    n_neighbors=5,
+    weights='distance',
+    metric='euclidean'
+)
+model.fit(X_train, y_train)   # запоминает
+y_pred = model.predict(X_test)</code></pre>
+  </div>
+
+  <div class="block">
+    <h2>🔷 3. Параметры</h2>
+    <table>
+      <tr><th>Парам.</th><th>Совет</th></tr>
+      <tr><td><code>k</code></td><td>1–30, подбирать по CV</td></tr>
+      <tr><td><code>weights</code></td><td><code>'uniform'</code>, <code>'distance'</code></td></tr>
+      <tr><td><code>metric</code></td><td><code>'euclidian'</code>, <code>'manhattan'</code>, <code>'cosine'</code></td></tr>
+      <tr><td><code>algorithm</code></td><td><code>'auto'</code>, <code>'kd_tree'</code>, <code>'ball_tree'</code>, <code>'brute'</code></td></tr>
+    </table>
+  </div>
+
+  <div class="block">
+    <h2>🔷 4. Предобработка</h2>
+    <p>✅ <strong>Масштабирование</strong></p>
+    <pre><code>scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+# используем transform, а не fit_transform
+X_test = scaler.transform(X_test)  </code></pre>
+    <p>✅ <strong>Кодирование</strong></p>
+    <ul>
+      <li>Порядковые → ordinal</li>
+      <li>Номинальные → one-hot</li>
+    </ul>
+  </div>
+
+  <div class="block">
+    <h2>🔷 5. Проблемы → Решения</h2>
+    <table>
+      <tr><th>Проблема</th><th>Решение</th></tr>
+      <tr><td>Медленно</td><td><code>kd_tree</code>, <code>FAISS</code>, <code>Annoy</code></td></tr>
+      <tr><td>Высокая размерность</td><td>PCA, отбор признаков</td></tr>
+      <tr><td>Шум / выбросы</td><td>Увеличить <code>k</code>, чистка данных</td></tr>
+      <tr><td>Выбор <code>k</code></td><td>Кросс-валидация, кривая качества (accuracy или f1 от k)</td></tr>
+    </table>
+  </div>
+
+  <div class="block">
+    <h2>🔷 6. Расширения</h2>
+    <ul>
+      <li><strong>RadiusNeighbors</strong>: все в радиусе <code>r</code></li>
+      <li><strong>Взвешенная регрессия</strong>: вес = <code>1/(1+dist)</code></li>
+      <li><strong>Заполнение пропусков</strong>: среднее <code>k</code> соседей</li>
+      <li><strong>Рекомендации</strong>: user/item-based kNN</li>
+      <li><strong>Создание новых признаков с помощью knn</strong>: вероятность принадлежности к классу А
+    </ul>
+  </div>
+
+  <div class="block">
+    <h2>🔷 7. Когда использовать</h2>
+    <div class="good-vs-bad">
+      <div class="good">
+        <h3>✅ Хорошо</h3>
+        <ul>
+          <li>&lt;100K строк</li>
+          <li>Чистые данные</li>
+          <li>Нужно объяснить решение</li>
+          <li>Baseline</li>
+        </ul>
+      </div>
+      <div class="bad">
+        <h3>❌ Плохо</h3>
+        <ul>
+          <li>Миллионы строк</li>
+          <li>Сырые данные</li>
+          <li>Моб. приложения</li>
+          <li>&gt;1000 признаков без PCA</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>🔷 8. Чек-лист</h2>
+    <ul>
+      <li>[ ] Удалить дубликаты / выбросы</li>
+      <li>[ ] Закодировать категории</li>
+      <li>[ ] Масштабировать числа</li>
+      <li>[ ] Разделить на train/val/test</li>
+      <li>[ ] Подобрать <code>k</code> через CV</li>
+      <li>[ ] Сравнить train/val — нет ли переобучения</li>
+    </ul>
+
+    <h3>💡 Объяснение заказчику:</h3>
+    <blockquote>
+      «Смотрим на <code>k</code> похожих людей. Если 3 из 5 купили телефон — советуем вам его тоже».
+    </blockquote>
+  </div>
+
+</div>
+
+</body>
+</html>

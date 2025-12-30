@@ -135,6 +135,7 @@
     * 🟡 [*Почему сигмоида?*](121_why_sigmoid.md)
     * [Что делать с log(0)](122_log0.md)
     * Практика: Iris Dataset (библиотека sklearn)
+    * [cheatsheet](https://html-preview.github.io/?url=https://github.com/gurovic/MLCourse/blob/main/logreg_cheatsheet.html)
   * 🔴 [SVM](130_svm.ipynb): линейное/нелинейное разделение
     SVM является **линейной** только с линейным ядром*
     * Практика: [Breast Cancer Wisconsin](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html) (scikit-learn).

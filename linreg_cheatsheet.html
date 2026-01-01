@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Линейная регрессия Cheatsheet — 3 колонки</title>
+  <style>
+    @media screen {
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+        color: #333;
+        background: #fafcff;
+        padding: 10px;
+      }
+    }
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      @page {
+        size: A4 landscape;
+        margin: 10mm;
+      }
+    }
+
+    .container {
+      column-count: 3;
+      column-gap: 20px;
+      max-width: 100%;
+    }
+
+    .block {
+      break-inside: avoid;
+      margin-bottom: 1.2em;
+      padding: 12px;
+      background: white;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    h1 {
+      font-size: 1.6em;
+      font-weight: 700;
+      color: #1a5fb4;
+      text-align: center;
+      margin: 0 0 8px;
+      column-span: all;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 0.9em;
+      margin-bottom: 12px;
+      column-span: all;
+    }
+
+    h2 {
+      font-size: 1.15em;
+      font-weight: 700;
+      color: #1a5fb4;
+      margin: 0 0 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #e0e7ff;
+    }
+
+    p, ul, ol {
+      font-size: 0.92em;
+      margin: 0.6em 0;
+    }
+
+    ul, ol {
+      padding-left: 18px;
+    }
+
+    li {
+      margin-bottom: 4px;
+    }
+
+    code {
+      font-family: 'Consolas', 'Courier New', monospace;
+      background-color: #f0f4ff;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-size: 0.88em;
+    }
+
+    pre {
+      background-color: #f0f4ff;
+      padding: 8px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 0.84em;
+      margin: 6px 0;
+    }
+
+    pre code {
+      padding: 0;
+      background: none;
+      white-space: pre-wrap;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82em;
+      margin: 6px 0;
+    }
+
+    th {
+      background-color: #e6f0ff;
+      text-align: left;
+      padding: 4px 6px;
+      font-weight: 600;
+    }
+
+    td {
+      padding: 4px 6px;
+      border-bottom: 1px solid #f0f4ff;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f8fbff;
+    }
+
+    .good-vs-bad {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .good-vs-bad div {
+      flex: 1;
+      padding: 6px 8px;
+      border-radius: 4px;
+    }
+
+    .good {
+      background-color: #f0f9f4;
+      border-left: 3px solid #2e8b57;
+    }
+
+    .bad {
+      background-color: #fdf0f2;
+      border-left: 3px solid #d32f2f;
+    }
+
+    .good h3, .bad h3 {
+      margin: 0 0 4px;
+      font-size: 1em;
+      font-weight: 700;
+    }
+
+    .good ul, .bad ul {
+      padding-left: 20px;
+      margin: 0;
+    }
+
+    .good li::before { content: "✅ "; font-weight: bold; }
+    .bad li::before { content: "❌ "; font-weight: bold; }
+
+    blockquote {
+      font-style: italic;
+      margin: 8px 0;
+      padding: 6px 10px;
+      background: #f8fbff;
+      border-left: 2px solid #1a5fb4;
+      font-size: 0.88em;
+    }
+
+    @media print {
+      .container { column-gap: 12px; }
+      .block { box-shadow: none; }
+      code, pre, table { font-size: 0.78em; }
+      h1 { font-size: 1.4em; }
+      h2 { font-size: 1em; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <h1>📈 Линейная регрессия Cheatsheet</h1>
+  <div class="subtitle">Для начинающих • Без сложной математики • Практический фокус<br>📅 17 декабря 2025</div>
+
+  <div class="block">
+    <h2>🔷 1. Суть</h2>
+    <ul>
+      <li><strong>Прогноз числа</strong>: целевая переменная — непрерывная</li>
+      <li><strong>Линейная зависимость</strong>: y = w₁x₁ + w₂x₂ + ... + b</li>
+      <li><strong>Обучение</strong>: найти веса (w) и смещение (b)</li>
+      <li><strong>Метод наименьших квадратов</strong>: минимизация ошибок</li>
+    </ul>
+  </div>
+
+  <div class="block">
+    <h2>🔷 2. Базовый код</h2>
+    <pre><code>from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+
+model = LinearRegression()
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+
+mse = mean_squared_error(y_test, y_pred)
+r2 = model.score(X_test, y_test)</code></pre>
+  </div>
+
+  <div class="block">
+    <h2>🔷 3. Ключевые параметры</h2>
+    <table>
+      <tr><th>Параметр</th><th>Описание</th></tr>
+      <tr><td><code>fit_intercept</code></td><td>Добавлять ли смещение (b)</td></tr>
+      <tr><td><code>n_jobs</code></td><td>Параллельные вычисления</td></tr>
+      <tr><td><code>positive</code></td><td>Только положительные веса</td></tr>
+    </table>
+  </div>
+
+  <div class="block">
+    <h2>🔷 4. Предобработка данных</h2>
+    <p>✅ <strong>Масштабирование</strong> (важно для регуляризации)</p>
+    <pre><code>from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)</code></pre>
+    <p>✅ <strong>Обработка категорий</strong></p>
+    <ul>
+      <li>One-Hot Encoding для номинальных</li>
+      <li>Ordinal Encoding для порядковых</li>
+    </ul>
+    <p>✅ <strong>Проверка мультиколлинеарности</strong> (VIF)</p>
+  </div>
+
+  <div class="block">
+    <h2>🔷 5. Проблемы → Решения</h2>
+    <table>
+      <tr><th>Проблема</th><th>Решение</th></tr>
+      <tr><td>Переобучение</td><td>Регуляризация (Ridge, Lasso)</td></tr>
+      <tr><td>Нелинейность</td><td>Полиномиальные признаки</td></tr>
+      <tr><td>Выбросы</td><td>RobustScaler, удаление выбросов</td></tr>
+      <tr><td>Мультиколлинеарность</td><td>Удалить коррелирующие признаки, PCA</td></tr>
+      <tr><td>Гетероскедастичность</td><td>Преобразование целевой переменной</td></tr>
+      <tr><td>(дисперсии остатков не равны)</td><td></td></tr>    </table>
+  </div>
+
+  <div class="block">
+    <h2>🔷 6. Регуляризация</h2>
+    <table>
+      <tr><th>Метод</th><th>Формула</th><th>Когда использовать</th></tr>
+      <tr><td><strong>Ridge (L2)</strong></td><td>+α·Σw²</td><td>Много коррелированных признаков</td></tr>
+      <tr><td><strong>Lasso (L1)</strong></td><td>+α·Σ|w|</td><td>Отбор признаков, разреженность</td></tr>
+      <tr><td><strong>ElasticNet</strong></td><td>L1 + L2</td><td>Компромисс между Ridge и Lasso</td></tr>
+    </table>
+<pre><code>from sklearn.linear_model import Ridge, Lasso, ElasticNet
+
+ridge = Ridge(alpha=1.0).fit(X_train, y_train)
+lasso = Lasso(alpha=0.1).fit(X_train, y_train)
+elastic = ElasticNet(alpha=0.1, l1_ratio=0.5).fit(X_train, y_train)
+
+y_pred_elastic = elastic.predict(X_test)</code></pre>
+  </div>
+
+  <div class="block">
+    <h2>🔷 7. Когда использовать</h2>
+    <div class="good-vs-bad">
+      <div class="good">
+        <h3>✅ Хорошо</h3>
+        <ul>
+          <li>Линейная зависимость в данных</li>
+          <li>Интерпретируемость важна</li>
+          <li>Малый/средний размер данных</li>
+          <li>Быстрое прототипирование</li>
+        </ul>
+      </div>
+      <div class="bad">
+        <h3>❌ Плохо</h3>
+        <ul>
+          <li>Сложные нелинейные зависимости</li>
+          <li>Автоматический отбор признаков (кроме Lasso)</li>
+          <li>Очень большой объем данных</li>
+          <li>Высокая размерность без регуляризации</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>🔷 8. Чек-лист</h2>
+    <ul>
+      <li>[ ] Проверить линейность связи (графики)</li>
+      <li>[ ] Обработать пропуски и выбросы</li>
+      <li>[ ] Закодировать категории</li>
+      <li>[ ] Масштабировать признаки</li>
+      <li>[ ] Проверить на мультиколлинеарность</li>
+      <li>[ ] Разделить на train/val/test</li>
+      <li>[ ] Попробовать регуляризацию</li>
+      <li>[ ] Оценить качество: MSE, R², MAE</li>
+    </ul>
+
+    <h3>💡 Объяснение заказчику:</h3>
+    <blockquote>
+      «Мы находим простую формулу, которая связывает параметры (например, площадь квартиры, район) с ценой. 
+      Каждый параметр получает свой "вес" — насколько он влияет на итоговую цену».
+    </blockquote>
+  </div>
+
+  <div class="block">
+    <h2>🔷 9. Метрики качества</h2>
+    <table>
+      <tr><th>Метрика</th><th>Формула</th><th>Особенности</th></tr>
+      <tr><td><strong>MSE</strong></td><td>Σ(y - ŷ)² / n</td><td>Чувствительна к выбросам</td></tr>
+      <tr><td><strong>RMSE</strong></td><td>√MSE</td><td>В тех же единицах, что и y</td></tr>
+      <tr><td><strong>MAE</strong></td><td>Σ|y - ŷ| / n</td><td>Устойчива к выбросам</td></tr>
+      <tr><td><strong>R²</strong></td><td>1 - (Regression sum of squares) / (Total sum of squares)</td><td>Доля объясненной дисперсии</td></tr>
+    </table>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -130,7 +130,8 @@
   * 🔴 [Линейная регрессия](110_linreg.ipynb): MSE, градиентный спуск.
     * Практика: Boston Housing Dataset
     * 🔴 [Регуляризация](116_regularization.ipynb) (Ridge/Lasso)
-    * Практика: прогнозирование цен на жилье.  
+    * Практика: прогнозирование цен на жилье.
+    * [cheatsheet](https://html-preview.github.io/?url=https://github.com/gurovic/MLCourse/blob/main/linreg_cheatsheet.html)  
   * 🔴 [Логистическая регрессия](120_logreg.md): Sigmoid, бинарная классификация.
     * 🟡 [*Почему сигмоида?*](121_why_sigmoid.md)
     * [Что делать с log(0)](122_log0.md)

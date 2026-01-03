@@ -177,6 +177,7 @@
   * 🔴 [Категориальные признаки и CatBoost](180_cat_features.md): автокодирование.
     * 🔴 Практика: [Wine Quality](https://www.kaggle.com/uciml/red-wine-quality-cortez-et-al-2009) (UCI / Kaggle), сравнение XGBoost/LightGBM/CatBoost по скорости/качеству.  
     * 🔴 Практика: [Amazon Employee Access Challenge](https://www.kaggle.com/c/amazon-employee-access-challenge) (Kaggle).  
+  * [cheatsheet](https://html-preview.github.io/?url=https://github.com/gurovic/MLCourse/blob/main/boosting_cheatsheet.html)
 * 🔴 [Стекинг](190_stacking.ipynb): CatBoost + ...
   * Практика: [Tabular Playground Series](https://www.kaggle.com/c/tabular-playground-series) (Kaggle).  
 * 🔴 [Интерпретация: важность признаков](195_feature_importances.ipynb) (feature importances) для бэггинга и бустинга.

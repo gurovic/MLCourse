@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Бустинг Cheatsheet — 3 колонки</title>
+  <style>
+    @media screen {
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+        color: #333;
+        background: #fafcff;
+        padding: 10px;
+      }
+    }
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      @page {
+        size: A4 landscape;
+        margin: 10mm;
+      }
+    }
+
+    .container {
+      column-count: 3;
+      column-gap: 20px;
+      max-width: 100%;
+    }
+
+    .block {
+      break-inside: avoid;
+      margin-bottom: 1.2em;
+      padding: 12px;
+      background: white;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    h1 {
+      font-size: 1.6em;
+      font-weight: 700;
+      color: #1a5fb4;
+      text-align: center;
+      margin: 0 0 8px;
+      column-span: all;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 0.9em;
+      margin-bottom: 12px;
+      column-span: all;
+    }
+
+    h2 {
+      font-size: 1.15em;
+      font-weight: 700;
+      color: #1a5fb4;
+      margin: 0 0 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #e0e7ff;
+    }
+
+    p, ul, ol {
+      font-size: 0.92em;
+      margin: 0.6em 0;
+    }
+
+    ul, ol {
+      padding-left: 18px;
+    }
+
+    li {
+      margin-bottom: 4px;
+    }
+
+    code {
+      font-family: 'Consolas', 'Courier New', monospace;
+      background-color: #f0f4ff;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-size: 0.88em;
+    }
+
+    pre {
+      background-color: #f0f4ff;
+      padding: 8px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 0.84em;
+      margin: 6px 0;
+    }
+
+    pre code {
+      padding: 0;
+      background: none;
+      white-space: pre-wrap;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82em;
+      margin: 6px 0;
+    }
+
+    th {
+      background-color: #e6f0ff;
+      text-align: left;
+      padding: 4px 6px;
+      font-weight: 600;
+    }
+
+    td {
+      padding: 4px 6px;
+      border-bottom: 1px solid #f0f4ff;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f8fbff;
+    }
+
+    .good-vs-bad {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .good-vs-bad div {
+      flex: 1;
+      padding: 6px 8px;
+      border-radius: 4px;
+    }
+
+    .good {
+      background-color: #f0f9f4;
+      border-left: 3px solid #2e8b57;
+    }
+
+    .bad {
+      background-color: #fdf0f2;
+      border-left: 3px solid #d32f2f;
+    }
+
+    .good h3, .bad h3 {
+      margin: 0 0 4px;
+      font-size: 1em;
+      font-weight: 700;
+    }
+
+    .good ul, .bad ul {
+      padding-left: 20px;
+      margin: 0;
+    }
+
+    .good li::before { content: "✅ "; font-weight: bold; }
+    .bad li::before { content: "❌ "; font-weight: bold; }
+
+    blockquote {
+      font-style: italic;
+      margin: 8px 0;
+      padding: 6px 10px;
+      background: #f8fbff;
+      border-left: 2px solid #1a5fb4;
+      font-size: 0.88em;
+    }
+
+    .boosting-viz {
+      background-color: #f0f9f4;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #c1e7d3;
+      margin: 4px 0;
+      font-size: 0.85em;
+      text-align: center;
+    }
+
+    .formula {
+      font-family: 'Cambria Math', serif;
+      font-size: 0.9em;
+      background: #f8fbff;
+      padding: 6px;
+      border-radius: 4px;
+      margin: 4px 0;
+      text-align: center;
+    }
+
+    @media print {
+      .container { column-gap: 12px; }
+      .block { box-shadow: none; }
+      code, pre, table { font-size: 0.78em; }
+      h1 { font-size: 1.4em; }
+      h2 { font-size: 1em; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <h1>🚀 Бустинг Cheatsheet</h1>
+  <div class="subtitle">Последовательные ансамбли • Градиентный бустинг • XGBoost, LightGBM, CatBoost<br>📅 17 декабря 2025</div>
+
+  <div class="block">
+    <h2>🔷 1. Суть бустинга</h2>
+    <ul>
+      <li><strong>Последовательное обучение</strong>: каждая новая модель исправляет ошибки предыдущих</li>
+      <li><strong>Фокус на сложных примерах</strong>: плохо предсказанные объекты получают больший вес</li>
+      <li><strong>Композиция слабых моделей</strong>: в итоге получаем одну сильную модель</li>
+      <li><strong>Минимизация функции потерь</strong>: градиентный спуск в пространстве функций</li>
+    </ul>
+    <div class="boosting-viz">
+      [Данные] → [Модель 1] → Ошибки → [Вес сложных ↑] → [Модель 2] → Ошибки → ... → Финальная композиция
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>🔷 2. Основные алгоритмы</h2>
+    <table>
+      <tr><th>Алгоритм</th><th>Особенность</th><th>Использование</th></tr>
+      <tr><td><strong>AdaBoost</strong></td><td>Адаптивное увеличение веса ошибочных объектов</td><td>Бинарная классификация</td></tr>
+      <tr><td><strong>Gradient Boosting</strong></td><td>Оптимизация любой дифференцируемой функции потерь</td><td>Классификация и регрессия</td></tr>
+      <tr><td><strong>XGBoost</strong></td><td>Регуляризованный градиентный бустинг с оптимизациями</td><td>Соревнования, production</td></tr>
+      <tr><td><strong>LightGBM</strong></td><td>Гистограммный метод, скорость и эффективность памяти</td><td>Большие данные</td></tr>
+      <tr><td><strong>CatBoost</strong></td><td>Эффективная работа с категориальными признаками</td><td>Данные с категориями</td></tr>
+    </table>
+  </div>
+
+  <div class="block">
+    <h2>🔷 3. Базовый код</h2>
+    <pre><code># XGBoost
+import xgboost as xgb
+model = xgb.XGBClassifier(
+    n_estimators=100,
+    learning_rate=0.1,
+    max_depth=6
+)
+model.fit(X_train, y_train)
+
+# LightGBM
+import lightgbm as lgb
+model = lgb.LGBMClassifier(
+    n_estimators=100,
+    learning_rate=0.05,
+    num_leaves=31
+)
+
+# CatBoost
+from catboost import CatBoostClassifier
+model = CatBoostClassifier(
+    iterations=100,
+    learning_rate=0.05,
+    depth=6,
+    silent=True
+)</code></pre>
+  </div>
+
+  <div class="block">
+    <h2>🔷 4. Ключевые параметры</h2>
+    <table>
+      <tr><th>Параметр</th><th>Описание</th><th>Совет</th></tr>
+      <tr><td><code>n_estimators</code></td><td>Число деревьев (итераций)</td><td>100-1000, с early stopping</td></tr>
+      <tr><td><code>learning_rate</code></td><td>Темп обучения (шаг)</td><td>0.01-0.3 (меньше → больше деревьев)</td></tr>
+      <tr><td><code>max_depth</code></td><td>Макс. глубина деревьев</td><td>3-10 (глубже → сложнее модель)</td></tr>
+      <tr><td><code>subsample</code></td><td>Доля данных для каждого дерева</td><td>0.7-1.0 (Stochastic GB)</td></tr>
+      <tr><td><code>colsample_bytree</code></td><td>Доля признаков для каждого дерева</td><td>0.7-1.0</td></tr>
+      <tr><td><code>reg_alpha, reg_lambda</code></td><td>L1 и L2 регуляризация</td><td>Защита от переобучения</td></tr>
+      <tr><td><code>min_child_weight</code></td><td>Мин. сумма весов в листе</td><td>Больше → консервативнее</td></tr>
+    </table>
+  </div>
+
+  <div class="block">
+    <h2>🔷 5. Преимущества бустинга</h2>
+    <ul>
+      <li><strong>Высокая точность</strong>: часто лучший результат на табличных данных</li>
+      <li><strong>Гибкость</strong>: разные функции потерь, обработка пропусков</li>
+      <li><strong>Автоматический отбор признаков</strong>: важность признаков встроена</li>
+      <li><strong>Регуляризация</strong>: встроенная защита от переобучения</li>
+      <li><strong>Работа с категориями</strong>: особенно CatBoost</li>
+      <li><strong>Интерпретируемость</strong>: важность признаков, SHAP значения</li>
+    </ul>
+  </div>
+
+  <div class="block">
+    <h2>🔷 6. Проблемы и решения</h2>
+    <table>
+      <tr><th>Проблема</th><th>Решение</th></tr>
+      <tr><td>Переобучение</td><td>Уменьшить max_depth, увеличить регуляризацию, ранняя остановка</td></tr>
+      <tr><td>Долгое обучение</td><td>Уменьшить n_estimators, увеличить learning_rate, использовать GPU</td></tr>
+      <tr><td>Чувствительность к шуму</td><td>Увеличить min_child_weight, уменьшить learning_rate</td></tr>
+      <tr><td>Память</td><td>Использовать LightGBM, уменьшить глубину</td></tr>
+      <tr><td>Подбор параметров</td><td>Bayesian optimization, Hyperopt, Optuna</td></tr>
+      <tr><td>Несбалансированные классы</td><td>Параметр scale_pos_weight, балансировка весов</td></tr>
+    </table>
+  </div>
+
+  <div class="block">
+    <h2>🔷 7. Ранняя остановка (Early Stopping)</h2>
+    <ul>
+      <li><strong>Принцип</strong>: Останавливаем обучение, когда качество на валидации перестает расти</li>
+      <li><strong>Параметры</strong>: <code>early_stopping_rounds</code>, <code>eval_set</code>, <code>eval_metric</code></li>
+      <li><strong>Преимущества</strong>: Автоматический выбор числа деревьев, защита от переобучения</li>
+    </ul>
+    <pre><code># XGBoost с ранней остановкой
+model = xgb.XGBClassifier(n_estimators=1000, learning_rate=0.05)
+model.fit(
+    X_train, y_train,
+    eval_set=[(X_val, y_val)],
+    early_stopping_rounds=50,
+    verbose=False
+)
+
+# LightGBM
+model = lgb.LGBMClassifier(n_estimators=1000)
+model.fit(
+    X_train, y_train,
+    eval_set=[(X_val, y_val)],
+    callbacks=[lgb.early_stopping(50)]
+)</code></pre>
+  </div>
+
+  <div class="block">
+    <h2>🔷 8. Сравнение алгоритмов</h2>
+    <table>
+      <tr><th>Критерий</th><th>XGBoost</th><th>LightGBM</th><th>CatBoost</th></tr>
+      <tr><td><strong>Скорость обучения</strong></td><td>Быстро</td><td>Очень быстро</td><td>Средне/быстро</td></tr>
+      <tr><td><strong>Память</strong></td><td>Средне</td><td>Мало</td><td>Средне</td></tr>
+      <tr><td><strong>Категории</strong></td><td>One-Hot</td><td>Гистограммы</td><td>Встроенная обработка</td></tr>
+      <tr><td><strong>Точность</strong></td><td>Высокая</td><td>Высокая</td><td>Высокая</td></tr>
+      <tr><td><strong>Подбор параметров</strong></td><td>Сложный</td><td>Проще</td><td>Проще</td></tr>
+      <tr><td><strong>Производство</strong></td><td>Отлично</td><td>Хорошо</td><td>Хорошо</td></tr>
+    </table>
+  </div>
+
+  <div class="block">
+    <h2>🔷 9. Когда использовать бустинг</h2>
+    <div class="good-vs-bad">
+      <div class="good">
+        <h3>✅ Хорошо</h3>
+        <ul>
+          <li>Табличные данные</li>
+          <li>Нужна максимальная точность</li>
+          <li>Соревнования (Kaggle)</li>
+          <li>Смешанные типы признаков</li>
+          <li>Достаточно данных (>10K строк)</li>
+          <li>Ресурсы для настройки параметров</li>
+        </ul>
+      </div>
+      <div class="bad">
+        <h3>❌ Плохо</h3>
+        <ul>
+          <li>Мало данных (< 1K строк)</li>
+          <li>Требуется мгновенное предсказание</li>
+          <li>Ограниченные вычислительные ресурсы</li>
+          <li>Высокий уровень шума в данных</li>
+          <li>Требуется простая интерпретируемость</li>
+          <li>Онлайн-обучение</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>🔷 10. Важность признаков и интерпретация</h2>
+    <ul>
+      <li><strong>Gain</strong>: среднее уменьшение impurity при использовании признака</li>
+      <li><strong>Cover</strong>: сколько примеров касается признака</li>
+      <li><strong>Frequency</strong>: как часто признак используется в деревьях</li>
+      <li><strong>SHAP значения</strong>: вклад каждого признака в предсказание для каждого объекта</li>
+    </ul>
+    <pre><code># Важность признаков (XGBoost)
+importance = model.feature_importances_
+for name, importance in zip(feature_names, importance):
+    print(f"{name}: {importance}")
+
+# SHAP значения
+import shap
+explainer = shap.TreeExplainer(model)
+shap_values = explainer.shap_values(X_test)
+shap.summary_plot(shap_values, X_test)</code></pre>
+  </div>
+
+  <div class="block">
+    <h2>🔷 11. Чек-лист работы с бустингом</h2>
+    <ul>
+      <li>[ ] Закодировать категории (кроме CatBoost)</li>
+      <li>[ ] Масштабировать числовые признаки (опционально, но может помочь)</li>
+      <li>[ ] Разделить на train/val/test</li>
+      <li>[ ] Настроить early stopping</li>
+      <li>[ ] Начать с дефолтных параметров</li>
+      <li>[ ] Подобрать learning_rate и n_estimators</li>
+      <li>[ ] Оптимизировать глубину деревьев</li>
+      <li>[ ] Добавить регуляризацию при переобучении</li>
+      <li>[ ] Использовать кросс-валидацию для оценки</li>
+      <li>[ ] Проанализировать важность признаков</li>
+      <li>[ ] Проверить качество на отложенной выборке</li>
+    </ul>
+  </div>
+
+  <div class="block">
+    <h2>🔷 12. Типичные ошибки</h2>
+    <ul>
+      <li><strong>Слишком большой learning_rate</strong>: модель расходится</li>
+      <li><strong>Слишком много деревьев без early stopping</strong>: переобучение</li>
+      <li><strong>Слишком глубокие деревья</strong>: переобучение, медленная работа</li>
+      <li><strong>Отсутствие валидационной выборки</strong>: нет контроля переобучения</li>
+      <li><strong>Игнорирование категориальных признаков</strong>: потеря информации</li>
+      <li><strong>Неправильная обработка пропусков</strong>: бустинг может сам, но нужно проверять</li>
+    </ul>
+    <blockquote>
+      «Бустинг — это мощный инструмент, который требует аккуратного обращения. Ранняя остановка, правильный learning_rate и регуляризация — ключ к успеху.»
+    </blockquote>
+  </div>
+
+</div>
+
+</body>
+</html>

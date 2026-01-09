@@ -201,7 +201,6 @@
 
 **6.1 Основы нейронных сетей**
 - 🔴 [PyTorch Basics](410_pytorch.md): Тензоры, autograd, базовые операции
-  - Практика: Линейная регрессия на PyTorch ([Boston Housing Dataset](https://www.kaggle.com/c/boston-housing))
 - 🔴 [Полносвязные нейросети (MLP)](420_mlp.md): Архитектура, функции активации (ReLU, Sigmoid, Tanh)
   - 🔴 [Задачи](420_mlp_tasks.md)
   - Практика: [MNIST Handwritten Digits](http://yann.lecun.com/exdb/mnist/) (Yann LeCun)

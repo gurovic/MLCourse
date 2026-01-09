@@ -26,6 +26,10 @@ tensor_a = torch.tensor([1, 2, 3])  # вектор [1, 2, 3]
 # Специальные тензоры
 zeros = torch.zeros(2, 3)       # матрица 2x3 из нулей  
 rand_matrix = torch.rand(3, 3)  # случайные значения 0-1
+
+# Явное указание типа данных (рекомендуется)
+tensor_float = torch.tensor([1.0, 2.0], dtype=torch.float32)
+tensor_int = torch.tensor([1, 2], dtype=torch.int64)
 ```
 
 ### **1.2 Операции с тензорами**  
@@ -151,7 +155,11 @@ make_dot(y).render("graph", format="png")  # сохраняет граф в PNG
 ## **🚀 Практический пример: Линейная регрессия**  
 
 ```python
+import torch
 import matplotlib.pyplot as plt
+
+# Установка seed для воспроизводимости
+torch.manual_seed(42)
 
 # Данные: y = 1.5*x + 0.8 + шум
 x = torch.linspace(0, 1, 100)
@@ -180,6 +188,57 @@ plt.scatter(x, y_noisy, label='Данные')
 plt.plot(x, y_pred.detach(), 'r-', label='Прогноз')
 plt.legend()
 plt.show()
+```
+
+---
+
+## **🔄 Расширенный пример: Обучение с DataLoader**
+
+```python
+import torch
+from torch.utils.data import DataLoader, TensorDataset
+
+# Установка seed
+torch.manual_seed(42)
+
+# Генерация большего датасета
+n_samples = 1000
+x_data = torch.randn(n_samples, 5)  # 5 признаков
+weights_true = torch.tensor([[2.0], [-1.5], [0.5], [3.0], [-2.5]])
+y_data = x_data @ weights_true + 0.5 * torch.randn(n_samples, 1)
+
+# Создание DataLoader для батч-обработки
+dataset = TensorDataset(x_data, y_data)
+dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
+
+# Модель с несколькими параметрами
+w = torch.randn(5, 1, requires_grad=True)
+b = torch.zeros(1, requires_grad=True)
+
+# Оптимизатор
+optimizer = torch.optim.Adam([w, b], lr=0.01)
+
+# Обучение с батчами
+for epoch in range(20):
+    epoch_loss = 0.0
+    for batch_x, batch_y in dataloader:
+        # Forward pass
+        y_pred = batch_x @ w + b
+        loss = torch.mean((y_pred - batch_y)**2)
+        
+        # Backward pass
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        
+        epoch_loss += loss.item()
+    
+    if epoch % 5 == 0:
+        avg_loss = epoch_loss / len(dataloader)
+        print(f"Epoch {epoch}: Avg Loss={avg_loss:.4f}")
+
+print(f"\nИтоговые веса:\n{w.detach()}")
+print(f"Истинные веса:\n{weights_true}")
 ```
 
 ---

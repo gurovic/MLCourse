@@ -1,5 +1,19 @@
 # **Задачи: GPU в PyTorch**
 
+## **⚙️ Подготовка**
+
+Перед началом проверьте доступность GPU:
+```python
+import torch
+print(f"PyTorch версия: {torch.__version__}")
+print(f"CUDA доступна: {torch.cuda.is_available()}")
+if torch.cuda.is_available():
+    print(f"CUDA версия: {torch.version.cuda}")
+# Если GPU недоступен, используйте Google Colab с GPU runtime
+```
+
+---
+
 ## **🟢 Базовый уровень**
 
 ### **Задача 1: Проверка доступности GPU**

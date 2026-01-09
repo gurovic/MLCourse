@@ -495,3 +495,14 @@ def initialize_for_transfer_learning(model, pretrained_model, freeze_early_layer
 - [Understanding the difficulty of training deep networks](https://proceedings.mlr.press/v9/glorot10a.html)
 - [Delving Deep into Rectifiers (He initialization)](https://arxiv.org/abs/1502.01852)
 - [Fixup Initialization](https://arxiv.org/abs/1901.09321)
+
+---
+
+## 📝 Задачи
+
+**[Перейти к задачам по инициализации весов →](431_weight_init_tasks.md)**
+
+Практические задания для закрепления материала:
+- 🟢 Базовый уровень: демонстрация проблем, сравнение Xavier и He
+- 🟡 Продвинутый уровень: анализ градиентов, ResNet с правильной инициализацией
+- 🔴 Экспертный уровень: LSUV, Fixup, анализ спектра весов

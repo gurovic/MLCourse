@@ -442,3 +442,14 @@ params = out_channels * (in_channels * kernel_h * kernel_w + 1)
 - [CS231n: Convolutional Networks](https://cs231n.github.io/convolutional-networks/)
 - [Understanding Convolutions](https://colah.github.io/posts/2014-07-Understanding-Convolutions/)
 - [A guide to convolution arithmetic](https://arxiv.org/abs/1603.07285)
+
+---
+
+## 📝 Задачи
+
+**[Перейти к задачам по основам CNN →](440_cnn_basics_tasks.md)**
+
+Практические задания для закрепления материала:
+- 🟢 Базовый уровень: понимание свертки, первая CNN, stride и padding
+- 🟡 Продвинутый уровень: сравнение pooling, визуализация feature maps, receptive field
+- 🔴 Экспертный уровень: dilated convolutions, depthwise separable, 1x1 conv, flexible CNN

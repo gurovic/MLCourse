@@ -542,3 +542,14 @@ class TextAugmentation:
 - [RandAugment Paper](https://arxiv.org/abs/1909.13719)
 - [MixUp Paper](https://arxiv.org/abs/1710.09412)
 - [CutMix Paper](https://arxiv.org/abs/1905.04899)
+
+---
+
+## 📝 Задачи
+
+**[Перейти к задачам по Data Augmentation →](434_augmentation_tasks.md)**
+
+Практические задания для закрепления материала:
+- 🟢 Базовый уровень: базовые трансформации, ColorJitter
+- 🟡 Продвинутый уровень: RandAugment, Cutout, Mixup
+- 🔴 Экспертный уровень: CutMix, TTA, AutoAugment, domain-specific augmentation

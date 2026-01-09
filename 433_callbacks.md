@@ -580,3 +580,14 @@ callbacks = [
 - [PyTorch Lightning Callbacks](https://pytorch-lightning.readthedocs.io/en/stable/extensions/callbacks.html)
 - [Keras Callbacks](https://keras.io/api/callbacks/)
 - [Fast.ai Callbacks](https://docs.fast.ai/callback.core.html)
+
+---
+
+## 📝 Задачи
+
+**[Перейти к задачам по Callbacks →](433_callbacks_tasks.md)**
+
+Практические задания для закрепления материала:
+- 🟢 Базовый уровень: Early Stopping, сохранение лучшей модели
+- 🟡 Продвинутый уровень: система callbacks, ModelCheckpoint, LRScheduler
+- 🔴 Экспертный уровень: TensorBoard, GradientMonitor, полный training pipeline

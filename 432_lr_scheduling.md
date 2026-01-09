@@ -520,3 +520,14 @@ scheduler = OneCycleLR(optimizer, max_lr=0.1,
 - [PyTorch LR Schedulers](https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate)
 - [Cyclical Learning Rates](https://arxiv.org/abs/1506.01186)
 - [Super-Convergence](https://arxiv.org/abs/1708.07120)
+
+---
+
+## 📝 Задачи
+
+**[Перейти к задачам по Learning Rate Scheduling →](432_lr_scheduling_tasks.md)**
+
+Практические задания для закрепления материала:
+- 🟢 Базовый уровень: StepLR, ExponentialLR, CosineAnnealing
+- 🟡 Продвинутый уровень: ReduceLROnPlateau, OneCycleLR
+- 🔴 Экспертный уровень: Warmup + Cosine Decay, LR Finder, сравнение всех методов

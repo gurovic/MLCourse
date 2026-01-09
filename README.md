@@ -202,29 +202,29 @@
 **6.1 Основы нейронных сетей**
 - 🔴 [PyTorch Basics](410_pytorch.md): Тензоры, autograd, базовые операции
   - Практика: Линейная регрессия на PyTorch
-- ◯ [Полносвязные нейросети (MLP)](420_mlp.md): Архитектура, функции активации (ReLU, Sigmoid, Tanh)
+- 🔴 [Полносвязные нейросети (MLP)](420_mlp.md): Архитектура, функции активации (ReLU, Sigmoid, Tanh)
   - Практика: [MNIST Handwritten Digits](http://yann.lecun.com/exdb/mnist/) (Yann LeCun)
-- ◯ [Обратное распространение ошибки](421_backpropagation.md): Математика градиентного спуска, цепное правило
+- 🔴 [Обратное распространение ошибки](421_backpropagation.md): Математика градиентного спуска, цепное правило
   - Практика: Реализация простой нейросети с нуля на NumPy
-- ◯ [Функции потерь](422_loss_functions.md): MSE, Cross-Entropy, Binary Cross-Entropy
+- 🔴 [Функции потерь](422_loss_functions.md): MSE, Cross-Entropy, Binary Cross-Entropy
   - Практика: Сравнение функций потерь на задачах регрессии и классификации
-- ◯ [Оптимизаторы](423_optimizers.md): SGD, Adam, RMSprop, AdaGrad
+- 🔴 [Оптимизаторы](423_optimizers.md): SGD, Adam, RMSprop, AdaGrad
   - Практика: Сравнение скорости сходимости разных оптимизаторов
 
 **6.2 Продвинутые техники обучения**
-- ◯ [Регуляризация в нейросетях](430_regularization.md): Dropout, Batch Normalization, Layer Normalization, Weight Decay
+- 🔴 [Регуляризация в нейросетях](430_regularization.md): Dropout, Batch Normalization, Layer Normalization, Weight Decay
   - Практика: Борьба с переобучением на MNIST
-- ◯ [Инициализация весов](431_weight_init.md): Xavier, He initialization
+- 🔴 [Инициализация весов](431_weight_init.md): Xavier, He initialization
   - Практика: Влияние инициализации на сходимость
-- ◯ [Learning Rate Scheduling](432_lr_scheduling.md): StepLR, ReduceLROnPlateau, CosineAnnealing
+- 🔴 [Learning Rate Scheduling](432_lr_scheduling.md): StepLR, ReduceLROnPlateau, CosineAnnealing
   - Практика: Подбор оптимального schedule для обучения
-- ◯ [Early Stopping и Callbacks](433_callbacks.md): Мониторинг метрик, сохранение лучших моделей
+- 🔴 [Early Stopping и Callbacks](433_callbacks.md): Мониторинг метрик, сохранение лучших моделей
   - Практика: Настройка пайплайна обучения с early stopping
-- ◯ [Data Augmentation](434_augmentation.md): Техники аугментации для различных типов данных
+- 🔴 [Data Augmentation](434_augmentation.md): Техники аугментации для различных типов данных
   - Практика: Улучшение качества модели через аугментацию
 
 **6.3 Сверточные нейронные сети (CNN)**
-- ◯ [Основы CNN](440_cnn_basics.md): Сверточные слои, pooling, stride, padding
+- 🔴 [Основы CNN](440_cnn_basics.md): Сверточные слои, pooling, stride, padding
   - Практика: Простая CNN для MNIST
 - ◯ [Архитектуры CNN](441_cnn_architectures.md): LeNet, AlexNet, VGG, ResNet, Inception
   - Практика: [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) (University of Toronto)

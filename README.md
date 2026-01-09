@@ -287,7 +287,7 @@
 - ◯ [Развертывание моделей](492_deployment.md): ONNX, TorchScript, сервисы для inference
   - Практика: Развертывание модели в продакшн
 - ◯ [MLOps для нейросетей](493_mlops.md): Tracking экспериментов (Weights & Biases, MLflow), версионирование моделей
-  - Практика: Настройка MLOps пайплайна  
+  - Практика: Настройка MLOps пайплайна
 
 **Блок 7: Продвинутые соревновательные методы и алгоритмы**  
 - ◯ Гиперпараметры: Optuna для CatBoost. Практика: [Santander Customer Transaction Prediction](https://www.kaggle.com/c/santander-customer-transaction-prediction) (Kaggle).  

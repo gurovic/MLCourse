@@ -1,4 +1,4 @@
-# 483. Reinforcement Learning: Основы
+# Reinforcement Learning: Основы
 
 ## 🟢 Основы (Basic Level)
 

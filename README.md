@@ -207,7 +207,7 @@
   - 🔴 [Задачи](411_pytorch_gpu_tasks.md)
 - 🔴 [Полносвязные нейросети (MLP)](420_mlp.md): Архитектура, функции активации (ReLU, Sigmoid, Tanh)
   - 🔴 [Задачи](420_mlp_tasks.md)
-  - Практика: [MNIST Handwritten Digits](http://yann.lecun.com/exdb/mnist/) (Yann LeCun)
+  - Практика: [MNIST Handwritten Digits](https://pytorch.org/vision/stable/datasets.html#mnist) (PyTorch datasets)
 - 🔴 [Обратное распространение ошибки](421_backpropagation.md): Математика градиентного спуска, цепное правило
   - 🔴 [Задачи](421_backpropagation_tasks.md)
   - Практика: Реализация простой нейросети с нуля на NumPy ([XOR Dataset](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_classification.html))
@@ -221,7 +221,7 @@
 **6.2 Продвинутые техники обучения**
 - 🔴 [Регуляризация в нейросетях](430_regularization.md): Dropout, Batch Normalization, Layer Normalization, Weight Decay
   - 🔴 [Задачи](430_regularization_tasks.md)
-  - Практика: Борьба с переобучением на [MNIST](http://yann.lecun.com/exdb/mnist/)
+  - Практика: Борьба с переобучением на [MNIST](https://pytorch.org/vision/stable/datasets.html#mnist)
 - 🔴 [Инициализация весов](431_weight_init.md): Xavier, He initialization
   - 🔴 [Задачи](431_weight_init_tasks.md)
   - Практика: Влияние инициализации на сходимость ([Fashion-MNIST](https://github.com/zalandoresearch/fashion-mnist))
@@ -238,7 +238,7 @@
 **6.3 Сверточные нейронные сети (CNN)**
 - 🔴 [Основы CNN](440_cnn_basics.md): Сверточные слои, pooling, stride, padding
   - 🔴 [Задачи](440_cnn_basics_tasks.md)
-  - Практика: Простая CNN для [MNIST](http://yann.lecun.com/exdb/mnist/)
+  - Практика: Простая CNN для [MNIST](https://pytorch.org/vision/stable/datasets.html#mnist)
 - 🔴 [Архитектуры CNN](441_cnn_architectures.md): LeNet, AlexNet, VGG, ResNet, Inception
   - 🔴 [Задачи](441_cnn_architectures_tasks.md)
   - Практика: [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) (University of Toronto)
@@ -289,10 +289,10 @@
 **6.6 Генеративные модели**
 - 🔴 [Autoencoders](470_autoencoders.md): Variational Autoencoders (VAE), применения
   - 🔴 [Задачи](470_autoencoders_tasks.md)
-  - Практика: Сжатие и реконструкция изображений [MNIST](http://yann.lecun.com/exdb/mnist/)
+  - Практика: Сжатие и реконструкция изображений [MNIST](https://pytorch.org/vision/stable/datasets.html#mnist)
 - 🔴 [Generative Adversarial Networks (GAN)](471_gan.md): Архитектура GAN, discriminator, generator
   - 🔴 [Задачи](471_gan_tasks.md)
-  - Практика: Генерация изображений цифр ([MNIST](http://yann.lecun.com/exdb/mnist/))
+  - Практика: Генерация изображений цифр ([MNIST](https://pytorch.org/vision/stable/datasets.html#mnist))
 - 🔴 [Продвинутые GAN](472_advanced_gan.md): DCGAN, StyleGAN, условные GAN (cGAN)
   - 🔴 [Задачи](472_advanced_gan_tasks.md)
   - Практика: Генерация изображений с условиями ([CelebA](https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html))
@@ -317,13 +317,13 @@
 **6.8 Практические аспекты**
 - 🔴 [Отладка нейросетей](490_debugging.md): Диагностика проблем обучения, визуализация
   - 🔴 [Задачи](490_debugging_tasks.md)
-  - Практика: Исправление типичных ошибок ([MNIST](http://yann.lecun.com/exdb/mnist/) с намеренными ошибками)
+  - Практика: Исправление типичных ошибок ([MNIST](https://pytorch.org/vision/stable/datasets.html#mnist) с намеренными ошибками)
 - 🔴 [Оптимизация производительности](491_performance.md): Mixed precision, gradient accumulation, distributed training
   - 🔴 [Задачи](491_performance_tasks.md)
   - Практика: Ускорение обучения больших моделей ([ImageNet subset](https://www.kaggle.com/c/imagenet-object-localization-challenge))
 - 🔴 [Развертывание моделей](492_deployment.md): ONNX, TorchScript, сервисы для inference
   - 🔴 [Задачи](492_deployment_tasks.md)
-  - Практика: Развертывание модели в продакшн ([MNIST](http://yann.lecun.com/exdb/mnist/) classifier deployment)
+  - Практика: Развертывание модели в продакшн ([MNIST](https://pytorch.org/vision/stable/datasets.html#mnist) classifier deployment)
 - 🔴 [MLOps для нейросетей](493_mlops.md): Tracking экспериментов (Weights & Biases, MLflow), версионирование моделей
   - 🔴 [Задачи](493_mlops_tasks.md)
   - Практика: Настройка MLOps пайплайна ([Fashion-MNIST](https://github.com/zalandoresearch/fashion-mnist))
@@ -331,7 +331,7 @@
 **6.9 Интерпретируемость и продвинутые темы**
 - 🔴 [Интерпретируемость нейросетей](500_interpretability.md): Saliency Maps, Grad-CAM, SHAP, LIME, Integrated Gradients
   - 🔴 [Задачи](500_interpretability_tasks.md)
-  - Практика: Объяснение предсказаний CNN ([MNIST](http://yann.lecun.com/exdb/mnist/), CIFAR-10)
+  - Практика: Объяснение предсказаний CNN ([MNIST](https://pytorch.org/vision/stable/datasets.html#mnist), CIFAR-10)
 - 🔴 [Мультимодальное обучение](510_multimodal.md): CLIP, Image Captioning, VQA, Multimodal Transformers
   - 🔴 [Задачи](510_multimodal_tasks.md)
   - Практика: Image-Text retrieval ([Flickr30k](http://shannon.cs.illinois.edu/DenotationGraph/), [COCO](https://cocodataset.org/))

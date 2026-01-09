@@ -59,7 +59,7 @@
 Создайте dashboard с визуализациями. Сравните, какие методы дают наиболее полезные insights.
 
 **Datasets:**
-- MNIST: http://yann.lecun.com/exdb/mnist/
+- MNIST: https://pytorch.org/vision/stable/datasets.html#mnist
 - CIFAR-10: https://www.cs.toronto.edu/~kriz/cifar.html
 - Breast Cancer Wisconsin: sklearn.datasets.load_breast_cancer
 - IMDB Reviews: https://ai.stanford.edu/~amaas/data/sentiment/

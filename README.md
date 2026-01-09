@@ -236,8 +236,8 @@
 - 🔴 [Основы CNN](440_cnn_basics.md): Сверточные слои, pooling, stride, padding
   - 🔴 [Задачи](440_cnn_basics_tasks.md)
   - Практика: Простая CNN для [MNIST](http://yann.lecun.com/exdb/mnist/)
-- ◯ [Архитектуры CNN](441_cnn_architectures.md): LeNet, AlexNet, VGG, ResNet, Inception
-  - ◯ [Задачи](441_cnn_architectures_tasks.md)
+- 🔴 [Архитектуры CNN](441_cnn_architectures.md): LeNet, AlexNet, VGG, ResNet, Inception
+  - 🔴 [Задачи](441_cnn_architectures_tasks.md)
   - Практика: [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) (University of Toronto)
 - 🔴 [Transfer Learning](442_transfer_learning.md): Fine-tuning, feature extraction, предобученные модели
   - 🔴 [Задачи](442_transfer_learning_tasks.md)
@@ -307,7 +307,8 @@
 - 🔴 [Meta-Learning](482_meta_learning.md): Few-shot learning, MAML
   - 🔴 [Задачи](482_meta_learning_tasks.md)
   - Практика: Обучение на малых данных ([Omniglot Dataset](https://github.com/brendenlake/omniglot))
-- ◯ [Reinforcement Learning основы](483_rl_basics.md): Q-learning, DQN, Policy Gradient
+- 🔴 [Reinforcement Learning основы](483_rl_basics.md): Q-learning, DQN, Policy Gradient
+  - 🔴 [Задачи](483_rl_basics_tasks.md)
   - Практика: Обучение агента в простой среде ([OpenAI Gym CartPole](https://www.gymlibrary.dev/environments/classic_control/cart_pole/))
 
 **6.8 Практические аспекты**
@@ -320,8 +321,17 @@
 - 🔴 [Развертывание моделей](492_deployment.md): ONNX, TorchScript, сервисы для inference
   - 🔴 [Задачи](492_deployment_tasks.md)
   - Практика: Развертывание модели в продакшн ([MNIST](http://yann.lecun.com/exdb/mnist/) classifier deployment)
-- ◯ [MLOps для нейросетей](493_mlops.md): Tracking экспериментов (Weights & Biases, MLflow), версионирование моделей
+- 🔴 [MLOps для нейросетей](493_mlops.md): Tracking экспериментов (Weights & Biases, MLflow), версионирование моделей
+  - 🔴 [Задачи](493_mlops_tasks.md)
   - Практика: Настройка MLOps пайплайна ([Fashion-MNIST](https://github.com/zalandoresearch/fashion-mnist))
+
+**6.9 Интерпретируемость и продвинутые темы**
+- 🔴 [Интерпретируемость нейросетей](500_interpretability.md): Saliency Maps, Grad-CAM, SHAP, LIME, Integrated Gradients
+  - 🔴 [Задачи](500_interpretability_tasks.md)
+  - Практика: Объяснение предсказаний CNN ([MNIST](http://yann.lecun.com/exdb/mnist/), CIFAR-10)
+- 🔴 [Мультимодальное обучение](510_multimodal.md): CLIP, Image Captioning, VQA, Multimodal Transformers
+  - 🔴 [Задачи](510_multimodal_tasks.md)
+  - Практика: Image-Text retrieval ([Flickr30k](http://shannon.cs.illinois.edu/DenotationGraph/), [COCO](https://cocodataset.org/))
 
 **Блок 7: Продвинутые соревновательные методы и алгоритмы**  
 - ◯ Гиперпараметры: Optuna для CatBoost. Практика: [Santander Customer Transaction Prediction](https://www.kaggle.com/c/santander-customer-transaction-prediction) (Kaggle).  

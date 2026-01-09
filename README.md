@@ -267,15 +267,20 @@
 - 🔴 [Эмбеддинги слов](460_embeddings.md): Word2Vec, GloVe, FastText
   - 🔴 [Задачи](460_embeddings_tasks.md)
   - Практика: Визуализация word embeddings ([Text8 Corpus](https://mattmahoney.net/dc/textdata.html))
-- ◯ [Attention механизм](461_attention.md): Self-attention, multi-head attention
+- 🔴 [Attention механизм](461_attention.md): Self-attention, multi-head attention
+  - 🔴 [Задачи](461_attention_tasks.md)
   - Практика: Визуализация attention weights ([WMT English-German](https://www.statmt.org/wmt14/translation-task.html))
-- ◯ [Transformer](462_transformer.md): Архитектура Transformer, позиционное кодирование
+- 🔴 [Transformer](462_transformer.md): Архитектура Transformer, позиционное кодирование
+  - 🔴 [Задачи](462_transformer_tasks.md)
   - Практика: Sentiment analysis с Transformer ([SST-2 Dataset](https://nlp.stanford.edu/sentiment/))
-- ◯ [BERT и его варианты](463_bert.md): BERT, RoBERTa, DistilBERT, предобучение и fine-tuning
+- 🔴 [BERT и его варианты](463_bert.md): BERT, RoBERTa, DistilBERT, предобучение и fine-tuning
+  - 🔴 [Задачи](463_bert_tasks.md)
   - Практика: [Jigsaw Toxic Comments Classification](https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge) (Kaggle)
-- ◯ [Hugging Face Transformers](464_huggingface.md): Использование готовых моделей, tokenizers, pipelines
+- 🔴 [Hugging Face Transformers](464_huggingface.md): Использование готовых моделей, tokenizers, pipelines
+  - 🔴 [Задачи](464_huggingface_tasks.md)
   - Практика: Текстовая классификация с предобученными моделями ([AG News](https://www.kaggle.com/datasets/amananandrai/ag-news-classification-dataset))
-- ◯ [Генеративные модели для текста](465_text_generation.md): GPT, T5, генерация и fine-tuning
+- 🔴 [Генеративные модели для текста](465_text_generation.md): GPT, T5, генерация и fine-tuning
+  - 🔴 [Задачи](465_text_generation_tasks.md)
   - Практика: Fine-tuning GPT-2 для генерации текста ([WikiText-2](https://www.salesforce.com/products/einstein/ai-research/the-wikitext-dependency-language-modeling-dataset/))
 
 **6.6 Генеративные модели**

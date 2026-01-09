@@ -28,14 +28,13 @@ zeros = torch.zeros(2, 3)       # матрица 2x3 из нулей
 rand_matrix = torch.rand(3, 3)  # случайные значения 0-1
 
 # На GPU (ускорение ~10-100x)
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 tensor_gpu = rand_matrix.to(device) # создать копию тензора на GPU, если доступно
 ```
 
 ### **1.2 Операции с тензорами**  
 ```python
-# requires_grad=True включает отслеживание операций для автоматического вычисления градиентов
-# Когда вы вызываете .backward(), PyTorch автоматически вычисляет градиенты для всех тензоров с requires_grad=True
+# requires_grad=True включает автоматическое отслеживание операций для вычисления градиентов
 a = torch.tensor([1.0, 2.0], requires_grad=True)
 b = torch.tensor([3.0, 4.0], requires_grad=True)
 

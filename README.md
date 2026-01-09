@@ -236,69 +236,102 @@
 - 🔴 [Основы CNN](440_cnn_basics.md): Сверточные слои, pooling, stride, padding
   - 🔴 [Задачи](440_cnn_basics_tasks.md)
   - Практика: Простая CNN для [MNIST](http://yann.lecun.com/exdb/mnist/)
-- ◯ [Архитектуры CNN](441_cnn_architectures.md): LeNet, AlexNet, VGG, ResNet, Inception
-  - ◯ [Задачи](441_cnn_architectures_tasks.md)
+- 🔴 [Архитектуры CNN](441_cnn_architectures.md): LeNet, AlexNet, VGG, ResNet, Inception
+  - 🔴 [Задачи](441_cnn_architectures_tasks.md)
   - Практика: [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) (University of Toronto)
-- ◯ [Transfer Learning](442_transfer_learning.md): Fine-tuning, feature extraction, предобученные модели
+- 🔴 [Transfer Learning](442_transfer_learning.md): Fine-tuning, feature extraction, предобученные модели
+  - 🔴 [Задачи](442_transfer_learning_tasks.md)
   - Практика: [Dogs vs Cats](https://www.kaggle.com/c/dogs-vs-cats-redux-kernels-edition) (Kaggle)
-- ◯ [Современные архитектуры](443_modern_cnn.md): EfficientNet, MobileNet, Vision Transformer (ViT)
+- 🔴 [Современные архитектуры](443_modern_cnn.md): EfficientNet, MobileNet, Vision Transformer (ViT)
+  - 🔴 [Задачи](443_modern_cnn_tasks.md)
   - Практика: Сравнение производительности разных архитектур ([ImageNet subset](https://www.kaggle.com/c/imagenet-object-localization-challenge))
-- ◯ [Object Detection](444_object_detection.md): YOLO, R-CNN, SSD
+- 🔴 [Object Detection](444_object_detection.md): YOLO, R-CNN, SSD
+  - 🔴 [Задачи](444_object_detection_tasks.md)
   - Практика: Детекция объектов на пользовательских данных ([COCO Dataset](https://cocodataset.org/))
 
 **6.4 Рекуррентные нейронные сети (RNN)**
-- ◯ [Основы RNN](450_rnn_basics.md): Архитектура RNN, проблема затухающих градиентов
+- 🔴 [Основы RNN](450_rnn_basics.md): Архитектура RNN, проблема затухающих градиентов
+  - 🔴 [Задачи](450_rnn_basics_tasks.md)
   - Практика: Генерация текста на уровне символов ([Shakespeare Text](https://www.kaggle.com/datasets/kingburrito666/shakespeare-plays))
-- ◯ [LSTM и GRU](451_lstm_gru.md): Long Short-Term Memory, Gated Recurrent Unit
+- 🔴 [LSTM и GRU](451_lstm_gru.md): Long Short-Term Memory, Gated Recurrent Unit
+  - 🔴 [Задачи](451_lstm_gru_tasks.md)
   - Практика: Прогнозирование временных рядов ([Air Quality Dataset](https://archive.ics.uci.edu/ml/datasets/Air+Quality))
-- ◯ [Bidirectional RNN](452_bidirectional_rnn.md): Обработка последовательностей в обоих направлениях
+- 🔴 [Bidirectional RNN](452_bidirectional_rnn.md): Обработка последовательностей в обоих направлениях
+  - 🔴 [Задачи](452_bidirectional_rnn_tasks.md)
   - Практика: Анализ тональности отзывов ([IMDB Movie Reviews](https://ai.stanford.edu/~amaas/data/sentiment/))
-- ◯ [Sequence-to-Sequence](453_seq2seq.md): Encoder-Decoder архитектура, машинный перевод
+- 🔴 [Sequence-to-Sequence](453_seq2seq.md): Encoder-Decoder архитектура, машинный перевод
+  - 🔴 [Задачи](453_seq2seq_tasks.md)
   - Практика: Простой переводчик текста ([WMT English-German](https://www.statmt.org/wmt14/translation-task.html))
 
 **6.5 Natural Language Processing (NLP)**
-- ◯ [Эмбеддинги слов](460_embeddings.md): Word2Vec, GloVe, FastText
+- 🔴 [Эмбеддинги слов](460_embeddings.md): Word2Vec, GloVe, FastText
+  - 🔴 [Задачи](460_embeddings_tasks.md)
   - Практика: Визуализация word embeddings ([Text8 Corpus](https://mattmahoney.net/dc/textdata.html))
-- ◯ [Attention механизм](461_attention.md): Self-attention, multi-head attention
+- 🔴 [Attention механизм](461_attention.md): Self-attention, multi-head attention
+  - 🔴 [Задачи](461_attention_tasks.md)
   - Практика: Визуализация attention weights ([WMT English-German](https://www.statmt.org/wmt14/translation-task.html))
-- ◯ [Transformer](462_transformer.md): Архитектура Transformer, позиционное кодирование
+- 🔴 [Transformer](462_transformer.md): Архитектура Transformer, позиционное кодирование
+  - 🔴 [Задачи](462_transformer_tasks.md)
   - Практика: Sentiment analysis с Transformer ([SST-2 Dataset](https://nlp.stanford.edu/sentiment/))
-- ◯ [BERT и его варианты](463_bert.md): BERT, RoBERTa, DistilBERT, предобучение и fine-tuning
+- 🔴 [BERT и его варианты](463_bert.md): BERT, RoBERTa, DistilBERT, предобучение и fine-tuning
+  - 🔴 [Задачи](463_bert_tasks.md)
   - Практика: [Jigsaw Toxic Comments Classification](https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge) (Kaggle)
-- ◯ [Hugging Face Transformers](464_huggingface.md): Использование готовых моделей, tokenizers, pipelines
+- 🔴 [Hugging Face Transformers](464_huggingface.md): Использование готовых моделей, tokenizers, pipelines
+  - 🔴 [Задачи](464_huggingface_tasks.md)
   - Практика: Текстовая классификация с предобученными моделями ([AG News](https://www.kaggle.com/datasets/amananandrai/ag-news-classification-dataset))
-- ◯ [Генеративные модели для текста](465_text_generation.md): GPT, T5, генерация и fine-tuning
+- 🔴 [Генеративные модели для текста](465_text_generation.md): GPT, T5, генерация и fine-tuning
+  - 🔴 [Задачи](465_text_generation_tasks.md)
   - Практика: Fine-tuning GPT-2 для генерации текста ([WikiText-2](https://www.salesforce.com/products/einstein/ai-research/the-wikitext-dependency-language-modeling-dataset/))
 
 **6.6 Генеративные модели**
-- ◯ [Autoencoders](470_autoencoders.md): Variational Autoencoders (VAE), применения
+- 🔴 [Autoencoders](470_autoencoders.md): Variational Autoencoders (VAE), применения
+  - 🔴 [Задачи](470_autoencoders_tasks.md)
   - Практика: Сжатие и реконструкция изображений [MNIST](http://yann.lecun.com/exdb/mnist/)
-- ◯ [Generative Adversarial Networks (GAN)](471_gan.md): Архитектура GAN, discriminator, generator
+- 🔴 [Generative Adversarial Networks (GAN)](471_gan.md): Архитектура GAN, discriminator, generator
+  - 🔴 [Задачи](471_gan_tasks.md)
   - Практика: Генерация изображений цифр ([MNIST](http://yann.lecun.com/exdb/mnist/))
-- ◯ [Продвинутые GAN](472_advanced_gan.md): DCGAN, StyleGAN, условные GAN (cGAN)
+- 🔴 [Продвинутые GAN](472_advanced_gan.md): DCGAN, StyleGAN, условные GAN (cGAN)
+  - 🔴 [Задачи](472_advanced_gan_tasks.md)
   - Практика: Генерация изображений с условиями ([CelebA](https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html))
-- ◯ [Диффузионные модели](473_diffusion.md): DDPM, Stable Diffusion, основы
+- 🔴 [Диффузионные модели](473_diffusion.md): DDPM, Stable Diffusion, основы
+  - 🔴 [Задачи](473_diffusion_tasks.md)
   - Практика: Генерация изображений с диффузионной моделью ([CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html))
 
 **6.7 Специализированные темы**
-- ◯ [Graph Neural Networks (GNN)](480_gnn.md): Основы GNN, Graph Convolutional Networks
+- 🔴 [Graph Neural Networks (GNN)](480_gnn.md): Основы GNN, Graph Convolutional Networks
+  - 🔴 [Задачи](480_gnn_tasks.md)
   - Практика: Классификация узлов графа ([Cora Dataset](https://relational.fit.cvut.cz/dataset/CORA))
-- ◯ [Рекомендательные системы](481_recommender.md): Коллаборативная фильтрация, нейронные подходы
+- 🔴 [Рекомендательные системы](481_recommender.md): Коллаборативная фильтрация, нейронные подходы
+  - 🔴 [Задачи](481_recommender_tasks.md)
   - Практика: [MovieLens](https://grouplens.org/datasets/movielens/) рекомендации
-- ◯ [Meta-Learning](482_meta_learning.md): Few-shot learning, MAML
+- 🔴 [Meta-Learning](482_meta_learning.md): Few-shot learning, MAML
+  - 🔴 [Задачи](482_meta_learning_tasks.md)
   - Практика: Обучение на малых данных ([Omniglot Dataset](https://github.com/brendenlake/omniglot))
-- ◯ [Reinforcement Learning основы](483_rl_basics.md): Q-learning, DQN, Policy Gradient
+- 🔴 [Reinforcement Learning основы](483_rl_basics.md): Q-learning, DQN, Policy Gradient
+  - 🔴 [Задачи](483_rl_basics_tasks.md)
   - Практика: Обучение агента в простой среде ([OpenAI Gym CartPole](https://www.gymlibrary.dev/environments/classic_control/cart_pole/))
 
 **6.8 Практические аспекты**
-- ◯ [Отладка нейросетей](490_debugging.md): Диагностика проблем обучения, визуализация
+- 🔴 [Отладка нейросетей](490_debugging.md): Диагностика проблем обучения, визуализация
+  - 🔴 [Задачи](490_debugging_tasks.md)
   - Практика: Исправление типичных ошибок ([MNIST](http://yann.lecun.com/exdb/mnist/) с намеренными ошибками)
-- ◯ [Оптимизация производительности](491_performance.md): Mixed precision, gradient accumulation, distributed training
+- 🔴 [Оптимизация производительности](491_performance.md): Mixed precision, gradient accumulation, distributed training
+  - 🔴 [Задачи](491_performance_tasks.md)
   - Практика: Ускорение обучения больших моделей ([ImageNet subset](https://www.kaggle.com/c/imagenet-object-localization-challenge))
-- ◯ [Развертывание моделей](492_deployment.md): ONNX, TorchScript, сервисы для inference
+- 🔴 [Развертывание моделей](492_deployment.md): ONNX, TorchScript, сервисы для inference
+  - 🔴 [Задачи](492_deployment_tasks.md)
   - Практика: Развертывание модели в продакшн ([MNIST](http://yann.lecun.com/exdb/mnist/) classifier deployment)
-- ◯ [MLOps для нейросетей](493_mlops.md): Tracking экспериментов (Weights & Biases, MLflow), версионирование моделей
+- 🔴 [MLOps для нейросетей](493_mlops.md): Tracking экспериментов (Weights & Biases, MLflow), версионирование моделей
+  - 🔴 [Задачи](493_mlops_tasks.md)
   - Практика: Настройка MLOps пайплайна ([Fashion-MNIST](https://github.com/zalandoresearch/fashion-mnist))
+
+**6.9 Интерпретируемость и продвинутые темы**
+- 🔴 [Интерпретируемость нейросетей](500_interpretability.md): Saliency Maps, Grad-CAM, SHAP, LIME, Integrated Gradients
+  - 🔴 [Задачи](500_interpretability_tasks.md)
+  - Практика: Объяснение предсказаний CNN ([MNIST](http://yann.lecun.com/exdb/mnist/), CIFAR-10)
+- 🔴 [Мультимодальное обучение](510_multimodal.md): CLIP, Image Captioning, VQA, Multimodal Transformers
+  - 🔴 [Задачи](510_multimodal_tasks.md)
+  - Практика: Image-Text retrieval ([Flickr30k](http://shannon.cs.illinois.edu/DenotationGraph/), [COCO](https://cocodataset.org/))
 
 **Блок 7: Продвинутые соревновательные методы и алгоритмы**  
 - ◯ Гиперпараметры: Optuna для CatBoost. Практика: [Santander Customer Transaction Prediction](https://www.kaggle.com/c/santander-customer-transaction-prediction) (Kaggle).  

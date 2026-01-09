@@ -239,7 +239,8 @@
 - ◯ [Архитектуры CNN](441_cnn_architectures.md): LeNet, AlexNet, VGG, ResNet, Inception
   - ◯ [Задачи](441_cnn_architectures_tasks.md)
   - Практика: [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) (University of Toronto)
-- ◯ [Transfer Learning](442_transfer_learning.md): Fine-tuning, feature extraction, предобученные модели
+- 🔴 [Transfer Learning](442_transfer_learning.md): Fine-tuning, feature extraction, предобученные модели
+  - 🔴 [Задачи](442_transfer_learning_tasks.md)
   - Практика: [Dogs vs Cats](https://www.kaggle.com/c/dogs-vs-cats-redux-kernels-edition) (Kaggle)
 - ◯ [Современные архитектуры](443_modern_cnn.md): EfficientNet, MobileNet, Vision Transformer (ViT)
   - Практика: Сравнение производительности разных архитектур ([ImageNet subset](https://www.kaggle.com/c/imagenet-object-localization-challenge))

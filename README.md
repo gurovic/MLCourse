@@ -198,10 +198,96 @@
 - ◯ Kaggle Challenge: Полный цикл решения. Практика: [Spaceship Titanic](https://www.kaggle.com/c/spaceship-titanic) (Kaggle).  
 
 **Блок 6: Нейросети**  
-- 🔴 [PyTorch Basics](410_pytorch.md): Тензоры, autograd. Практика: [MNIST Handwritten Digits](http://yann.lecun.com/exdb/mnist/) (Yann LeCun).  
-- ◯ CNN: Сверточные слои, аугментация. Практика: [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) (University of Toronto).  
-- ◯ Трансферное обучение: Fine-tuning ResNet. Практика: [Dogs vs Cats](https://www.kaggle.com/c/dogs-vs-cats-redux-kernels-edition) (Kaggle).  
-- ◯ NLP: BERT, Hugging Face. Практика: [Jigsaw Toxic Comments Classification](https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge) (Kaggle).  
+
+**6.1 Основы нейронных сетей**
+- 🔴 [PyTorch Basics](410_pytorch.md): Тензоры, autograd, базовые операции
+  - Практика: Линейная регрессия на PyTorch
+- ◯ [Полносвязные нейросети (MLP)](420_mlp.md): Архитектура, функции активации (ReLU, Sigmoid, Tanh)
+  - Практика: [MNIST Handwritten Digits](http://yann.lecun.com/exdb/mnist/) (Yann LeCun)
+- ◯ [Обратное распространение ошибки](421_backpropagation.md): Математика градиентного спуска, цепное правило
+  - Практика: Реализация простой нейросети с нуля на NumPy
+- ◯ [Функции потерь](422_loss_functions.md): MSE, Cross-Entropy, Binary Cross-Entropy
+  - Практика: Сравнение функций потерь на задачах регрессии и классификации
+- ◯ [Оптимизаторы](423_optimizers.md): SGD, Adam, RMSprop, AdaGrad
+  - Практика: Сравнение скорости сходимости разных оптимизаторов
+
+**6.2 Продвинутые техники обучения**
+- ◯ [Регуляризация в нейросетях](430_regularization.md): Dropout, Batch Normalization, Layer Normalization, Weight Decay
+  - Практика: Борьба с переобучением на MNIST
+- ◯ [Инициализация весов](431_weight_init.md): Xavier, He initialization
+  - Практика: Влияние инициализации на сходимость
+- ◯ [Learning Rate Scheduling](432_lr_scheduling.md): StepLR, ReduceLROnPlateau, CosineAnnealing
+  - Практика: Подбор оптимального schedule для обучения
+- ◯ [Early Stopping и Callbacks](433_callbacks.md): Мониторинг метрик, сохранение лучших моделей
+  - Практика: Настройка пайплайна обучения с early stopping
+- ◯ [Data Augmentation](434_augmentation.md): Техники аугментации для различных типов данных
+  - Практика: Улучшение качества модели через аугментацию
+
+**6.3 Сверточные нейронные сети (CNN)**
+- ◯ [Основы CNN](440_cnn_basics.md): Сверточные слои, pooling, stride, padding
+  - Практика: Простая CNN для MNIST
+- ◯ [Архитектуры CNN](441_cnn_architectures.md): LeNet, AlexNet, VGG, ResNet, Inception
+  - Практика: [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) (University of Toronto)
+- ◯ [Transfer Learning](442_transfer_learning.md): Fine-tuning, feature extraction, предобученные модели
+  - Практика: [Dogs vs Cats](https://www.kaggle.com/c/dogs-vs-cats-redux-kernels-edition) (Kaggle)
+- ◯ [Современные архитектуры](443_modern_cnn.md): EfficientNet, MobileNet, Vision Transformer (ViT)
+  - Практика: Сравнение производительности разных архитектур
+- ◯ [Object Detection](444_object_detection.md): YOLO, R-CNN, SSD
+  - Практика: Детекция объектов на пользовательских данных
+
+**6.4 Рекуррентные нейронные сети (RNN)**
+- ◯ [Основы RNN](450_rnn_basics.md): Архитектура RNN, проблема затухающих градиентов
+  - Практика: Генерация текста на уровне символов
+- ◯ [LSTM и GRU](451_lstm_gru.md): Long Short-Term Memory, Gated Recurrent Unit
+  - Практика: Прогнозирование временных рядов
+- ◯ [Bidirectional RNN](452_bidirectional_rnn.md): Обработка последовательностей в обоих направлениях
+  - Практика: Анализ тональности отзывов
+- ◯ [Sequence-to-Sequence](453_seq2seq.md): Encoder-Decoder архитектура, машинный перевод
+  - Практика: Простой переводчик текста
+
+**6.5 Natural Language Processing (NLP)**
+- ◯ [Эмбеддинги слов](460_embeddings.md): Word2Vec, GloVe, FastText
+  - Практика: Визуализация word embeddings
+- ◯ [Attention механизм](461_attention.md): Self-attention, multi-head attention
+  - Практика: Визуализация attention weights
+- ◯ [Transformer](462_transformer.md): Архитектура Transformer, позиционное кодирование
+  - Практика: Sentiment analysis с Transformer
+- ◯ [BERT и его варианты](463_bert.md): BERT, RoBERTa, DistilBERT, предобучение и fine-tuning
+  - Практика: [Jigsaw Toxic Comments Classification](https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge) (Kaggle)
+- ◯ [Hugging Face Transformers](464_huggingface.md): Использование готовых моделей, tokenizers, pipelines
+  - Практика: Текстовая классификация с предобученными моделями
+- ◯ [Генеративные модели для текста](465_text_generation.md): GPT, T5, генерация и fine-tuning
+  - Практика: Fine-tuning GPT-2 для генерации текста
+
+**6.6 Генеративные модели**
+- ◯ [Autoencoders](470_autoencoders.md): Variational Autoencoders (VAE), применения
+  - Практика: Сжатие и реконструкция изображений MNIST
+- ◯ [Generative Adversarial Networks (GAN)](471_gan.md): Архитектура GAN, discriminator, generator
+  - Практика: Генерация изображений цифр
+- ◯ [Продвинутые GAN](472_advanced_gan.md): DCGAN, StyleGAN, условные GAN (cGAN)
+  - Практика: Генерация изображений с условиями
+- ◯ [Диффузионные модели](473_diffusion.md): DDPM, Stable Diffusion, основы
+  - Практика: Генерация изображений с диффузионной моделью
+
+**6.7 Специализированные темы**
+- ◯ [Graph Neural Networks (GNN)](480_gnn.md): Основы GNN, Graph Convolutional Networks
+  - Практика: Классификация узлов графа
+- ◯ [Рекомендательные системы](481_recommender.md): Коллаборативная фильтрация, нейронные подходы
+  - Практика: [MovieLens](https://grouplens.org/datasets/movielens/) рекомендации
+- ◯ [Meta-Learning](482_meta_learning.md): Few-shot learning, MAML
+  - Практика: Обучение на малых данных
+- ◯ [Reinforcement Learning основы](483_rl_basics.md): Q-learning, DQN, Policy Gradient
+  - Практика: Обучение агента в простой среде (CartPole)
+
+**6.8 Практические аспекты**
+- ◯ [Отладка нейросетей](490_debugging.md): Диагностика проблем обучения, визуализация
+  - Практика: Исправление типичных ошибок
+- ◯ [Оптимизация производительности](491_performance.md): Mixed precision, gradient accumulation, distributed training
+  - Практика: Ускорение обучения больших моделей
+- ◯ [Развертывание моделей](492_deployment.md): ONNX, TorchScript, сервисы для inference
+  - Практика: Развертывание модели в продакшн
+- ◯ [MLOps для нейросетей](493_mlops.md): Tracking экспериментов (Weights & Biases, MLflow), версионирование моделей
+  - Практика: Настройка MLOps пайплайна  
 
 **Блок 7: Продвинутые соревновательные методы и алгоритмы**  
 - ◯ Гиперпараметры: Optuna для CatBoost. Практика: [Santander Customer Transaction Prediction](https://www.kaggle.com/c/santander-customer-transaction-prediction) (Kaggle).  

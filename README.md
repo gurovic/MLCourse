@@ -284,17 +284,22 @@
   - Практика: Fine-tuning GPT-2 для генерации текста ([WikiText-2](https://www.salesforce.com/products/einstein/ai-research/the-wikitext-dependency-language-modeling-dataset/))
 
 **6.6 Генеративные модели**
-- ◯ [Autoencoders](470_autoencoders.md): Variational Autoencoders (VAE), применения
+- 🔴 [Autoencoders](470_autoencoders.md): Variational Autoencoders (VAE), применения
+  - 🔴 [Задачи](470_autoencoders_tasks.md)
   - Практика: Сжатие и реконструкция изображений [MNIST](http://yann.lecun.com/exdb/mnist/)
-- ◯ [Generative Adversarial Networks (GAN)](471_gan.md): Архитектура GAN, discriminator, generator
+- 🔴 [Generative Adversarial Networks (GAN)](471_gan.md): Архитектура GAN, discriminator, generator
+  - 🔴 [Задачи](471_gan_tasks.md)
   - Практика: Генерация изображений цифр ([MNIST](http://yann.lecun.com/exdb/mnist/))
-- ◯ [Продвинутые GAN](472_advanced_gan.md): DCGAN, StyleGAN, условные GAN (cGAN)
+- 🔴 [Продвинутые GAN](472_advanced_gan.md): DCGAN, StyleGAN, условные GAN (cGAN)
+  - 🔴 [Задачи](472_advanced_gan_tasks.md)
   - Практика: Генерация изображений с условиями ([CelebA](https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html))
-- ◯ [Диффузионные модели](473_diffusion.md): DDPM, Stable Diffusion, основы
+- 🔴 [Диффузионные модели](473_diffusion.md): DDPM, Stable Diffusion, основы
+  - 🔴 [Задачи](473_diffusion_tasks.md)
   - Практика: Генерация изображений с диффузионной моделью ([CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html))
 
 **6.7 Специализированные темы**
-- ◯ [Graph Neural Networks (GNN)](480_gnn.md): Основы GNN, Graph Convolutional Networks
+- 🔴 [Graph Neural Networks (GNN)](480_gnn.md): Основы GNN, Graph Convolutional Networks
+  - 🔴 [Задачи](480_gnn_tasks.md)
   - Практика: Классификация узлов графа ([Cora Dataset](https://relational.fit.cvut.cz/dataset/CORA))
 - ◯ [Рекомендательные системы](481_recommender.md): Коллаборативная фильтрация, нейронные подходы
   - Практика: [MovieLens](https://grouplens.org/datasets/movielens/) рекомендации

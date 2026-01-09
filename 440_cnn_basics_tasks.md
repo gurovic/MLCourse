@@ -40,7 +40,7 @@ img = np.array(Image.open('test_image.jpg').convert('L'))
 kernels = {
     'Vertical edges': np.array([[1, 0, -1], [1, 0, -1], [1, 0, -1]]),
     'Horizontal edges': np.array([[1, 1, 1], [0, 0, 0], [-1, -1, -1]]),
-    'Blur': np.ones((3, 3)) / 9,
+    'Blur': np.ones((3, 3)) / 9.0,
     'Sharpen': np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
 }
 ```
@@ -100,7 +100,7 @@ def count_parameters(model):
    - kernel_size=3, stride=2, padding=1
    - kernel_size=5, stride=1, padding=2
 3. Для каждой комбинации выведите размер выхода
-4. Проверьте формулу: `output_size = (input_size - kernel_size + 2*padding) / stride + 1`
+4. Проверьте формулу: `output_size = int((input_size - kernel_size + 2*padding) / stride) + 1`
 5. Визуализируйте, как разные параметры влияют на receptive field
 
 **Вопрос:** Когда использовать stride > 1 вместо pooling?

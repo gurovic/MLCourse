@@ -66,11 +66,18 @@ for epoch in range(100):
 ```python
 class EarlyStoppingWithCheckpoint:
     def __init__(self, patience=5, path='best_model.pt', verbose=True):
-        # TODO: реализуйте
+        # TODO: инициализируйте атрибуты
+        # self.patience, self.path, self.verbose
+        # self.counter = 0
+        # self.best_score = None
+        # self.early_stop = False
         pass
     
     def __call__(self, val_loss, model):
-        # Сохраняет модель при улучшении
+        # TODO: проверьте, улучшилась ли метрика
+        # если да - сохраните модель и сбросьте counter
+        # если нет - увеличьте counter
+        # если counter >= patience - установите early_stop = True
         pass
     
     def save_checkpoint(self, model):

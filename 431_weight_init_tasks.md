@@ -34,7 +34,10 @@ class DeepNet(nn.Module):
         layers = []
         for _ in range(10):
             layer = nn.Linear(100, 100)
-            # TODO: применить инициализацию
+            # TODO: применить инициализацию в зависимости от init_type
+            # if init_type == 'zeros': nn.init.zeros_(layer.weight)
+            # elif init_type == 'large': nn.init.normal_(layer.weight, std=10.0)
+            # elif init_type == 'xavier': nn.init.xavier_normal_(layer.weight)
             layers.append(layer)
             layers.append(nn.ReLU())
         self.net = nn.Sequential(*layers, nn.Linear(100, 10))

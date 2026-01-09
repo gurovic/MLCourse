@@ -301,19 +301,24 @@
 - 🔴 [Graph Neural Networks (GNN)](480_gnn.md): Основы GNN, Graph Convolutional Networks
   - 🔴 [Задачи](480_gnn_tasks.md)
   - Практика: Классификация узлов графа ([Cora Dataset](https://relational.fit.cvut.cz/dataset/CORA))
-- ◯ [Рекомендательные системы](481_recommender.md): Коллаборативная фильтрация, нейронные подходы
+- 🔴 [Рекомендательные системы](481_recommender.md): Коллаборативная фильтрация, нейронные подходы
+  - 🔴 [Задачи](481_recommender_tasks.md)
   - Практика: [MovieLens](https://grouplens.org/datasets/movielens/) рекомендации
-- ◯ [Meta-Learning](482_meta_learning.md): Few-shot learning, MAML
+- 🔴 [Meta-Learning](482_meta_learning.md): Few-shot learning, MAML
+  - 🔴 [Задачи](482_meta_learning_tasks.md)
   - Практика: Обучение на малых данных ([Omniglot Dataset](https://github.com/brendenlake/omniglot))
 - ◯ [Reinforcement Learning основы](483_rl_basics.md): Q-learning, DQN, Policy Gradient
   - Практика: Обучение агента в простой среде ([OpenAI Gym CartPole](https://www.gymlibrary.dev/environments/classic_control/cart_pole/))
 
 **6.8 Практические аспекты**
-- ◯ [Отладка нейросетей](490_debugging.md): Диагностика проблем обучения, визуализация
+- 🔴 [Отладка нейросетей](490_debugging.md): Диагностика проблем обучения, визуализация
+  - 🔴 [Задачи](490_debugging_tasks.md)
   - Практика: Исправление типичных ошибок ([MNIST](http://yann.lecun.com/exdb/mnist/) с намеренными ошибками)
-- ◯ [Оптимизация производительности](491_performance.md): Mixed precision, gradient accumulation, distributed training
+- 🔴 [Оптимизация производительности](491_performance.md): Mixed precision, gradient accumulation, distributed training
+  - 🔴 [Задачи](491_performance_tasks.md)
   - Практика: Ускорение обучения больших моделей ([ImageNet subset](https://www.kaggle.com/c/imagenet-object-localization-challenge))
-- ◯ [Развертывание моделей](492_deployment.md): ONNX, TorchScript, сервисы для inference
+- 🔴 [Развертывание моделей](492_deployment.md): ONNX, TorchScript, сервисы для inference
+  - 🔴 [Задачи](492_deployment_tasks.md)
   - Практика: Развертывание модели в продакшн ([MNIST](http://yann.lecun.com/exdb/mnist/) classifier deployment)
 - ◯ [MLOps для нейросетей](493_mlops.md): Tracking экспериментов (Weights & Biases, MLflow), версионирование моделей
   - Практика: Настройка MLOps пайплайна ([Fashion-MNIST](https://github.com/zalandoresearch/fashion-mnist))

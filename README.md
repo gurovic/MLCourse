@@ -256,7 +256,8 @@
 - 🔴 [LSTM и GRU](451_lstm_gru.md): Long Short-Term Memory, Gated Recurrent Unit
   - 🔴 [Задачи](451_lstm_gru_tasks.md)
   - Практика: Прогнозирование временных рядов ([Air Quality Dataset](https://archive.ics.uci.edu/ml/datasets/Air+Quality))
-- ◯ [Bidirectional RNN](452_bidirectional_rnn.md): Обработка последовательностей в обоих направлениях
+- 🔴 [Bidirectional RNN](452_bidirectional_rnn.md): Обработка последовательностей в обоих направлениях
+  - 🔴 [Задачи](452_bidirectional_rnn_tasks.md)
   - Практика: Анализ тональности отзывов ([IMDB Movie Reviews](https://ai.stanford.edu/~amaas/data/sentiment/))
 - ◯ [Sequence-to-Sequence](453_seq2seq.md): Encoder-Decoder архитектура, машинный перевод
   - Практика: Простой переводчик текста ([WMT English-German](https://www.statmt.org/wmt14/translation-task.html))

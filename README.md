@@ -253,7 +253,8 @@
 - 🔴 [Основы RNN](450_rnn_basics.md): Архитектура RNN, проблема затухающих градиентов
   - 🔴 [Задачи](450_rnn_basics_tasks.md)
   - Практика: Генерация текста на уровне символов ([Shakespeare Text](https://www.kaggle.com/datasets/kingburrito666/shakespeare-plays))
-- ◯ [LSTM и GRU](451_lstm_gru.md): Long Short-Term Memory, Gated Recurrent Unit
+- 🔴 [LSTM и GRU](451_lstm_gru.md): Long Short-Term Memory, Gated Recurrent Unit
+  - 🔴 [Задачи](451_lstm_gru_tasks.md)
   - Практика: Прогнозирование временных рядов ([Air Quality Dataset](https://archive.ics.uci.edu/ml/datasets/Air+Quality))
 - ◯ [Bidirectional RNN](452_bidirectional_rnn.md): Обработка последовательностей в обоих направлениях
   - Практика: Анализ тональности отзывов ([IMDB Movie Reviews](https://ai.stanford.edu/~amaas/data/sentiment/))

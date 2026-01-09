@@ -28,13 +28,15 @@ zeros = torch.zeros(2, 3)       # матрица 2x3 из нулей
 rand_matrix = torch.rand(3, 3)  # случайные значения 0-1
 
 # На GPU (ускорение ~10-100x)
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
 tensor_gpu = rand_matrix.to(device) # создать копию тензора на GPU, если доступно
 ```
 
 ### **1.2 Операции с тензорами**  
 ```python
-a = torch.tensor([1.0, 2.0], requires_grad=True) # Когда вы вызываете .backward(), PyTorch автоматически вычисляет градиенты для всех тензоров с requires_grad=True.
+# requires_grad=True включает отслеживание операций для автоматического вычисления градиентов
+# Когда вы вызываете .backward(), PyTorch автоматически вычисляет градиенты для всех тензоров с requires_grad=True
+a = torch.tensor([1.0, 2.0], requires_grad=True)
 b = torch.tensor([3.0, 4.0], requires_grad=True)
 
 # Базовые операции
@@ -44,7 +46,7 @@ d = torch.dot(a, b)  # скалярное произведение 1*3 + 2*4 = 1
 # Матричные операции
 mat1 = torch.randn(2, 3)
 mat2 = torch.randn(3, 2)
-mat_mul = torch.mm(mat1, mat2)  # матричное умножение
+mat_mul = mat1 @ mat2  # матричное умножение (современный синтаксис)
 ```
 
 ### **1.3 Индексация и изменение формы**  
@@ -97,7 +99,7 @@ with torch.no_grad():
     y = x * 2  # операции не будут записаны в граф
 
 # Ручное управление памятью градиентов
-model.zero_grad()  # обнуляем градиенты перед новым backward()
+optimizer.zero_grad()  # обнуляем градиенты перед новым backward()
 ```
 
 ---

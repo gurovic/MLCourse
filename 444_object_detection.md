@@ -678,5 +678,5 @@ def tta_predict(model, image):
 - [YOLOv5 Documentation](https://docs.ultralytics.com/)
 - [RetinaNet Paper (Focal Loss)](https://arxiv.org/abs/1708.02002)
 - [Feature Pyramid Networks](https://arxiv.org/abs/1612.03144)
-- [COCO Dataset](https://cocodataset.org/)
+- [COCO Dataset](https://cocodataset.org/#download)
 - [MMDetection Library](https://github.com/open-mmlab/mmdetection)

@@ -74,7 +74,7 @@
 - Flickr8k: https://www.kaggle.com/datasets/adityajn105/flickr8k
 - Flickr30k: http://shannon.cs.illinois.edu/DenotationGraph/
 - COCO Captions: https://cocodataset.org/#captions-2015
-- VQA v2: https://visualqa.org/
+- VQA v2: https://visualqa.org/download.html
 - Conceptual Captions: https://ai.google.com/research/ConceptualCaptions/
 - UCF-101: https://www.crcv.ucf.edu/data/UCF101.php
 

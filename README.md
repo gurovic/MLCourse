@@ -259,11 +259,13 @@
 - 🔴 [Bidirectional RNN](452_bidirectional_rnn.md): Обработка последовательностей в обоих направлениях
   - 🔴 [Задачи](452_bidirectional_rnn_tasks.md)
   - Практика: Анализ тональности отзывов ([IMDB Movie Reviews](https://ai.stanford.edu/~amaas/data/sentiment/))
-- ◯ [Sequence-to-Sequence](453_seq2seq.md): Encoder-Decoder архитектура, машинный перевод
+- 🔴 [Sequence-to-Sequence](453_seq2seq.md): Encoder-Decoder архитектура, машинный перевод
+  - 🔴 [Задачи](453_seq2seq_tasks.md)
   - Практика: Простой переводчик текста ([WMT English-German](https://www.statmt.org/wmt14/translation-task.html))
 
 **6.5 Natural Language Processing (NLP)**
-- ◯ [Эмбеддинги слов](460_embeddings.md): Word2Vec, GloVe, FastText
+- 🔴 [Эмбеддинги слов](460_embeddings.md): Word2Vec, GloVe, FastText
+  - 🔴 [Задачи](460_embeddings_tasks.md)
   - Практика: Визуализация word embeddings ([Text8 Corpus](https://mattmahoney.net/dc/textdata.html))
 - ◯ [Attention механизм](461_attention.md): Self-attention, multi-head attention
   - Практика: Визуализация attention weights ([WMT English-German](https://www.statmt.org/wmt14/translation-task.html))

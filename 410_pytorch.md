@@ -243,6 +243,73 @@ print(f"Истинные веса:\n{weights_true}")
 
 ---
 
+## **📊 Пример с валидацией: Train/Val split**
+
+```python
+import torch
+from torch.utils.data import DataLoader, TensorDataset, random_split
+
+torch.manual_seed(42)
+
+# Генерация данных
+n_samples = 1000
+x_data = torch.randn(n_samples, 3)
+y_data = 2*x_data[:, 0] - 3*x_data[:, 1] + x_data[:, 2] + torch.randn(n_samples)
+
+# Создание датасета и разделение на train/val (80/20)
+dataset = TensorDataset(x_data, y_data)
+train_size = int(0.8 * len(dataset))
+val_size = len(dataset) - train_size
+train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
+
+# DataLoader для обоих наборов
+train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
+
+# Простая модель
+w = torch.randn(3, 1, requires_grad=True)
+b = torch.zeros(1, requires_grad=True)
+optimizer = torch.optim.Adam([w, b], lr=0.01)
+
+# Обучение с валидацией
+best_val_loss = float('inf')
+for epoch in range(50):
+    # Training
+    train_loss = 0.0
+    for batch_x, batch_y in train_loader:
+        y_pred = batch_x @ w + b
+        loss = torch.mean((y_pred - batch_y.unsqueeze(1))**2)
+        
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        train_loss += loss.item()
+    
+    # Validation
+    val_loss = 0.0
+    with torch.no_grad():
+        for batch_x, batch_y in val_loader:
+            y_pred = batch_x @ w + b
+            loss = torch.mean((y_pred - batch_y.unsqueeze(1))**2)
+            val_loss += loss.item()
+    
+    train_loss /= len(train_loader)
+    val_loss /= len(val_loader)
+    
+    # Сохранение лучшей модели
+    if val_loss < best_val_loss:
+        best_val_loss = val_loss
+        best_w = w.clone().detach()
+        best_b = b.clone().detach()
+    
+    if epoch % 10 == 0:
+        print(f"Epoch {epoch}: Train Loss={train_loss:.4f}, Val Loss={val_loss:.4f}")
+
+print(f"\nЛучший Val Loss: {best_val_loss:.4f}")
+```
+
+---
+
 ## **💎 Заключение**  
 **Ключевые концепции PyTorch:**  
 1. **Тензоры** — основа всех вычислений  
@@ -254,9 +321,61 @@ print(f"Истинные веса:\n{weights_true}")
 - Регулярно вызывайте `.zero_grad()` при обучении  
 - Визуализируйте графы для сложных моделей  
 
+**⚠️ Типичные ошибки новичков:**
+
+1. **Забыли обнулить градиенты:**
+```python
+# ❌ Неправильно
+for epoch in range(100):
+    loss.backward()
+    optimizer.step()
+# Градиенты накапливаются!
+
+# ✅ Правильно
+for epoch in range(100):
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+```
+
+2. **Использование тензора с графом для логирования:**
+```python
+# ❌ Неправильно - утечка памяти
+losses = []
+for epoch in range(100):
+    loss = compute_loss()
+    losses.append(loss)  # Сохраняет весь граф!
+
+# ✅ Правильно
+losses = []
+for epoch in range(100):
+    loss = compute_loss()
+    losses.append(loss.item())  # Только значение
+```
+
+3. **Изменение тензора in-place во время backward:**
+```python
+# ❌ Неправильно
+x = torch.tensor([1.0], requires_grad=True)
+y = x * 2
+y.backward()
+x.data.zero_()  # Модифицирует тензор после backward
+
+# ✅ Правильно
+with torch.no_grad():
+    x -= learning_rate * x.grad
+```
+
 > **"PyTorch дает исследователям и инженерам свободу творчества, сочетая простоту Python с мощью вычислительных ресурсов."**  
 
 **Дальнейшее изучение:**  
 - [Официальные туториалы PyTorch](https://pytorch.org/tutorials/)  
 - [Deep Learning с PyTorch](https://practicaldeeplearning.ai/)  
 - [Интерактивный курс Kaggle](https://www.kaggle.com/learn/pytorch)
+
+**🎯 Дополнительные техники:**
+- **Градиентный клиппинг:** `torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)`
+- **Learning Rate Scheduling:** `torch.optim.lr_scheduler.StepLR`
+- **Early Stopping:** Останавливайте обучение, когда val_loss перестает улучшаться
+- **Checkpointing:** Сохраняйте модель с `torch.save(model.state_dict(), 'model.pth')`
+

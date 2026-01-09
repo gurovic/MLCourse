@@ -951,9 +951,135 @@ print("\nГрафик сохранен в 'debug_training.png'")
 
 ---
 
+### **Задача 10: Mixed Precision Training**
+Реализуйте обучение с использованием автоматического смешанного точности (AMP).
+
+1. Создайте простую нейронную сеть для классификации
+2. Реализуйте обычное обучение
+3. Реализуйте обучение с Mixed Precision (torch.cuda.amp)
+4. Сравните скорость и использование памяти
+
+**Требуется:** PyTorch 1.6+ и GPU с Compute Capability >= 7.0 (Volta или новее)
+
+<details>
+<summary>Решение</summary>
+
+```python
+import torch
+import torch.nn as nn
+from torch.cuda.amp import autocast, GradScaler
+import time
+
+if not torch.cuda.is_available():
+    print("GPU недоступен. Используйте Google Colab с GPU.")
+else:
+    # Проверка поддержки Mixed Precision
+    device_capability = torch.cuda.get_device_capability()
+    print(f"GPU Compute Capability: {device_capability}")
+    if device_capability[0] >= 7:
+        print("✅ GPU поддерживает Mixed Precision Training")
+    
+    # Модель
+    class SimpleNet(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.fc1 = nn.Linear(1024, 512)
+            self.fc2 = nn.Linear(512, 256)
+            self.fc3 = nn.Linear(256, 10)
+            self.relu = nn.ReLU()
+        
+        def forward(self, x):
+            x = self.relu(self.fc1(x))
+            x = self.relu(self.fc2(x))
+            return self.fc3(x)
+    
+    # Синтетические данные
+    x = torch.randn(1000, 1024).cuda()
+    y = torch.randint(0, 10, (1000,)).cuda()
+    
+    def train_normal(epochs=20):
+        """Обычное обучение (FP32)"""
+        model = SimpleNet().cuda()
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+        criterion = nn.CrossEntropyLoss()
+        
+        torch.cuda.reset_peak_memory_stats()
+        start_time = time.time()
+        
+        for epoch in range(epochs):
+            optimizer.zero_grad()
+            outputs = model(x)
+            loss = criterion(outputs, y)
+            loss.backward()
+            optimizer.step()
+        
+        torch.cuda.synchronize()
+        elapsed = time.time() - start_time
+        peak_memory = torch.cuda.max_memory_allocated() / 1e9
+        
+        return elapsed, peak_memory
+    
+    def train_mixed_precision(epochs=20):
+        """Обучение с Mixed Precision (FP16)"""
+        model = SimpleNet().cuda()
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+        criterion = nn.CrossEntropyLoss()
+        scaler = GradScaler()
+        
+        torch.cuda.reset_peak_memory_stats()
+        start_time = time.time()
+        
+        for epoch in range(epochs):
+            optimizer.zero_grad()
+            
+            # Автоматическое использование FP16
+            with autocast():
+                outputs = model(x)
+                loss = criterion(outputs, y)
+            
+            # Масштабирование и обратное распространение
+            scaler.scale(loss).backward()
+            scaler.step(optimizer)
+            scaler.update()
+        
+        torch.cuda.synchronize()
+        elapsed = time.time() - start_time
+        peak_memory = torch.cuda.max_memory_allocated() / 1e9
+        
+        return elapsed, peak_memory
+    
+    # Сравнение
+    print("\n" + "="*60)
+    print("ОБЫЧНОЕ ОБУЧЕНИЕ (FP32)")
+    print("="*60)
+    time_normal, mem_normal = train_normal()
+    print(f"Время: {time_normal:.2f}s")
+    print(f"Пик памяти: {mem_normal:.2f} GB")
+    
+    print("\n" + "="*60)
+    print("MIXED PRECISION TRAINING (FP16)")
+    print("="*60)
+    time_amp, mem_amp = train_mixed_precision()
+    print(f"Время: {time_amp:.2f}s")
+    print(f"Пик памяти: {mem_amp:.2f} GB")
+    
+    # Результаты
+    print("\n" + "="*60)
+    print("СРАВНЕНИЕ")
+    print("="*60)
+    speedup = time_normal / time_amp
+    memory_saving = (1 - mem_amp / mem_normal) * 100
+    print(f"Ускорение: {speedup:.2f}x")
+    print(f"Экономия памяти: {memory_saving:.1f}%")
+    print("\n✅ Mixed Precision обеспечивает существенное ускорение!")
+```
+</details>
+
+---
+
 ## **💡 Дополнительные задачи**
 
-### **Задача 10: Pinned Memory для ускорения**
+### **Задача 11: Pinned Memory для ускорения**
 Продемонстрируйте разницу между обычным и pinned memory при переносе данных на GPU.
 
 <details>

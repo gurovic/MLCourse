@@ -309,6 +309,36 @@ if hasattr(torch, 'compile'):
     print("✅ Модель скомпилирована с torch.compile()")
 ```
 
+### **DataParallel: Простое multi-GPU обучение**
+```python
+import torch
+import torch.nn as nn
+
+# Проверка наличия нескольких GPU
+if torch.cuda.device_count() > 1:
+    print(f"Используем {torch.cuda.device_count()} GPU!")
+    
+    # Создание модели
+    model = nn.Sequential(
+        nn.Linear(1000, 500),
+        nn.ReLU(),
+        nn.Linear(500, 10)
+    )
+    
+    # Обертывание модели для параллельного выполнения
+    model = nn.DataParallel(model)
+    model = model.cuda()
+    
+    # Обучение автоматически распределяется по GPU
+    x = torch.randn(128, 1000).cuda()
+    output = model(x)
+    print(f"Output shape: {output.shape}")
+else:
+    print("Доступен только 1 GPU или GPU недоступен")
+```
+
+**Примечание:** Для production используйте `DistributedDataParallel` (более эффективно).
+
 ---
 
 ## **💡 Лучшие практики**

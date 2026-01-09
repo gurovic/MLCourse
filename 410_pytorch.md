@@ -368,14 +368,3 @@ with torch.no_grad():
 
 > **"PyTorch дает исследователям и инженерам свободу творчества, сочетая простоту Python с мощью вычислительных ресурсов."**  
 
-**Дальнейшее изучение:**  
-- [Официальные туториалы PyTorch](https://pytorch.org/tutorials/)  
-- [Deep Learning с PyTorch](https://practicaldeeplearning.ai/)  
-- [Интерактивный курс Kaggle](https://www.kaggle.com/learn/pytorch)
-
-**🎯 Дополнительные техники:**
-- **Градиентный клиппинг:** `torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)`
-- **Learning Rate Scheduling:** `torch.optim.lr_scheduler.StepLR`
-- **Early Stopping:** Останавливайте обучение, когда val_loss перестает улучшаться
-- **Checkpointing:** Сохраняйте модель с `torch.save(model.state_dict(), 'model.pth')`
-

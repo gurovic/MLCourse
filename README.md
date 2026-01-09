@@ -242,7 +242,8 @@
 - 🔴 [Transfer Learning](442_transfer_learning.md): Fine-tuning, feature extraction, предобученные модели
   - 🔴 [Задачи](442_transfer_learning_tasks.md)
   - Практика: [Dogs vs Cats](https://www.kaggle.com/c/dogs-vs-cats-redux-kernels-edition) (Kaggle)
-- ◯ [Современные архитектуры](443_modern_cnn.md): EfficientNet, MobileNet, Vision Transformer (ViT)
+- 🔴 [Современные архитектуры](443_modern_cnn.md): EfficientNet, MobileNet, Vision Transformer (ViT)
+  - 🔴 [Задачи](443_modern_cnn_tasks.md)
   - Практика: Сравнение производительности разных архитектур ([ImageNet subset](https://www.kaggle.com/c/imagenet-object-localization-challenge))
 - ◯ [Object Detection](444_object_detection.md): YOLO, R-CNN, SSD
   - Практика: Детекция объектов на пользовательских данных ([COCO Dataset](https://cocodataset.org/))

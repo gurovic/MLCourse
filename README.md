@@ -250,7 +250,7 @@
   - Практика: Детекция объектов на пользовательских данных ([COCO Dataset](https://cocodataset.org/))
 
 **6.4 Рекуррентные нейронные сети (RNN)**
-- ◯ [Основы RNN](450_rnn_basics.md): Архитектура RNN, проблема затухающих градиентов
+- 🔴 [Основы RNN](450_rnn_basics.md): Архитектура RNN, проблема затухающих градиентов
   - Практика: Генерация текста на уровне символов ([Shakespeare Text](https://www.kaggle.com/datasets/kingburrito666/shakespeare-plays))
 - ◯ [LSTM и GRU](451_lstm_gru.md): Long Short-Term Memory, Gated Recurrent Unit
   - Практика: Прогнозирование временных рядов ([Air Quality Dataset](https://archive.ics.uci.edu/ml/datasets/Air+Quality))

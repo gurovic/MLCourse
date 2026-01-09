@@ -5,7 +5,6 @@ import torch
 import torch.nn as nn
 import torchvision.models as models
 import matplotlib.pyplot as plt
-import numpy as np
 
 # !pip install torch torchvision timm matplotlib
 ```

@@ -721,6 +721,6 @@ def realtime_detection(model, camera_id=0):
 - [YOLOv8 Documentation](https://docs.ultralytics.com/)
 - [Focal Loss Paper](https://arxiv.org/abs/1708.02002)
 - [FPN Paper](https://arxiv.org/abs/1612.03144)
-- [COCO Dataset](https://cocodataset.org/)
+- [COCO Dataset](https://cocodataset.org/#download)
 - [MMDetection Library](https://github.com/open-mmlab/mmdetection)
 - [TorchVision Detection Reference](https://pytorch.org/vision/stable/models.html#object-detection)

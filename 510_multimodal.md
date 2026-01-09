@@ -1,4 +1,4 @@
-# 510. Мультимодальное обучение
+# Мультимодальное обучение
 
 ## 🟢 Основы (Basic Level)
 
@@ -488,6 +488,6 @@ class AudioVisualModel(nn.Module):
 ## Datasets
 
 - [COCO Captions](https://cocodataset.org/#captions-2015)
-- [VQA v2](https://visualqa.org/)
+- [VQA v2](https://visualqa.org/download.html)
 - [Flickr30k](http://shannon.cs.illinois.edu/DenotationGraph/)
 - [Conceptual Captions](https://ai.google.com/research/ConceptualCaptions/)

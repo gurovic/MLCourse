@@ -201,7 +201,7 @@
 **Блок 6: Нейросети**  
 
 **6.1 Основы нейронных сетей**
-- 🔴 [PyTorch Basics](410_pytorch.md): Тензоры, autograd, базовые операции
+- 🟢 [PyTorch Basics](410_pytorch.md): Тензоры, autograd, базовые операции
   - 🔴 [Задачи](410_pytorch_tasks.md)
 - 🔴 [GPU в PyTorch](411_pytorch_gpu.md): Ускорение вычислений на GPU
   - 🔴 [Задачи](411_pytorch_gpu_tasks.md)

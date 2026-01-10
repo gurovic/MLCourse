@@ -287,15 +287,6 @@ for epoch in range(10):
     params = optax.apply_updates(params, updates)
     return params, opt_state
 
-# Обучение
-X = jax.random.normal(key, (1000, 20))
-y = (X.sum(axis=1) > 0).astype(jnp.int32)
-
-for epoch in range(10):
-    params, opt_state = train_step(params, opt_state, X, y)
-    loss = loss_fn(params, X, y)
-    print(f"Epoch {epoch+1}, Loss: {loss:.4f}")
-```
 
 ### Экосистема JAX
 

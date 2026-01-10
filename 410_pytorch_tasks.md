@@ -505,8 +505,9 @@ z = torch.mean(y)
 z.backward(retain_graph=True)
 print(f"Градиент после первого backward: {x.grad}")
 
-z.backward()  # Теперь работает, но градиенты накапливаются!
-print(f"Градиент после второго backward: {x.grad}")  # Будет в 2 раза больше!
+x.grad.zero_()
+z.backward()  
+print(f"Градиент после второго backward: {x.grad}")
 ```
 </details>
 

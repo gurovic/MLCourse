@@ -513,55 +513,62 @@ print(f"Градиент после второго backward: {x.grad}")
 
 ---
 
-### **Задача 11: Broadcasting и градиенты**
-Понять поведение broadcasting при вычислении градиентов.
+### **Задача 11: Broadcasting в ML**
+Изучите применение broadcasting в типичных задачах машинного обучения.
 
-1. Создайте тензор `w` размера (3, 1) и `x` размера (1, 4) с градиентами
-2. Вычислите `y = w + x` (результат будет 3x4 из-за broadcasting)
-3. Вычислите `loss = y.sum()`
-4. Вызовите `.backward()`
-5. Изучите формы градиентов `w.grad` и `x.grad`
-
-<details>
-<summary>Решение</summary>
+**Пример 1: Добавление bias**
 
 ```python
 import torch
 
-# 1. Создание тензоров
-w = torch.randn(3, 1, requires_grad=True)
-x = torch.randn(1, 4, requires_grad=True)
+# Батч из 32 примеров с 10 признаками
+X = torch.randn(32, 10)
+w = torch.randn(10, 1)
+b = torch.randn(1)  # Один bias для всех примеров
 
-print(f"w.shape: {w.shape}")
-print(f"x.shape: {x.shape}")
+# Broadcasting: (32, 1) + (1,) -> (32, 1)
+output = X @ w + b
 
-# 2. Broadcasting
-y = w + x
-print(f"\ny.shape: {y.shape}")  # (3, 4)
-print(f"y:\n{y}")
-
-# 3. Loss
-loss = y.sum()
-print(f"\nloss: {loss.item()}")
-
-# 4. Backward
-loss.backward()
-
-# 5. Изучение градиентов
-print(f"\nw.grad.shape: {w.grad.shape}")  # (3, 1)
-print(f"w.grad:\n{w.grad}")
-
-print(f"\nx.grad.shape: {x.grad.shape}")  # (1, 4)
-print(f"x.grad:\n{x.grad}")
-
-# Объяснение
-print("\nОбъяснение:")
-print("Градиент w: каждая строка w используется 4 раза (по количеству столбцов x)")
-print("Поэтому градиент w - это сумма по строкам, каждое значение = 4")
-print("\nГрадиент x: каждый столбец x используется 3 раза (по количеству строк w)")
-print("Поэтому градиент x - это сумма по столбцам, каждое значение = 3")
+print(f"X.shape: {X.shape}")        # (32, 10)
+print(f"output.shape: {output.shape}")  # (32, 1)
+print("Bias добавляется ко всем примерам в батче")
 ```
-</details>
+
+**Пример 2: Нормализация батча**
+
+```python
+import torch
+
+X = torch.randn(32, 10)
+
+# Вычисляем среднее и std для каждого признака
+mean = X.mean(dim=0, keepdim=True)  # (1, 10)
+std = X.std(dim=0, keepdim=True)    # (1, 10)
+
+# Broadcasting: (32, 10) - (1, 10) -> (32, 10)
+X_normalized = (X - mean) / (std + 1e-5)
+
+print(f"X.shape: {X.shape}")
+print(f"mean.shape: {mean.shape}")
+print(f"X_normalized.shape: {X_normalized.shape}")
+```
+
+**Пример 3: Вычисление расстояний**
+
+```python
+import torch
+
+# Два набора точек
+X = torch.randn(100, 3)  # 100 точек в 3D
+Y = torch.randn(50, 3)   # 50 точек в 3D
+
+# Вычисление попарных расстояний через broadcasting
+# (100, 1, 3) - (1, 50, 3) -> (100, 50, 3)
+distances = torch.sqrt(((X.unsqueeze(1) - Y.unsqueeze(0)) ** 2).sum(dim=2))
+
+print(f"distances.shape: {distances.shape}")  # (100, 50)
+print("distances[i, j] = расстояние от X[i] до Y[j]")
+```
 
 ---
 

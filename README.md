@@ -202,7 +202,7 @@
 
 **6.1 Основы нейронных сетей**
 - 🟢 [PyTorch Basics](410_pytorch.md): Тензоры, autograd, базовые операции
-  - 🔴 [Задачи](410_pytorch_tasks.md)
+  - 🟢 [Задачи](410_pytorch_tasks.md)
 - 🔴 [GPU в PyTorch](411_pytorch_gpu.md): Ускорение вычислений на GPU
   - 🔴 [Задачи](411_pytorch_gpu_tasks.md)
 - 🔴 [Полносвязные нейросети (MLP)](420_mlp.md): Архитектура, функции активации (ReLU, Sigmoid, Tanh)

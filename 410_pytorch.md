@@ -131,7 +131,7 @@ x = torch.tensor(3.0, requires_grad=True)
 y = x**2 + 2*x
 
 # Первая производная
-dy_dx = torch.autograd.grad(y, x, create_graph=True)[0]
+dy_dx = torch.autograd.grad(y, x, create_graph=True)[0] # create_graph=True — сохраняет граф вычислений для второго дифференцирования
 
 # Вторая производная
 d2y_dx2 = torch.autograd.grad(dy_dx, x)[0]

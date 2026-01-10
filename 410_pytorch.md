@@ -133,6 +133,7 @@ y = x**2 + 2*x
 # Первая производная: autograd.grad освобождает память сразу после вычисления
 # backward() сохраняет градиенты в .grad и использует больше памяти
 dy_dx = torch.autograd.grad(y, x, create_graph=True)[0] # create_graph=True — сохраняет граф вычислений для второго дифференцирования
+# если вы планируете использовать backward или вызывать autograd.grad еще раз, то нужен параметр retain_graph=True
 
 # Вторая производная
 d2y_dx2 = torch.autograd.grad(dy_dx, x)[0]

@@ -130,7 +130,8 @@ y.backward(torch.ones_like(y)) # подумайте о смысле этой с�
 x = torch.tensor(3.0, requires_grad=True)
 y = x**2 + 2*x
 
-# Первая производная
+# Первая производная: autograd.grad освобождает память сразу после вычисления
+# backward() сохраняет градиенты в .grad и использует больше памяти
 dy_dx = torch.autograd.grad(y, x, create_graph=True)[0] # create_graph=True — сохраняет граф вычислений для второго дифференцирования
 
 # Вторая производная

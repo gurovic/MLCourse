@@ -106,25 +106,23 @@ with torch.no_grad():
 
 ## **🔴 Экспертный уровень: Динамические графы**  
 
-### **3.1 Пользовательские функции с autograd**  
+### **3.1 Пользовательские функции с autograd** (очень сложно разобраться!) 
 ```python
 class CustomReLU(torch.autograd.Function):
-    @staticmethod
-    def forward(ctx, input):
-        ctx.save_for_backward(input)
+    @staticmethod # подумайте, почему staticmethod
+    def forward(ctx, input): # подумайте, что такое ctx (context)
+        ctx.save_for_backward(input) # подумайте, зачем мы сохраняем input
         return input.clamp(min=0)
     
     @staticmethod
     def backward(ctx, grad_output):
-        input, = ctx.saved_tensors
-        grad_input = grad_output.clone()
-        grad_input[input < 0] = 0
-        return grad_input
+        input, = ctx.saved_tensors # подумайте, зачем здесь запятая
+        return grad_output * (input < 0).float() # ВАЖНО! Умножаем градиент grad_output на градиент нашей функции
 
 # Использование
 x = torch.randn(4, requires_grad=True)
-y = CustomReLU.apply(x)
-y.backward(torch.ones_like(y))
+y = CustomReLU.apply(x) # подумайте, что за apply
+y.backward(torch.ones_like(y)) # подумайте о смысле этой строчки
 ```
 
 ### **3.2 Градиенты второго порядка**  

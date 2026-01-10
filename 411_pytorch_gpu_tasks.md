@@ -1177,14 +1177,22 @@ else:
 
 ## **🔴 Экспертный уровень**
 
-### **Задача 7: Обучение модели на GPU с профилированием**
-Реализуйте обучение нейронной сети на GPU с детальным профилированием.
+### **Задача 7: Оптимизация загрузки данных для GPU**
+Создайте эффективную систему загрузки и предобработки данных для обучения на GPU, которая минимизирует простой GPU.
 
-1. Создайте простую MLP (многослойный перцептрон)
-2. Обучите на синтетических данных
-3. Измерьте время каждого этапа: forward, backward, optimizer step
-4. Сравните общее время с CPU
-5. Постройте графики использования времени
+Реализуйте класс `OptimizedDataPipeline`, который:
+1. Использует pinned memory и асинхронную загрузку данных на GPU
+2. Выполняет предобработку данных на CPU параллельно с обучением на GPU
+3. Использует double buffering (пока GPU обрабатывает батч N, CPU готовит батч N+1)
+4. Сравнивает производительность с наивной загрузкой данных
+
+**Требования:**
+- Метод `load_batch_naive(batch_idx)` - наивная синхронная загрузка
+- Метод `load_batch_optimized(batch_idx)` - оптимизированная асинхронная загрузка
+- Метод `benchmark()` - сравнение производительности
+- Визуализация timeline выполнения (CPU preprocessing, data transfer, GPU compute)
+
+**Подсказка:** Используйте `pin_memory=True`, `non_blocking=True`, и CUDA streams для параллельного выполнения.
 
 <details>
 <summary>Решение</summary>
@@ -1194,185 +1202,252 @@ import torch
 import torch.nn as nn
 import time
 import matplotlib.pyplot as plt
+import numpy as np
 
-class SimpleMLP(nn.Module):
-    def __init__(self, input_size, hidden_size, output_size):
-        super(SimpleMLP, self).__init__()
-        self.fc1 = nn.Linear(input_size, hidden_size)
-        self.relu = nn.ReLU()
-        self.fc2 = nn.Linear(hidden_size, hidden_size)
-        self.fc3 = nn.Linear(hidden_size, output_size)
+class OptimizedDataPipeline:
+    """
+    Оптимизированный пайплайн загрузки данных для GPU
+    """
+    def __init__(self, dataset_size=1000, batch_size=32, input_size=100):
+        self.dataset_size = dataset_size
+        self.batch_size = batch_size
+        self.input_size = input_size
+        
+        # Генерируем синтетический датасет
+        self.data = torch.randn(dataset_size, input_size)
+        self.labels = torch.randint(0, 10, (dataset_size,))
+        
+        # Для оптимизированной версии создаем pinned memory версию
+        self.data_pinned = self.data.pin_memory()
+        self.labels_pinned = self.labels.pin_memory()
+        
+        print(f"✅ DataPipeline создан:")
+        print(f"   Размер датасета: {dataset_size}")
+        print(f"   Размер батча: {batch_size}")
+        print(f"   Размер входа: {input_size}")
     
-    def forward(self, x):
-        x = self.fc1(x)
-        x = self.relu(x)
-        x = self.fc2(x)
-        x = self.relu(x)
-        x = self.fc3(x)
-        return x
+    def preprocess_on_cpu(self, data, labels):
+        """
+        Симуляция предобработки на CPU (нормализация, аугментация и т.д.)
+        """
+        # Симулируем вычислительно затратную предобработку
+        time.sleep(0.001)  # эмуляция работы
+        normalized_data = (data - data.mean()) / (data.std() + 1e-7)
+        return normalized_data, labels
+    
+    def load_batch_naive(self, batch_idx):
+        """
+        Наивная синхронная загрузка: предобработка -> перенос на GPU
+        """
+        start_idx = batch_idx * self.batch_size
+        end_idx = min((batch_idx + 1) * self.batch_size, self.dataset_size)
+        
+        # 1. Предобработка на CPU (блокирующая)
+        data_batch = self.data[start_idx:end_idx]
+        labels_batch = self.labels[start_idx:end_idx]
+        data_batch, labels_batch = self.preprocess_on_cpu(data_batch, labels_batch)
+        
+        # 2. Перенос на GPU (блокирующий)
+        data_gpu = data_batch.cuda()
+        labels_gpu = labels_batch.cuda()
+        
+        # 3. Синхронизация (ожидание завершения переноса)
+        torch.cuda.synchronize()
+        
+        return data_gpu, labels_gpu
+    
+    def load_batch_optimized(self, batch_idx):
+        """
+        Оптимизированная асинхронная загрузка
+        """
+        start_idx = batch_idx * self.batch_size
+        end_idx = min((batch_idx + 1) * self.batch_size, self.dataset_size)
+        
+        # 1. Предобработка на CPU
+        data_batch = self.data_pinned[start_idx:end_idx]
+        labels_batch = self.labels_pinned[start_idx:end_idx]
+        data_batch, labels_batch = self.preprocess_on_cpu(data_batch, labels_batch)
+        
+        # 2. Асинхронный перенос на GPU (non_blocking=True)
+        # Pinned memory позволяет делать это быстрее
+        data_gpu = data_batch.cuda(non_blocking=True)
+        labels_gpu = labels_batch.cuda(non_blocking=True)
+        
+        # НЕ вызываем synchronize - пусть GPU работает асинхронно!
+        return data_gpu, labels_gpu
+    
+    def benchmark(self, model, num_batches=20):
+        """
+        Сравнение производительности наивной и оптимизированной загрузки
+        """
+        model = model.cuda()
+        model.eval()
+        
+        results = {
+            'naive': {'times': [], 'total': 0},
+            'optimized': {'times': [], 'total': 0}
+        }
+        
+        print("\n" + "="*70)
+        print("Бенчмарк: Наивная загрузка")
+        print("="*70)
+        
+        # Прогрев
+        for _ in range(3):
+            data, labels = self.load_batch_naive(0)
+            _ = model(data)
+        torch.cuda.synchronize()
+        
+        # Бенчмарк наивной загрузки
+        start = time.time()
+        for batch_idx in range(num_batches):
+            batch_start = time.time()
+            
+            # Загрузка данных
+            data, labels = self.load_batch_naive(batch_idx)
+            
+            # Вычисления на GPU
+            with torch.no_grad():
+                output = model(data)
+            torch.cuda.synchronize()
+            
+            batch_time = time.time() - batch_start
+            results['naive']['times'].append(batch_time)
+            
+            if batch_idx % 5 == 0:
+                print(f"Батч {batch_idx}: {batch_time:.4f}s")
+        
+        results['naive']['total'] = time.time() - start
+        print(f"Общее время: {results['naive']['total']:.4f}s")
+        
+        print("\n" + "="*70)
+        print("Бенчмарк: Оптимизированная загрузка")
+        print("="*70)
+        
+        # Прогрев
+        for _ in range(3):
+            data, labels = self.load_batch_optimized(0)
+            _ = model(data)
+        torch.cuda.synchronize()
+        
+        # Бенчмарк оптимизированной загрузки
+        start = time.time()
+        for batch_idx in range(num_batches):
+            batch_start = time.time()
+            
+            # Загрузка данных (асинхронная)
+            data, labels = self.load_batch_optimized(batch_idx)
+            
+            # Вычисления на GPU
+            with torch.no_grad():
+                output = model(data)
+            torch.cuda.synchronize()
+            
+            batch_time = time.time() - batch_start
+            results['optimized']['times'].append(batch_time)
+            
+            if batch_idx % 5 == 0:
+                print(f"Батч {batch_idx}: {batch_time:.4f}s")
+        
+        results['optimized']['total'] = time.time() - start
+        print(f"Общее время: {results['optimized']['total']:.4f}s")
+        
+        return results
+    
+    def visualize_results(self, results):
+        """Визуализация результатов бенчмарка"""
+        fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+        
+        # График 1: Время на батч
+        ax = axes[0]
+        batches = list(range(len(results['naive']['times'])))
+        ax.plot(batches, results['naive']['times'], 'ro-', label='Naive', alpha=0.7)
+        ax.plot(batches, results['optimized']['times'], 'go-', label='Optimized', alpha=0.7)
+        ax.set_xlabel('Номер батча')
+        ax.set_ylabel('Время (с)')
+        ax.set_title('Время обработки батча')
+        ax.legend()
+        ax.grid(True, alpha=0.3)
+        
+        # График 2: Сравнение среднего времени
+        ax = axes[1]
+        avg_naive = np.mean(results['naive']['times'])
+        avg_opt = np.mean(results['optimized']['times'])
+        ax.bar(['Naive', 'Optimized'], [avg_naive, avg_opt], color=['red', 'green'], alpha=0.7)
+        ax.set_ylabel('Среднее время (с)')
+        ax.set_title('Среднее время на батч')
+        ax.grid(True, alpha=0.3, axis='y')
+        
+        # Добавляем значения на столбцы
+        for i, v in enumerate([avg_naive, avg_opt]):
+            ax.text(i, v + 0.001, f'{v:.4f}s', ha='center', va='bottom')
+        
+        # График 3: Общее время и ускорение
+        ax = axes[2]
+        total_naive = results['naive']['total']
+        total_opt = results['optimized']['total']
+        speedup = total_naive / total_opt
+        
+        ax.bar(['Naive', 'Optimized'], [total_naive, total_opt], color=['red', 'green'], alpha=0.7)
+        ax.set_ylabel('Общее время (с)')
+        ax.set_title(f'Общее время (Ускорение: {speedup:.2f}x)')
+        ax.grid(True, alpha=0.3, axis='y')
+        
+        for i, v in enumerate([total_naive, total_opt]):
+            ax.text(i, v + 0.01, f'{v:.3f}s', ha='center', va='bottom')
+        
+        plt.tight_layout()
+        plt.savefig('data_loading_optimization.png', dpi=100)
+        print("\n📊 График сохранен в 'data_loading_optimization.png'")
+        
+        # Итоговая статистика
+        print("\n" + "="*70)
+        print("ИТОГОВЫЕ РЕЗУЛЬТАТЫ")
+        print("="*70)
+        print(f"Наивная загрузка:")
+        print(f"  Общее время: {total_naive:.4f}s")
+        print(f"  Среднее на батч: {avg_naive:.4f}s")
+        print(f"\nОптимизированная загрузка:")
+        print(f"  Общее время: {total_opt:.4f}s")
+        print(f"  Среднее на батч: {avg_opt:.4f}s")
+        print(f"\n🚀 Ускорение: {speedup:.2f}x ({(speedup-1)*100:.1f}% быстрее)")
 
-def train_with_profiling(device, epochs=50):
-    """Обучение с профилированием"""
-    # Гиперпараметры
-    input_size = 1000
-    hidden_size = 500
-    output_size = 10
-    batch_size = 128
-    
-    # Создание модели
-    model = SimpleMLP(input_size, hidden_size, output_size).to(device)
-    criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-    
-    # Синтетические данные
-    X = torch.randn(1000, input_size).to(device)
-    y = torch.randint(0, output_size, (1000,)).to(device)
-    
-    # Профилирование
-    forward_times = []
-    backward_times = []
-    optimizer_times = []
-    total_times = []
-    
-    print(f"\nОбучение на {device}...")
-    
-    for epoch in range(epochs):
-        epoch_start = time.time()
-        
-        # Выбираем батч
-        indices = torch.randperm(X.size(0))[:batch_size]
-        X_batch = X[indices]
-        y_batch = y[indices]
-        
-        # Forward pass
-        if device == 'cuda':
-            torch.cuda.synchronize()
-        forward_start = time.time()
-        
-        outputs = model(X_batch)
-        loss = criterion(outputs, y_batch)
-        
-        if device == 'cuda':
-            torch.cuda.synchronize()
-        forward_time = time.time() - forward_start
-        
-        # Backward pass
-        if device == 'cuda':
-            torch.cuda.synchronize()
-        backward_start = time.time()
-        
-        optimizer.zero_grad()
-        loss.backward()
-        
-        if device == 'cuda':
-            torch.cuda.synchronize()
-        backward_time = time.time() - backward_start
-        
-        # Optimizer step
-        if device == 'cuda':
-            torch.cuda.synchronize()
-        optimizer_start = time.time()
-        
-        optimizer.step()
-        
-        if device == 'cuda':
-            torch.cuda.synchronize()
-        optimizer_time = time.time() - optimizer_start
-        
-        epoch_time = time.time() - epoch_start
-        
-        # Сохраняем времена
-        forward_times.append(forward_time)
-        backward_times.append(backward_time)
-        optimizer_times.append(optimizer_time)
-        total_times.append(epoch_time)
-        
-        if (epoch + 1) % 10 == 0:
-            print(f"Epoch {epoch+1}/{epochs}, Loss: {loss.item():.4f}, "
-                  f"Time: {epoch_time:.4f}s")
-    
-    return {
-        'forward': forward_times,
-        'backward': backward_times,
-        'optimizer': optimizer_times,
-        'total': total_times
-    }
-
-# Обучение на CPU
-print("=" * 60)
-cpu_times = train_with_profiling('cpu', epochs=50)
-
-# Обучение на GPU (если доступен)
+# Тестирование
 if torch.cuda.is_available():
-    print("=" * 60)
-    gpu_times = train_with_profiling('cuda', epochs=50)
+    print("="*70)
+    print("Демонстрация оптимизации загрузки данных")
+    print("="*70)
     
-    # Визуализация
-    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+    # Создаем пайплайн и модель
+    pipeline = OptimizedDataPipeline(dataset_size=1000, batch_size=32, input_size=100)
     
-    # График 1: Сравнение общего времени
-    axes[0, 0].plot(cpu_times['total'], label='CPU', alpha=0.7)
-    axes[0, 0].plot(gpu_times['total'], label='GPU', alpha=0.7)
-    axes[0, 0].set_xlabel('Эпоха')
-    axes[0, 0].set_ylabel('Время (с)')
-    axes[0, 0].set_title('Общее время на эпоху')
-    axes[0, 0].legend()
-    axes[0, 0].grid(True)
+    model = nn.Sequential(
+        nn.Linear(100, 256),
+        nn.ReLU(),
+        nn.Linear(256, 128),
+        nn.ReLU(),
+        nn.Linear(128, 10)
+    )
     
-    # График 2: Разбивка времени для CPU
-    epochs = list(range(1, 51))
-    axes[0, 1].stackplot(epochs, 
-                         cpu_times['forward'],
-                         cpu_times['backward'],
-                         cpu_times['optimizer'],
-                         labels=['Forward', 'Backward', 'Optimizer'],
-                         alpha=0.7)
-    axes[0, 1].set_xlabel('Эпоха')
-    axes[0, 1].set_ylabel('Время (с)')
-    axes[0, 1].set_title('Разбивка времени - CPU')
-    axes[0, 1].legend(loc='upper right')
-    axes[0, 1].grid(True)
+    # Запускаем бенчмарк
+    results = pipeline.benchmark(model, num_batches=20)
     
-    # График 3: Разбивка времени для GPU
-    axes[1, 0].stackplot(epochs,
-                         gpu_times['forward'],
-                         gpu_times['backward'],
-                         gpu_times['optimizer'],
-                         labels=['Forward', 'Backward', 'Optimizer'],
-                         alpha=0.7)
-    axes[1, 0].set_xlabel('Эпоха')
-    axes[1, 0].set_ylabel('Время (с)')
-    axes[1, 0].set_title('Разбивка времени - GPU')
-    axes[1, 0].legend(loc='upper right')
-    axes[1, 0].grid(True)
+    # Визуализируем результаты
+    pipeline.visualize_results(results)
     
-    # График 4: Ускорение
-    speedup = [c/g for c, g in zip(cpu_times['total'], gpu_times['total'])]
-    axes[1, 1].plot(speedup, color='green', linewidth=2)
-    axes[1, 1].axhline(y=1, color='r', linestyle='--', label='Без ускорения')
-    axes[1, 1].set_xlabel('Эпоха')
-    axes[1, 1].set_ylabel('Ускорение (раз)')
-    axes[1, 1].set_title('Ускорение GPU относительно CPU')
-    axes[1, 1].legend()
-    axes[1, 1].grid(True)
-    
-    plt.tight_layout()
-    plt.savefig('training_profiling.png', dpi=100)
-    print("\nГрафик сохранен в 'training_profiling.png'")
-    
-    # Статистика
-    avg_cpu = sum(cpu_times['total']) / len(cpu_times['total'])
-    avg_gpu = sum(gpu_times['total']) / len(gpu_times['total'])
-    avg_speedup = avg_cpu / avg_gpu
-    
-    print(f"\n{'='*60}")
-    print("Итоговая статистика:")
-    print(f"{'='*60}")
-    print(f"Среднее время CPU: {avg_cpu:.4f}s")
-    print(f"Среднее время GPU: {avg_gpu:.4f}s")
-    print(f"Среднее ускорение: {avg_speedup:.2f}x")
+    print("\n" + "="*70)
+    print("💡 Ключевые оптимизации:")
+    print("="*70)
+    print("1. Pinned memory - быстрый перенос CPU→GPU")
+    print("2. Non-blocking transfer - асинхронный перенос данных")
+    print("3. Параллельное выполнение CPU и GPU операций")
+    print("4. Минимизация синхронизации между CPU и GPU")
+    print("\n💡 В реальных задачах также важны:")
+    print("- Использование DataLoader с num_workers > 0")
+    print("- Предзагрузка следующего батча (prefetching)")
+    print("- Кэширование предобработанных данных")
 else:
-    print("\nGPU недоступен. Используйте Google Colab с GPU runtime.")
+    print("⚠️  GPU недоступен. Запустите в Google Colab с GPU.")
 ```
 </details>
 
@@ -1515,178 +1590,289 @@ else:
 
 ---
 
-### **Задача 9: Отладка и оптимизация GPU-кода**
-Найдите и исправьте проблемы в следующем коде:
+### **Задача 9: Диагностика и исправление проблем производительности**
+У вас есть код обучения нейросети, который работает, но очень медленно на GPU (медленнее, чем ожидалось). Проведите профилирование и исправьте узкие места.
 
 ```python
 import torch
+import torch.nn as nn
 
-def train_model_buggy():
-    model = torch.nn.Linear(100, 10).cuda()
+def slow_training():
+    model = nn.Sequential(
+        nn.Linear(1000, 500),
+        nn.ReLU(),
+        nn.Linear(500, 100),
+        nn.ReLU(),
+        nn.Linear(100, 10)
+    ).cuda()
+    
     optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
     
-    losses = []
-    for epoch in range(100):
-        x = torch.randn(32, 100)  # Данные на CPU!
-        y = torch.randint(0, 10, (32,)).cuda()
-        
-        output = model(x)
-        loss = torch.nn.functional.cross_entropy(output, y)
-        
-        loss.backward()
-        optimizer.step()
-        
-        losses.append(loss)  # Утечка памяти!
-    
-    return losses
+    for epoch in range(50):
+        for batch in range(100):
+            # Создаем данные на каждой итерации
+            x = torch.randn(8, 1000).cuda()
+            y = torch.randint(0, 10, (8,)).cuda()
+            
+            output = model(x)
+            loss = nn.functional.cross_entropy(output, y)
+            
+            # Переносим loss на CPU для логирования
+            print(f"Epoch {epoch}, Batch {batch}: Loss = {loss.cpu().item()}")
+            
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            
+            # "Очищаем" память после каждого батча
+            torch.cuda.empty_cache()
 ```
 
-Найдите и исправьте:
-1. Несоответствие устройств
-2. Утечку памяти
-3. Отсутствие `zero_grad()`
-4. Добавьте профилирование времени
+**Задачи:**
+1. Найдите как минимум 5 проблем производительности в коде
+2. Объясните, почему каждая проблема замедляет работу
+3. Создайте оптимизированную версию кода
+4. Измерьте и сравните производительность (исходная vs оптимизированная)
+5. Постройте график сравнения
+
+**Подсказки для поиска:**
+- Перенос данных CPU↔GPU
+- Размер батча
+- Создание данных
+- Синхронизация
+- Ненужные операции
 
 <details>
 <summary>Решение</summary>
 
 ```python
 import torch
+import torch.nn as nn
 import time
-
-def train_model_buggy():
-    """ИСХОДНАЯ ВЕРСИЯ С ОШИБКАМИ"""
-    model = torch.nn.Linear(100, 10).cuda()
-    optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
-    
-    losses = []
-    for epoch in range(100):
-        x = torch.randn(32, 100)  # ❌ Данные на CPU!
-        y = torch.randint(0, 10, (32,)).cuda()
-        
-        output = model(x)  # ❌ RuntimeError: expected input and model on same device
-        loss = torch.nn.functional.cross_entropy(output, y)
-        
-        loss.backward()
-        optimizer.step()  # ❌ Нет zero_grad(), градиенты накапливаются!
-        
-        losses.append(loss)  # ❌ Утечка памяти! Сохраняем тензор с графом
-    
-    return losses
-
-def train_model_fixed():
-    """ИСПРАВЛЕННАЯ ВЕРСИЯ"""
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    
-    # ✅ Модель на GPU
-    model = torch.nn.Linear(100, 10).to(device)
-    optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
-    
-    losses = []
-    epoch_times = []
-    
-    print(f"Обучение на {device}")
-    print("-" * 60)
-    
-    for epoch in range(100):
-        start_time = time.time()
-        
-        # ✅ Данные на том же устройстве, что и модель
-        x = torch.randn(32, 100, device=device)
-        y = torch.randint(0, 10, (32,), device=device)
-        
-        # Forward pass
-        output = model(x)
-        loss = torch.nn.functional.cross_entropy(output, y)
-        
-        # ✅ Обнуление градиентов
-        optimizer.zero_grad()
-        
-        # Backward pass
-        loss.backward()
-        
-        # Update weights
-        optimizer.step()
-        
-        # ✅ Сохраняем только значение (без графа)
-        losses.append(loss.item())
-        
-        # Измерение времени
-        if device == 'cuda':
-            torch.cuda.synchronize()
-        epoch_time = time.time() - start_time
-        epoch_times.append(epoch_time)
-        
-        if (epoch + 1) % 20 == 0:
-            print(f"Epoch {epoch+1}/100: Loss={loss.item():.4f}, Time={epoch_time:.4f}s")
-    
-    return losses, epoch_times
-
-# Демонстрация ошибки
-print("=" * 60)
-print("1. ПОПЫТКА ЗАПУСКА БАГОВАННОГО КОДА")
-print("=" * 60)
-try:
-    train_model_buggy()
-    print("Код выполнился (но с утечкой памяти)")
-except RuntimeError as e:
-    print(f"❌ Ошибка: {str(e)[:80]}...")
-    print("   Причина: данные на CPU, модель на GPU")
-
-# Исправленная версия
-print("\n" + "=" * 60)
-print("2. ИСПРАВЛЕННЫЙ КОД")
-print("=" * 60)
-losses, times = train_model_fixed()
-
-# Статистика
-print("\n" + "=" * 60)
-print("СТАТИСТИКА")
-print("=" * 60)
-print(f"Финальная функция потерь: {losses[-1]:.4f}")
-print(f"Среднее время на эпоху: {sum(times)/len(times):.4f}s")
-print(f"Общее время обучения: {sum(times):.2f}s")
-
-if torch.cuda.is_available():
-    allocated = torch.cuda.memory_allocated() / 1e6
-    print(f"Использовано памяти GPU: {allocated:.2f} MB")
-
-# Визуализация
 import matplotlib.pyplot as plt
 
-plt.figure(figsize=(12, 4))
+# ИСХОДНАЯ ВЕРСИЯ (МЕДЛЕННАЯ)
+def slow_training():
+    """
+    Медленная версия обучения с множеством проблем производительности
+    """
+    model = nn.Sequential(
+        nn.Linear(1000, 500),
+        nn.ReLU(),
+        nn.Linear(500, 100),
+        nn.ReLU(),
+        nn.Linear(100, 10)
+    ).cuda()
+    
+    optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
+    
+    start_time = time.time()
+    
+    for epoch in range(5):  # сократили для быстрого теста
+        for batch in range(100):
+            # ПРОБЛЕМА 1: Создаем данные на каждой итерации (медленно!)
+            x = torch.randn(8, 1000).cuda()
+            y = torch.randint(0, 10, (8,)).cuda()
+            
+            output = model(x)
+            loss = nn.functional.cross_entropy(output, y)
+            
+            # ПРОБЛЕМА 2: Перенос loss на CPU для каждого print (синхронизация!)
+            # ПРОБЛЕМА 3: print на каждой итерации (IO операция!)
+            if batch % 20 == 0:
+                print(f"Epoch {epoch}, Batch {batch}: Loss = {loss.cpu().item()}")
+            
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            
+            # ПРОБЛЕМА 4: Ненужный вызов empty_cache после каждого батча!
+            torch.cuda.empty_cache()
+    
+    torch.cuda.synchronize()
+    total_time = time.time() - start_time
+    
+    return total_time
 
-plt.subplot(1, 2, 1)
-plt.plot(losses)
-plt.xlabel('Эпоха')
-plt.ylabel('Loss')
-plt.title('Кривая обучения')
-plt.grid(True)
+# ОПТИМИЗИРОВАННАЯ ВЕРСИЯ
+def optimized_training():
+    """
+    Оптимизированная версия обучения
+    """
+    model = nn.Sequential(
+        nn.Linear(1000, 500),
+        nn.ReLU(),
+        nn.Linear(500, 100),
+        nn.ReLU(),
+        nn.Linear(100, 10)
+    ).cuda()
+    
+    optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
+    
+    # ОПТИМИЗАЦИЯ 1: Создаем данные один раз и переиспользуем
+    # ОПТИМИЗАЦИЯ 2: Увеличиваем batch_size для лучшей утилизации GPU
+    batch_size = 64  # было 8!
+    num_batches = 100
+    
+    # Генерируем весь датасет заранее
+    all_data = torch.randn(num_batches, batch_size, 1000, device='cuda')
+    all_labels = torch.randint(0, 10, (num_batches, batch_size), device='cuda')
+    
+    start_time = time.time()
+    losses = []
+    
+    for epoch in range(5):
+        epoch_losses = []
+        for batch_idx in range(num_batches):
+            x = all_data[batch_idx]
+            y = all_labels[batch_idx]
+            
+            output = model(x)
+            loss = nn.functional.cross_entropy(output, y)
+            
+            # ОПТИМИЗАЦИЯ 3: Сохраняем loss.item() вместо переноса каждый раз
+            epoch_losses.append(loss.item())
+            
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+        
+        # ОПТИМИЗАЦИЯ 4: Логируем только среднее за эпоху (меньше IO)
+        avg_loss = sum(epoch_losses) / len(epoch_losses)
+        losses.append(avg_loss)
+        print(f"Epoch {epoch}: Avg Loss = {avg_loss:.4f}")
+    
+    # ОПТИМИЗАЦИЯ 5: Убрали ненужный empty_cache()
+    
+    torch.cuda.synchronize()
+    total_time = time.time() - start_time
+    
+    return total_time, losses
 
-plt.subplot(1, 2, 2)
-plt.plot(times)
-plt.xlabel('Эпоха')
-plt.ylabel('Время (с)')
-plt.title('Время на эпоху')
-plt.grid(True)
+# Анализ проблем производительности
+print("="*70)
+print("АНАЛИЗ ПРОБЛЕМ ПРОИЗВОДИТЕЛЬНОСТИ")
+print("="*70)
 
-plt.tight_layout()
-plt.savefig('debug_training.png', dpi=100)
-print("\nГрафик сохранен в 'debug_training.png'")
+print("\n🔍 Выявленные проблемы в исходном коде:\n")
+
+problems = [
+    ("1. Маленький batch_size (8)", 
+     "GPU не утилизируется полностью - мало параллелизма",
+     "Увеличить до 32-128 для лучшей утилизации GPU"),
+    
+    ("2. Создание данных на каждой итерации",
+     "torch.randn() и перенос на GPU - дополнительные накладные расходы",
+     "Создать данные заранее и переиспользовать"),
+    
+    ("3. Частый перенос данных GPU→CPU для логирования",
+     "loss.cpu() вызывает синхронизацию и блокирует GPU",
+     "Использовать .item() и логировать реже"),
+    
+    ("4. print() на каждом батче",
+     "IO операции блокируют выполнение",
+     "Логировать только сводку за эпоху"),
+    
+    ("5. Ненужный torch.cuda.empty_cache()",
+     "Вызов после каждого батча замедляет работу",
+     "Вызывать только при реальной нехватке памяти"),
+]
+
+for i, (problem, why, fix) in enumerate(problems, 1):
+    print(f"{problem}")
+    print(f"   ❌ Почему медленно: {why}")
+    print(f"   ✅ Исправление: {fix}\n")
+
+# Сравнение производительности
+if torch.cuda.is_available():
+    print("="*70)
+    print("СРАВНЕНИЕ ПРОИЗВОДИТЕЛЬНОСТИ")
+    print("="*70)
+    
+    print("\n🐌 Запуск медленной версии...")
+    slow_time = slow_training()
+    print(f"   Время выполнения: {slow_time:.2f}s")
+    
+    print("\n🚀 Запуск оптимизированной версии...")
+    opt_time, losses = optimized_training()
+    print(f"   Время выполнения: {opt_time:.2f}s")
+    
+    speedup = slow_time / opt_time
+    
+    print("\n" + "="*70)
+    print("РЕЗУЛЬТАТЫ")
+    print("="*70)
+    print(f"Исходная версия:        {slow_time:.2f}s")
+    print(f"Оптимизированная:       {opt_time:.2f}s")
+    print(f"Ускорение:              {speedup:.2f}x")
+    print(f"Экономия времени:       {(1 - opt_time/slow_time)*100:.1f}%")
+    
+    # Визуализация
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+    
+    # График 1: Сравнение времени
+    ax = axes[0]
+    ax.bar(['Медленная\n(batch=8)', 'Оптимизированная\n(batch=64)'], 
+           [slow_time, opt_time], 
+           color=['red', 'green'], 
+           alpha=0.7)
+    ax.set_ylabel('Время (секунды)')
+    ax.set_title(f'Сравнение производительности\n(Ускорение: {speedup:.2f}x)')
+    ax.grid(True, alpha=0.3, axis='y')
+    
+    # Добавляем значения на столбцы
+    for i, v in enumerate([slow_time, opt_time]):
+        ax.text(i, v + 0.5, f'{v:.2f}s', ha='center', va='bottom', fontweight='bold')
+    
+    # График 2: Кривая обучения оптимизированной версии
+    ax = axes[1]
+    ax.plot(range(len(losses)), losses, 'go-', linewidth=2, markersize=8)
+    ax.set_xlabel('Эпоха')
+    ax.set_ylabel('Средний Loss')
+    ax.set_title('Кривая обучения (оптимизированная версия)')
+    ax.grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    plt.savefig('performance_optimization.png', dpi=100)
+    print("\n📊 График сохранен в 'performance_optimization.png'")
+    
+    # Дополнительные метрики
+    print("\n" + "="*70)
+    print("ДОПОЛНИТЕЛЬНАЯ СТАТИСТИКА")
+    print("="*70)
+    
+    # Throughput (samples per second)
+    slow_throughput = (5 * 100 * 8) / slow_time
+    opt_throughput = (5 * 100 * 64) / opt_time
+    
+    print(f"Пропускная способность:")
+    print(f"  Медленная:            {slow_throughput:.0f} samples/s")
+    print(f"  Оптимизированная:     {opt_throughput:.0f} samples/s")
+    print(f"  Улучшение:            {opt_throughput/slow_throughput:.2f}x")
+    
+    print("\n💡 Ключевые выводы:")
+    print("   1. Размер батча критичен для утилизации GPU")
+    print("   2. Минимизируйте переносы CPU↔GPU")
+    print("   3. Избегайте синхронизации и IO в горячем цикле")
+    print("   4. empty_cache() нужен только при OOM, не вызывайте постоянно")
+    print("   5. Создавайте данные заранее, если возможно")
+    
+else:
+    print("⚠️  GPU недоступен. Запустите в Google Colab с GPU.")
 ```
 
-**Объяснение исправлений:**
+**Объяснение проблем и решений:**
 
-1. **Несоответствие устройств**: Данные `x` создавались на CPU, а модель была на GPU
-   - Исправление: `.to(device)` для данных
+1. **Маленький batch_size**: 8 образцов недостаточно для загрузки GPU. Увеличение до 64 улучшает параллелизм.
 
-2. **Утечка памяти**: Сохранение тензора `loss` с вычислительным графом
-   - Исправление: Используем `.item()` для извлечения только числа
+2. **Создание данных в цикле**: Каждый `torch.randn().cuda()` - это overhead. Лучше создать заранее.
 
-3. **Отсутствие `zero_grad()`**: Градиенты накапливались между итерациями
-   - Исправление: Добавлен `optimizer.zero_grad()` перед `backward()`
+3. **Перенос на CPU для логирования**: `loss.cpu()` блокирует GPU. Используйте `.item()` и логируйте реже.
 
-4. **Профилирование**: Добавлено измерение времени с `torch.cuda.synchronize()`
+4. **Частый print()**: IO операции замедляют работу. Логируйте только сводку.
+
+5. **Ненужный empty_cache()**: Вызов после каждого батча замедляет работу без пользы.
+
 </details>
 
 ---

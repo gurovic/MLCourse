@@ -9,8 +9,17 @@ print(f"PyTorch версия: {torch.__version__}")
 print(f"CUDA доступна: {torch.cuda.is_available()}")
 if torch.cuda.is_available():
     print(f"CUDA версия: {torch.version.cuda}")
+    print(f"Название GPU: {torch.cuda.get_device_name(0)}")
 # Если GPU недоступен, используйте Google Colab с GPU runtime
 ```
+
+## **⚠️ Важные правила работы с GPU**
+
+1. **Всегда проверяйте доступность GPU** перед использованием `cuda`
+2. **Синхронизируйте GPU** при измерении времени: `torch.cuda.synchronize()`
+3. **Используйте `.item()`** для извлечения скалярных значений (избегайте утечек памяти)
+4. **Переносите модель и данные** на одно устройство
+5. **Очищайте память** при работе с большими моделями: `del tensor; torch.cuda.empty_cache()`
 
 ---
 
@@ -170,7 +179,10 @@ print(f"\nСреднее значение после ReLU: {mean_val.item():.4f}
 3. Постройте график зависимости времени от размера
 4. Вычислите ускорение (speedup) для каждого размера
 
-**Важно:** Не забывайте использовать `torch.cuda.synchronize()` для GPU!
+**Важно:** 
+- Не забывайте использовать `torch.cuda.synchronize()` для GPU!
+- Используйте прогрев (warmup) - первые запуски могут быть медленнее
+- Для маленьких матриц GPU может быть медленнее из-за overhead на перенос данных
 
 <details>
 <summary>Решение</summary>
@@ -181,16 +193,23 @@ import time
 import matplotlib.pyplot as plt
 
 def benchmark_matmul(device, size, iterations=10):
-    """Бенчмарк матричного умножения"""
-    # Создание тензоров
+    """
+    Бенчмарк матричного умножения
+    
+    Args:
+        device: 'cpu' или 'cuda'
+        size: размер квадратной матрицы
+        iterations: количество повторений для усреднения
+    """
+    # Создание тензоров на выбранном устройстве
     A = torch.randn(size, size, device=device)
     B = torch.randn(size, size, device=device)
     
-    # Прогрев (для GPU)
+    # Прогрев (warmup) - первые запуски медленнее из-за инициализации
     for _ in range(3):
         _ = A @ B
     
-    # Синхронизация для GPU
+    # Синхронизация для GPU (операции на GPU асинхронные!)
     if device == 'cuda':
         torch.cuda.synchronize()
     
@@ -199,6 +218,7 @@ def benchmark_matmul(device, size, iterations=10):
     for _ in range(iterations):
         C = A @ B
     
+    # Обязательная синхронизация перед замером конечного времени
     if device == 'cuda':
         torch.cuda.synchronize()
     
@@ -213,6 +233,8 @@ speedups = []
 
 print("Бенчмаркинг матричного умножения...")
 print("-" * 60)
+print("💡 Заметка: для маленьких матриц GPU может быть медленнее")
+print("   из-за overhead на перенос данных\n")
 
 for size in sizes:
     # CPU
@@ -955,11 +977,16 @@ print("\nГрафик сохранен в 'debug_training.png'")
 Реализуйте обучение с использованием автоматического смешанного точности (AMP).
 
 1. Создайте простую нейронную сеть для классификации
-2. Реализуйте обычное обучение
-3. Реализуйте обучение с Mixed Precision (torch.cuda.amp)
+2. Реализуйте обычное обучение (FP32)
+3. Реализуйте обучение с Mixed Precision (FP16 + FP32)
 4. Сравните скорость и использование памяти
 
-**Требуется:** PyTorch 1.6+ и GPU с Compute Capability >= 7.0 (Volta или новее)
+**Что такое Mixed Precision?**
+- Использует FP16 (16-bit) для большинства операций → быстрее и меньше памяти
+- Использует FP32 (32-bit) для критичных операций → сохраняет точность
+- GradScaler предотвращает underflow градиентов в FP16
+
+**Требуется:** PyTorch 1.6+ и GPU с Compute Capability >= 7.0 (Volta или новее, например T4, V100, A100)
 
 <details>
 <summary>Решение</summary>
@@ -1020,10 +1047,12 @@ else:
         return elapsed, peak_memory
     
     def train_mixed_precision(epochs=20):
-        """Обучение с Mixed Precision (FP16)"""
+        """Обучение с Mixed Precision (FP16 + FP32)"""
         model = SimpleNet().cuda()
         optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
         criterion = nn.CrossEntropyLoss()
+        
+        # GradScaler масштабирует градиенты для предотвращения underflow в FP16
         scaler = GradScaler()
         
         torch.cuda.reset_peak_memory_stats()
@@ -1032,14 +1061,18 @@ else:
         for epoch in range(epochs):
             optimizer.zero_grad()
             
-            # Автоматическое использование FP16
+            # autocast() автоматически выбирает FP16 или FP32 для каждой операции
             with autocast():
                 outputs = model(x)
                 loss = criterion(outputs, y)
             
-            # Масштабирование и обратное распространение
+            # Масштабирование градиентов (умножение на большое число)
             scaler.scale(loss).backward()
+            
+            # Демасштабирование и обновление весов
             scaler.step(optimizer)
+            
+            # Обновление масштабирующего фактора для следующей итерации
             scaler.update()
         
         torch.cuda.synchronize()
@@ -1082,6 +1115,12 @@ else:
 ### **Задача 11: Pinned Memory для ускорения**
 Продемонстрируйте разницу между обычным и pinned memory при переносе данных на GPU.
 
+**Что такое Pinned Memory?**
+- Обычная память может быть перемещена ОС (pageable memory)
+- Pinned (page-locked) память зафиксирована и не может быть перемещена
+- Перенос pinned памяти на GPU быстрее, т.к. нет копирования в промежуточный буфер
+- Используйте с `non_blocking=True` для асинхронного переноса
+
 <details>
 <summary>Решение</summary>
 
@@ -1095,11 +1134,15 @@ else:
     size = 10000
     iterations = 100
     
-    # Обычная память
+    # Обычная память (pageable) - может быть перемещена ОС
     tensor_regular = torch.randn(size, size)
     
-    # Pinned память
+    # Pinned память (page-locked) - зафиксирована в RAM
     tensor_pinned = torch.randn(size, size).pin_memory()
+    
+    print("💡 Pinned memory ускоряет перенос CPU → GPU")
+    print(f"Размер тензора: {size}x{size}")
+    print(f"Итераций: {iterations}\n")
     
     # Бенчмарк для обычной памяти
     start = time.time()
@@ -1108,20 +1151,176 @@ else:
     torch.cuda.synchronize()
     time_regular = time.time() - start
     
-    # Бенчмарк для pinned памяти
+    # Бенчмарк для pinned памяти с асинхронным переносом
     start = time.time()
     for _ in range(iterations):
         _ = tensor_pinned.to('cuda', non_blocking=True)
     torch.cuda.synchronize()
     time_pinned = time.time() - start
     
-    print(f"Размер тензора: {size}x{size}")
-    print(f"Итераций: {iterations}")
-    print(f"\nОбычная память: {time_regular:.4f}s")
-    print(f"Pinned память: {time_pinned:.4f}s")
+    print(f"Обычная память: {time_regular:.4f}s")
+    print(f"Pinned память:  {time_pinned:.4f}s")
     print(f"Ускорение: {time_regular/time_pinned:.2f}x")
+    
+    print("\n💡 Используйте pinned memory для:")
+    print("   - DataLoader с pin_memory=True")
+    print("   - Частых переносов данных CPU → GPU")
+    print("   ⚠️ Не злоупотребляйте - pinned память ограничена!")
 ```
 </details>
+
+---
+
+## **🔧 Troubleshooting: Частые проблемы и решения**
+
+### **Проблема 1: RuntimeError: Expected all tensors to be on the same device**
+```python
+# ❌ Ошибка
+model = MyModel().cuda()
+data = torch.randn(10, 5)  # на CPU
+output = model(data)  # RuntimeError!
+```
+**Решение:** Убедитесь, что модель и данные на одном устройстве
+```python
+# ✅ Правильно
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+model = MyModel().to(device)
+data = torch.randn(10, 5).to(device)
+output = model(data)
+```
+
+### **Проблема 2: CUDA out of memory**
+**Причины:**
+- Слишком большой размер батча
+- Утечка памяти (сохранение тензоров с вычислительным графом)
+- Накопление промежуточных результатов
+
+**Решения:**
+```python
+# 1. Уменьшите размер батча
+batch_size = 32  # вместо 128
+
+# 2. Используйте .item() для скалярных значений
+losses = []
+for epoch in range(100):
+    loss = compute_loss()
+    losses.append(loss.item())  # ✅ вместо losses.append(loss)
+
+# 3. Очищайте память
+del large_tensor
+torch.cuda.empty_cache()
+
+# 4. Используйте gradient accumulation для больших батчей
+accumulation_steps = 4
+for i, (data, target) in enumerate(dataloader):
+    output = model(data)
+    loss = criterion(output, target) / accumulation_steps
+    loss.backward()
+    
+    if (i + 1) % accumulation_steps == 0:
+        optimizer.step()
+        optimizer.zero_grad()
+```
+
+### **Проблема 3: Медленная работа с GPU (медленнее CPU)**
+**Причины:**
+- Маленький размер данных (overhead переноса > выигрыш от GPU)
+- Частые переносы CPU ↔ GPU
+- Не используется `torch.cuda.synchronize()` при измерении времени
+
+**Решения:**
+```python
+# 1. Увеличьте размер данных/батчей
+# 2. Минимизируйте переносы между устройствами
+# 3. Правильно измеряйте время:
+torch.cuda.synchronize()  # перед началом
+start = time.time()
+# ... ваш код ...
+torch.cuda.synchronize()  # перед замером
+elapsed = time.time() - start
+```
+
+### **Проблема 4: Забыли обнулить градиенты**
+```python
+# ❌ Ошибка - градиенты накапливаются
+for epoch in range(100):
+    output = model(x)
+    loss = criterion(output, y)
+    loss.backward()
+    optimizer.step()  # Градиенты накапливаются!
+```
+**Решение:**
+```python
+# ✅ Правильно
+for epoch in range(100):
+    optimizer.zero_grad()  # Обнуляем перед backward
+    output = model(x)
+    loss = criterion(output, y)
+    loss.backward()
+    optimizer.step()
+```
+
+### **Проблема 5: Утечка памяти при сохранении loss**
+```python
+# ❌ Ошибка - сохраняем тензор с вычислительным графом
+losses = []
+for epoch in range(1000):
+    loss = compute_loss()
+    losses.append(loss)  # Утечка памяти!
+```
+**Решение:**
+```python
+# ✅ Правильно - сохраняем только значение
+losses = []
+for epoch in range(1000):
+    loss = compute_loss()
+    losses.append(loss.item())  # Сохраняем Python float
+    # или
+    losses.append(loss.detach().cpu())  # Если нужен тензор без графа
+```
+
+### **Проблема 6: Нет ускорения от GPU**
+**Чек-лист проверки:**
+```python
+# 1. Проверьте, что модель на GPU
+print(f"Модель на GPU: {next(model.parameters()).is_cuda}")
+
+# 2. Проверьте, что данные на GPU
+print(f"Данные на GPU: {x.is_cuda}")
+
+# 3. Проверьте размер данных (для маленьких данных GPU медленнее)
+print(f"Размер данных: {x.shape}")
+
+# 4. Используйте подходящий batch size (32-256 обычно оптимально)
+# 5. Убедитесь, что используете GPU-оптимизированные операции
+```
+
+### **💡 Советы по оптимизации**
+
+1. **Используйте Mixed Precision** (на GPU с Compute Capability >= 7.0):
+```python
+from torch.cuda.amp import autocast, GradScaler
+
+scaler = GradScaler()
+for data, target in dataloader:
+    optimizer.zero_grad()
+    with autocast():  # Автоматическое использование FP16
+        output = model(data)
+        loss = criterion(output, target)
+    scaler.scale(loss).backward()
+    scaler.step(optimizer)
+    scaler.update()
+```
+
+2. **Включите cuDNN autotuner** для фиксированных размеров входа:
+```python
+torch.backends.cudnn.benchmark = True
+```
+
+3. **Используйте DataLoader с num_workers** для асинхронной загрузки:
+```python
+dataloader = DataLoader(dataset, batch_size=64, num_workers=4, pin_memory=True)
+```
 
 ---
 

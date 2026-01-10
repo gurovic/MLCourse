@@ -233,7 +233,7 @@ X = np.column_stack([x1, x2])
 **Условие:** Проведите сравнительный анализ MLP и классических методов ML на табличных данных.
 
 **Требования:**
-1. Используйте датасет Wine Quality или Breast Cancer Wisconsin
+1. Используйте датасет Wine Quality (из sklearn или Kaggle) или Breast Cancer Wisconsin (из `sklearn.datasets.load_breast_cancer`)
 2. Обучите следующие модели:
    - Логистическая регрессия (с полиномиальными признаками степени 2)
    - Random Forest

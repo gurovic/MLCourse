@@ -38,14 +38,15 @@
 **Преимущества:**
 - ✅ Интуитивный Python-подобный синтаксис
 - ✅ Динамический граф (Define-by-Run) — удобная отладка
-- ✅ Доминирование в исследовательском сообществе (90%+ статей на конференциях)
+- ✅ Доминирование в исследовательском сообществе (85-90% статей на конференциях)
 - ✅ Отличная интеграция с NumPy
 - ✅ TorchScript для оптимизации и развертывания
+- ✅ Активное сообщество и быстрое внедрение новых идей
 
 **Недостатки:**
-- ❌ Меньше готовых решений для production (но улучшается)
+- ❌ Меньше готовых решений для промышленного развертывания
 - ❌ Менее зрелая мобильная поддержка по сравнению с TF Lite
-- ❌ Исторически более высокое потребление памяти
+- ❌ Требует больше кода для production-ready решений
 
 ### Пример кода: Простая нейросеть
 
@@ -55,7 +56,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 
-# Генерация данных
+# Генерация синтетических данных для классификации
 X = torch.randn(1000, 20)
 y = (X.sum(dim=1) > 0).long()
 
@@ -81,14 +82,23 @@ dataset = TensorDataset(X, y)
 loader = DataLoader(dataset, batch_size=32, shuffle=True)
 
 for epoch in range(10):
+    total_loss = 0
     for batch_X, batch_y in loader:
         optimizer.zero_grad()
         outputs = model(batch_X)
         loss = criterion(outputs, batch_y)
         loss.backward()
         optimizer.step()
-    print(f"Epoch {epoch+1}, Loss: {loss.item():.4f}")
+        total_loss += loss.item()
+    print(f"Epoch {epoch+1}, Avg Loss: {total_loss/len(loader):.4f}")
 ```
+
+**Ключевые особенности кода:**
+- `nn.Module` — базовый класс для всех моделей
+- `forward()` — определяет прямой проход (forward pass)
+- `optimizer.zero_grad()` — обязательное обнуление градиентов
+- `loss.backward()` — автоматическое вычисление градиентов
+- `optimizer.step()` — обновление весов
 
 ### Экосистема PyTorch
 
@@ -132,7 +142,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 import numpy as np
 
-# Генерация данных
+# Генерация синтетических данных
 X = np.random.randn(1000, 20).astype(np.float32)
 y = (X.sum(axis=1) > 0).astype(np.int32)
 
@@ -150,9 +160,15 @@ model.compile(
 )
 
 # Обучение
-history = model.fit(X, y, epochs=10, batch_size=32, validation_split=0.2, verbose=0)
+history = model.fit(X, y, epochs=10, batch_size=32, validation_split=0.2, verbose=1)
 print(f"Финальная точность: {history.history['accuracy'][-1]:.4f}")
 ```
+
+**Отличия от PyTorch:**
+- Более высокоуровневый API — меньше кода
+- `compile()` — явное указание оптимизатора и функции потерь
+- `fit()` — единая функция для обучения (в PyTorch нужен цикл)
+- Автоматическая валидация через `validation_split`
 
 ### Functional API: Более сложные архитектуры
 
@@ -244,10 +260,29 @@ grad_fn = jax.grad(loss_fn)
 optimizer = optax.adam(0.001)
 opt_state = optimizer.init(params)
 
-# Шаг обучения
+# Шаг обучения (JIT-компилируется для скорости)
 @jax.jit
 def train_step(params, opt_state, X, y):
     grads = grad_fn(params, X, y)
+    updates, opt_state = optimizer.update(grads, opt_state)
+    params = optax.apply_updates(params, updates)
+    return params, opt_state
+
+# Обучение
+X = jax.random.normal(key, (1000, 20))
+y = (X.sum(axis=1) > 0).astype(jnp.int32)
+
+for epoch in range(10):
+    params, opt_state = train_step(params, opt_state, X, y)
+    loss = loss_fn(params, X, y)
+    print(f"Epoch {epoch+1}, Loss: {loss:.4f}")
+```
+
+**Особенности JAX:**
+- Функциональный стиль — параметры передаются явно
+- `@jax.jit` — JIT-компиляция для максимальной скорости
+- `jax.grad()` — автоматическое дифференцирование любых функций
+- Требует понимания функционального программирования
     updates, opt_state = optimizer.update(grads, opt_state)
     params = optax.apply_updates(params, updates)
     return params, opt_state
@@ -323,58 +358,69 @@ for epoch in range(10):
 
 **Назначение:** Упрощение кода обучения PyTorch, устранение boilerplate
 
+**Преимущества:**
+- Автоматическое логирование метрик
+- Простое распределенное обучение на нескольких GPU
+- Встроенные callbacks для early stopping, checkpointing
+- Меньше кода — фокус на логике модели, а не на деталях обучения
+- Совместимость с обычным PyTorch кодом
+
+**Пример структуры:**
 ```python
 import pytorch_lightning as pl
 
-class LitModel(pl.LightningModule):
+class MyModel(pl.LightningModule):
     def __init__(self):
         super().__init__()
-        self.layer = nn.Linear(20, 2)
+        # Определение слоев
     
     def forward(self, x):
-        return self.layer(x)
+        # Прямой проход
+        pass
     
     def training_step(self, batch, batch_idx):
-        x, y = batch
-        y_hat = self(x)
-        loss = nn.functional.cross_entropy(y_hat, y)
+        # Логика одного шага обучения
         return loss
     
     def configure_optimizers(self):
-        return torch.optim.Adam(self.parameters(), lr=0.001)
-
-# Обучение в одну строку
-trainer = pl.Trainer(max_epochs=10)
-trainer.fit(model, train_loader)
+        # Настройка оптимизатора
+        return optimizer
 ```
 
-**Преимущества:**
-- Автоматическое логирование
-- Простое распределенное обучение
-- Встроенные callbacks
-- Меньше кода
+Обучение упрощается до одной строки: `trainer.fit(model, train_loader)`
 
 ### Hugging Face Transformers
 
 **Назначение:** Предобученные трансформеры для NLP и CV
 
-```python
-from transformers import AutoModel, AutoTokenizer
+**Концепция:** Hub с тысячами готовых моделей, которые можно использовать для:
+- Классификации текста
+- Генерации текста
+- Перевода
+- Ответов на вопросы
+- Классификации изображений
 
-# Загрузка предобученной модели BERT
-model = AutoModel.from_pretrained("bert-base-uncased")
-tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
-
-# Использование
-text = "Deep learning is amazing!"
-inputs = tokenizer(text, return_tensors="pt")
-outputs = model(**inputs)
-```
+**Основной workflow:**
+1. Выбрать модель на [huggingface.co/models](https://huggingface.co/models)
+2. Загрузить модель и токенайзер через `AutoModel` и `AutoTokenizer`
+3. Fine-tune на своих данных (опционально)
+4. Использовать для предсказаний
 
 **Поддержка:**
 - 200+ архитектур (BERT, GPT, T5, CLIP, ...)
 - 50K+ предобученных моделей
 - Работает с PyTorch и TensorFlow
+- Pipelines для быстрого прототипирования
+
+**Пример использования pipelines:**
+```python
+from transformers import pipeline
+
+# Классификация тональности (sentiment analysis)
+classifier = pipeline("sentiment-analysis")
+result = classifier("I love machine learning!")
+print(result)  # [{'label': 'POSITIVE', 'score': 0.9998}]
+```
 
 ### Fast.ai
 
@@ -415,19 +461,28 @@ learn.fine_tune(5)
 import torch
 import torch.onnx
 
-# Обученная модель
+# Обученная модель (например, наша SimpleNet)
 model = SimpleNet()
+model.eval()  # Переводим в режим инференса
+
+# Создаем пример входных данных
 dummy_input = torch.randn(1, 20)
 
 # Экспорт в ONNX
 torch.onnx.export(
-    model,
-    dummy_input,
-    "model.onnx",
-    input_names=['input'],
-    output_names=['output'],
-    dynamic_axes={'input': {0: 'batch_size'}, 'output': {0: 'batch_size'}}
+    model,                    # модель
+    dummy_input,              # пример входа
+    "model.onnx",            # имя файла
+    export_params=True,       # сохранить веса
+    input_names=['input'],    # имена входов
+    output_names=['output'],  # имена выходов
+    dynamic_axes={            # динамические размерности
+        'input': {0: 'batch_size'}, 
+        'output': {0: 'batch_size'}
+    }
 )
+print("Модель сохранена в model.onnx")
+```
 ```
 
 ### Инференс через ONNX Runtime
@@ -602,11 +657,17 @@ class PyTorchLSTM(nn.Module):
 
 **Выбор фреймворка зависит от ваших целей:**
 
-### Универсальные рекомендации
-1. **Начинающим:** Keras (простой API) или PyTorch (популярен в обучающих материалах)
-2. **Исследователям:** PyTorch (гибкость и сообщество)
-3. **ML-инженерам:** TensorFlow (production-ready)
-4. **Исследователям в области оптимизации:** JAX (производительность)
+### Для школьников и начинающих
+1. **Первый фреймворк:** Начните с **Keras** (простой API) или **PyTorch** (популярен в обучающих материалах)
+2. **Для экспериментов:** PyTorch — легко отлаживать и быстро итерировать
+3. **Для проектов:** TensorFlow/Keras — много готовых решений и туториалов
+
+### Универсальные рекомендации по областям
+1. **Исследователям:** PyTorch (гибкость, динамический граф, активное сообщество)
+2. **ML-инженерам:** TensorFlow (production-ready инструменты, зрелая экосистема)
+3. **Исследователям в области оптимизации:** JAX (максимальная производительность)
+4. **Для NLP:** PyTorch + Hugging Face (лучшие предобученные модели)
+5. **Для мобильных приложений:** TensorFlow Lite (лучшая оптимизация)
 
 ### Популярные комбинации
 - **Исследование:** PyTorch + Hugging Face + Weights & Biases
@@ -614,13 +675,26 @@ class PyTorchLSTM(nn.Module):
 - **Мобильная разработка:** TensorFlow Lite + Core ML (iOS)
 - **Высокая производительность:** JAX + TPU + XLA
 
-### Ключевые советы
-- Не привязывайтесь к одному фреймворку — изучите основы нескольких
-- Используйте ONNX для переноса моделей между фреймворками
-- Следите за трендами, но выбирайте проверенные решения для production
-- Экосистема важнее самого фреймворка (библиотеки, сообщество, документация)
+### Ключевые советы для изучения
+- **Не привязывайтесь к одному фреймворку** — понимание основ позволит легко переключаться
+- **Используйте ONNX** для переноса моделей между фреймворками
+- **Следите за трендами**, но выбирайте проверенные решения для серьезных проектов
+- **Экосистема важнее** самого фреймворка (библиотеки, сообщество, документация)
+- **Начните с практики** — теория важна, но практический опыт критичен
 
-> **"Лучший фреймворк — тот, который позволяет вам решать задачи быстро и эффективно. В 2024 году это означает знание хотя бы PyTorch или TensorFlow."**
+### Траектория обучения
+1. **Месяц 1:** Изучите основы одного фреймворка (PyTorch или Keras)
+2. **Месяц 2:** Реализуйте 3-5 проектов в выбранном фреймворке
+3. **Месяц 3:** Познакомьтесь со вторым фреймворком, сравните подходы
+4. **Месяц 4+:** Изучайте специализированные инструменты (Hugging Face, Lightning, etc.)
+
+> **"Лучший фреймворк — тот, который позволяет вам решать задачи быстро и эффективно. В 2026 году это означает знание хотя бы PyTorch или TensorFlow, плюс понимание экосистемы вокруг них."**
+
+### Что важно понимать
+- Все фреймворки решают одни и те же задачи, но по-разному
+- Концепции (градиенты, backpropagation, оптимизаторы) универсальны
+- Изучив один фреймворк хорошо, вы легко освоите другие
+- Главное — понимать, **что** делает код, а не только **как** он написан
 
 ---
 

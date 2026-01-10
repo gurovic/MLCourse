@@ -515,6 +515,7 @@ print(f"Градиент после второго backward: {x.grad}")
 
 ### **Задача 11: Broadcasting в ML**
 Изучите применение broadcasting в типичных задачах машинного обучения.
+Заполните пропуски.
 
 **Пример 1: Добавление bias**
 
@@ -527,7 +528,7 @@ w = torch.randn(10, 1)
 b = torch.randn(1)  # Один bias для всех примеров
 
 # Broadcasting: (32, 1) + (1,) -> (32, 1)
-output = X @ w + b
+output = _____________
 
 print(f"X.shape: {X.shape}")        # (32, 10)
 print(f"output.shape: {output.shape}")  # (32, 1)
@@ -546,14 +547,14 @@ mean = X.mean(dim=0, keepdim=True)  # (1, 10)
 std = X.std(dim=0, keepdim=True)    # (1, 10)
 
 # Broadcasting: (32, 10) - (1, 10) -> (32, 10)
-X_normalized = (X - mean) / (std + 1e-5)
+X_normalized = ______________________________ # должно работать и в случае std=0
 
 print(f"X.shape: {X.shape}")
 print(f"mean.shape: {mean.shape}")
 print(f"X_normalized.shape: {X_normalized.shape}")
 ```
 
-**Пример 3: Вычисление расстояний**
+**Пример 3*: Вычисление расстояний**
 
 ```python
 import torch
@@ -564,11 +565,22 @@ Y = torch.randn(50, 3)   # 50 точек в 3D
 
 # Вычисление попарных расстояний через broadcasting
 # (100, 1, 3) - (1, 50, 3) -> (100, 50, 3)
-distances = torch.sqrt(((X.unsqueeze(1) - Y.unsqueeze(0)) ** 2).sum(dim=2))
+distances = __________________________________________________ # используйте unsqueeze(...)
 
 print(f"distances.shape: {distances.shape}")  # (100, 50)
 print("distances[i, j] = расстояние от X[i] до Y[j]")
 ```
+
+<details>
+<summary>Решение</summary>
+
+1. X @ w + b
+
+2. (X - mean) / (std + 1e-5)
+
+3. torch.sqrt(((X.unsqueeze(1) - Y.unsqueeze(0)) ** 2).sum(dim=2))
+
+</details>
 
 ---
 

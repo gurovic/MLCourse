@@ -151,7 +151,10 @@ if torch.cuda.is_available():
 ### **3.2 Управление памятью GPU**
 ```python
 # Проверка использования памяти GPU
+tensor_cpu = torch.randn(100, 100)
+
 if torch.cuda.is_available():
+    tensor_gpu = tensor_cpu.to('cuda')  # копирование данных на GPU
     print(f"Выделено памяти: {torch.cuda.memory_allocated() / 1e9:.2f} GB")
     print(f"Зарезервировано памяти: {torch.cuda.memory_reserved() / 1e9:.2f} GB")
     

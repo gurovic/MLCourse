@@ -513,154 +513,62 @@ print(f"Градиент после второго backward: {x.grad}")
 
 ---
 
-### **Задача 11: Broadcasting в ML — Реалистичные примеры**
+### **Задача 11: Broadcasting в ML**
 Изучите применение broadcasting в типичных задачах машинного обучения.
 
-#### **Пример 1: Добавление bias к батчу данных**
-
-В нейронных сетях bias добавляется ко всем примерам в батче одновременно.
+**Пример 1: Добавление bias**
 
 ```python
 import torch
 
-# Батч из 32 примеров, каждый с 10 признаками
-batch_size = 32
-features = 10
-X = torch.randn(batch_size, features)
+# Батч из 32 примеров с 10 признаками
+X = torch.randn(32, 10)
+w = torch.randn(10, 1)
+b = torch.randn(1)  # Один bias для всех примеров
 
-# Веса и bias для одного нейрона
-w = torch.randn(features, 1, requires_grad=True)
-b = torch.randn(1, requires_grad=True)  # Один bias для всех примеров
+# Broadcasting: (32, 1) + (1,) -> (32, 1)
+output = X @ w + b
 
-# Forward pass: X @ w дает (32, 1), b (1,) broadcasting до (32, 1)
-output = X @ w + b  # Broadcasting: (32, 1) + (1,) -> (32, 1)
-
-print(f"X.shape: {X.shape}")
-print(f"w.shape: {w.shape}")
-print(f"b.shape: {b.shape}")
-print(f"output.shape: {output.shape}")
-
-# Вычисление градиентов
-loss = output.sum()
-loss.backward()
-
-print(f"\nb.grad: {b.grad}")  # Сумма градиентов по всему батчу
-print("Bias получает градиент = сумма по всем 32 примерам")
+print(f"X.shape: {X.shape}")        # (32, 10)
+print(f"output.shape: {output.shape}")  # (32, 1)
+print("Bias добавляется ко всем примерам в батче")
 ```
 
-#### **Пример 2: Batch Normalization**
-
-Нормализация батча использует broadcasting для вычитания среднего и деления на std.
+**Пример 2: Нормализация батча**
 
 ```python
 import torch
 
-# Батч из 64 примеров, каждый с 128 признаками
-batch_size = 64
-features = 128
-X = torch.randn(batch_size, features)
+X = torch.randn(32, 10)
 
-# Вычисление статистик по батчу (для каждого признака отдельно)
-mean = X.mean(dim=0, keepdim=True)  # (1, 128)
-std = X.std(dim=0, keepdim=True)    # (1, 128)
+# Вычисляем среднее и std для каждого признака
+mean = X.mean(dim=0, keepdim=True)  # (1, 10)
+std = X.std(dim=0, keepdim=True)    # (1, 10)
 
-# Нормализация: broadcasting mean и std на весь батч
+# Broadcasting: (32, 10) - (1, 10) -> (32, 10)
 X_normalized = (X - mean) / (std + 1e-5)
 
 print(f"X.shape: {X.shape}")
 print(f"mean.shape: {mean.shape}")
 print(f"X_normalized.shape: {X_normalized.shape}")
-
-# Проверка: среднее должно быть ~0, std ~1 для каждого признака
-print(f"\nСреднее после нормализации: {X_normalized.mean(dim=0).abs().max().item():.6f}")
-print(f"Std после нормализации: {X_normalized.std(dim=0).mean().item():.4f}")
 ```
 
-#### **Пример 3: Attention Mask**
-
-В трансформерах маска внимания применяется ко всем батчам и головам одновременно.
+**Пример 3: Вычисление расстояний**
 
 ```python
 import torch
 
-# Attention scores: (batch_size, num_heads, seq_len, seq_len)
-batch_size = 8
-num_heads = 12
-seq_len = 20
+# Два набора точек
+X = torch.randn(100, 3)  # 100 точек в 3D
+Y = torch.randn(50, 3)   # 50 точек в 3D
 
-attention_scores = torch.randn(batch_size, num_heads, seq_len, seq_len)
-
-# Создаем causal mask (нижнетреугольная матрица)
-# Форма (seq_len, seq_len), будет broadcast на (batch_size, num_heads, seq_len, seq_len)
-mask = torch.triu(torch.ones(seq_len, seq_len), diagonal=1).bool()
-
-# Применяем маску: broadcasting (20, 20) -> (8, 12, 20, 20)
-attention_scores_masked = attention_scores.masked_fill(mask, float('-inf'))
-
-print(f"attention_scores.shape: {attention_scores.shape}")
-print(f"mask.shape: {mask.shape}")
-print(f"attention_scores_masked.shape: {attention_scores_masked.shape}")
-print(f"\nМаска применяется ко всем батчам и головам одновременно!")
-```
-
-#### **Пример 4: Вычисление попарных расстояний**
-
-В k-NN или кластеризации нужно вычислить расстояния между всеми парами точек.
-
-```python
-import torch
-
-# Два набора точек: X (100 точек в 3D) и Y (50 точек в 3D)
-X = torch.randn(100, 3)
-Y = torch.randn(50, 3)
-
-# Эффективное вычисление попарных расстояний через broadcasting
-# X: (100, 1, 3), Y: (1, 50, 3) -> разница: (100, 50, 3)
+# Вычисление попарных расстояний через broadcasting
+# (100, 1, 3) - (1, 50, 3) -> (100, 50, 3)
 distances = torch.sqrt(((X.unsqueeze(1) - Y.unsqueeze(0)) ** 2).sum(dim=2))
 
-print(f"X.shape: {X.shape}")
-print(f"Y.shape: {Y.shape}")
 print(f"distances.shape: {distances.shape}")  # (100, 50)
-print(f"\ndistances[i, j] = расстояние от X[i] до Y[j]")
-
-# Найдем ближайшего соседа для каждой точки из X
-nearest_neighbors = distances.argmin(dim=1)
-print(f"\nБлижайшие соседи для первых 5 точек X: {nearest_neighbors[:5]}")
+print("distances[i, j] = расстояние от X[i] до Y[j]")
 ```
-
-#### **Пример 5: Применение dropout по признакам**
-
-В некоторых архитектурах (например, DropConnect) dropout применяется по-разному к разным измерениям.
-
-```python
-import torch
-
-# Батч из 32 примеров, каждый с 256 признаками
-batch_size = 32
-features = 256
-X = torch.randn(batch_size, features)
-
-# Создаем маску dropout только для признаков (одинаковую для всего батча)
-dropout_rate = 0.5
-mask = (torch.rand(1, features) > dropout_rate).float()  # (1, 256)
-
-# Применяем маску через broadcasting
-X_dropped = X * mask / (1 - dropout_rate)  # Broadcasting (32, 256) * (1, 256)
-
-print(f"X.shape: {X.shape}")
-print(f"mask.shape: {mask.shape}")
-print(f"X_dropped.shape: {X_dropped.shape}")
-
-# Проверяем, сколько признаков обнулились
-num_dropped = (mask == 0).sum().item()
-print(f"\nОбнулено признаков: {num_dropped} из {features}")
-print("Одинаковые признаки обнулены для всех примеров в батче")
-```
-
-**Задания для практики:**
-1. Реализуйте Layer Normalization используя broadcasting (нормализация по признакам для каждого примера)
-2. Создайте функцию для вычисления косинусного сходства между всеми парами векторов в двух батчах
-3. Реализуйте positional encoding для трансформера с broadcasting
 
 ---
 

@@ -349,4 +349,6 @@
   
 **Дополнительные темы**
 * 🔴 [Оптимизация памяти](040_memory.md): Сжатие типов данных.
-  * Практика: [NYC Taxi Trip Duration](https://www.kaggle.com/c/nyc-taxi-trip-duration) (Kaggle).  
+  * Практика: [NYC Taxi Trip Duration](https://www.kaggle.com/c/nyc-taxi-trip-duration) (Kaggle).
+* [Обзор и сравнение библиотек Deep Learning](520_dl_frameworks.md): PyTorch, TensorFlow/Keras, JAX, ONNX
+  * [Задачи](520_dl_frameworks_tasks.md)  

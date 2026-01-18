@@ -204,6 +204,7 @@
 - 🟢 [Полносвязные нейросети (MLP)](420_mlp.md): Архитектура, функции активации (ReLU, Sigmoid, Tanh)
   - 🔴 [Задачи](420_mlp_tasks.md)
   - Практика: [MNIST Handwritten Digits](https://pytorch.org/vision/stable/datasets.html#mnist) (PyTorch datasets)
+- 🔴 [Batch, dataset, dataloader](4205_batch_dataset_dataloader.md)
 - 🔴 [Обратное распространение ошибки](421_backpropagation.md): Математика градиентного спуска, цепное правило
   - 🔴 [Задачи](421_backpropagation_tasks.md)
   - Практика: Реализация простой нейросети с нуля на NumPy ([XOR Dataset](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_classification.html))

@@ -201,7 +201,7 @@
   - 🟢 [Задачи](410_pytorch_tasks.md)
 - 🟢 [GPU в PyTorch](411_pytorch_gpu.md): Ускорение вычислений на GPU
   - 🔴 [Задачи](411_pytorch_gpu_tasks.md)
-- 🔴 [Полносвязные нейросети (MLP)](420_mlp.md): Архитектура, функции активации (ReLU, Sigmoid, Tanh)
+- 🟢 [Полносвязные нейросети (MLP)](420_mlp.md): Архитектура, функции активации (ReLU, Sigmoid, Tanh)
   - 🔴 [Задачи](420_mlp_tasks.md)
   - Практика: [MNIST Handwritten Digits](https://pytorch.org/vision/stable/datasets.html#mnist) (PyTorch datasets)
 - 🔴 [Обратное распространение ошибки](421_backpropagation.md): Математика градиентного спуска, цепное правило

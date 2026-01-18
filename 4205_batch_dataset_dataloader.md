@@ -1,958 +1,1409 @@
-Глава: Эффективная обработка данных: батчи, Dataset и DataLoader
+# Работа с данными в PyTorch: Dataset, DataLoader и Batch
 
-🎯 Зачем нам батчи? Мотивирующий пример
+## 🎯 Почему нужны батчи? Мотивирующий пример
 
-Представьте, что вам нужно прочитать и запомнить энциклопедию из 1000 страниц:
-
-· Вариант A: Прочитать всю книгу за один раз, затем повторить 10 раз
-· Вариант B: Читать по 20 страниц в день, повторяя пройденное
-
-Какой метод эффективнее? Второй! В машинном обучении работает тот же принцип. Батчи позволяют:
-
-1. Экономить память (не нужно загружать все данные сразу)
-2. Ускорять обучение (параллельные вычисления)
-3. Улучшать качество (шум в градиентах помогает избегать локальных минимумов)
+Представьте, что у вас есть 100,000 изображений (например, MNIST) и вы хотите обучить на них нейронную сеть. Если попытаться загрузить все данные сразу:
 
 ```python
 import torch
-import torch.nn as nn
 import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.datasets import make_classification
-import time
 
-# Создадим реалистичный набор данных
-X, y = make_classification(
-    n_samples=5000,      # 5000 примеров
-    n_features=20,       # 20 признаков
-    n_classes=3,         # 3 класса
-    n_informative=8,     # 8 информативных признаков
-    random_state=42
-)
+# Представьте, что это ваши 100,000 изображений 28x28
+num_images = 100000
+image_size = 28 * 28  # 784 пикселя
 
-print("📊 Обзор нашего набора данных:")
-print(f"• Примеров: {X.shape[0]:,}")
-print(f"• Признаков у каждого примера: {X.shape[1]}")
-print(f"• Классов: {len(np.unique(y))}")
-print(f"• Размер в памяти: {X.nbytes / 1024 / 1024:.1f} МБ")
+# Попытка загрузить всё сразу
+try:
+    all_images = torch.randn(num_images, image_size)
+    all_labels = torch.randint(0, 10, (num_images,))
+    
+    print(f"Память для всех изображений: {all_images.element_size() * all_images.nelement() / 1024**2:.1f} MB")
+    print(f"Память для всех меток: {all_labels.element_size() * all_labels.nelement() / 1024**2:.1f} MB")
+    
+except Exception as e:
+    print(f"Проблема: {e}")
 ```
+
+**Проблема:** Большие данные не помещаются в память GPU!
+
+**Решение:** Обрабатывать данные **порциями (батчами)**. Именно для этого в PyTorch есть `Dataset`, `DataLoader` и работа с батчами.
 
 ---
 
-🔄 Попробуйте сами #1: Сравнение разных подходов
+## 🟢 Базовый уровень: Основные понятия
 
-```python
-# ИССЛЕДУЙТЕ РАЗНЫЕ СТРАТЕГИИ ОБУЧЕНИЯ:
+### 1. Что такое Dataset?
 
-class SimpleClassifier(nn.Module):
-    """Простой классификатор для экспериментов"""
-    def __init__(self, input_size=20, hidden_size=32, output_size=3):
-        super().__init__()
-        self.network = nn.Sequential(
-            nn.Linear(input_size, hidden_size),
-            nn.ReLU(),
-            nn.Linear(hidden_size, output_size)
-        )
-    
-    def forward(self, x):
-        return self.network(x)
-
-# Преобразуем данные в тензоры PyTorch
-X_tensor = torch.FloatTensor(X)
-y_tensor = torch.LongTensor(y)
-
-def train_single_example(model, X, y, epochs=5):
-    """Обучение на одном примере за раз (Stochastic Gradient Descent)"""
-    criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
-    
-    losses = []
-    start_time = time.time()
-    
-    print("Стратегия: Один пример за раз")
-    for epoch in range(epochs):
-        epoch_loss = 0
-        
-        # Перемешиваем данные каждый эпоху
-        indices = torch.randperm(len(X))
-        
-        for idx in indices:
-            # Берем ОДИН пример
-            x_single = X[idx:idx+1]
-            y_single = y[idx:idx+1]
-            
-            optimizer.zero_grad()
-            predictions = model(x_single)
-            loss = criterion(predictions, y_single)
-            loss.backward()
-            optimizer.step()
-            
-            epoch_loss += loss.item()
-        
-        avg_loss = epoch_loss / len(X)
-        losses.append(avg_loss)
-        print(f"  Эпоха {epoch}: средняя ошибка = {avg_loss:.4f}")
-    
-    return losses, time.time() - start_time
-
-def train_mini_batch(model, X, y, batch_size=32, epochs=5):
-    """Обучение мини-батчами"""
-    criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
-    
-    losses = []
-    start_time = time.time()
-    
-    print(f"Стратегия: Мини-батчи по {batch_size} примеров")
-    for epoch in range(epochs):
-        epoch_loss = 0
-        batch_count = 0
-        
-        # Перемешиваем данные
-        indices = torch.randperm(len(X))
-        X_shuffled = X[indices]
-        y_shuffled = y[indices]
-        
-        # Обрабатываем батчами
-        for i in range(0, len(X), batch_size):
-            X_batch = X_shuffled[i:i+batch_size]
-            y_batch = y_shuffled[i:i+batch_size]
-            
-            optimizer.zero_grad()
-            predictions = model(X_batch)
-            loss = criterion(predictions, y_batch)
-            loss.backward()
-            optimizer.step()
-            
-            epoch_loss += loss.item()
-            batch_count += 1
-        
-        avg_loss = epoch_loss / batch_count
-        losses.append(avg_loss)
-        print(f"  Эпоха {epoch}: средняя ошибка = {avg_loss:.4f}")
-    
-    return losses, time.time() - start_time
-
-def train_full_batch(model, X, y, epochs=5):
-    """Обучение на всех данных сразу (Full Batch)"""
-    criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
-    
-    losses = []
-    start_time = time.time()
-    
-    print("Стратегия: Все данные сразу")
-    for epoch in range(epochs):
-        optimizer.zero_grad()
-        
-        # ВСЕ данные за раз
-        predictions = model(X)
-        loss = criterion(predictions, y)
-        loss.backward()
-        optimizer.step()
-        
-        losses.append(loss.item())
-        print(f"  Эпоха {epoch}: ошибка = {loss.item():.4f}")
-    
-    return losses, time.time() - start_time
-
-# Запускаем сравнение
-print("=" * 60)
-print("СРАВНЕНИЕ ТРЕХ СТРАТЕГИЙ ОБУЧЕНИЯ")
-print("=" * 60)
-
-results = {}
-strategies = [
-    ("Один пример", 1, train_single_example),
-    ("Мини-батч 32", 32, lambda m, X, y, e: train_mini_batch(m, X, y, 32, e)),
-    ("Полный батч", len(X), train_full_batch)
-]
-
-for name, batch_size, train_func in strategies:
-    print(f"\n{name}:")
-    model = SimpleClassifier()
-    losses, duration = train_func(model, X_tensor[:1000], y_tensor[:1000], epochs=3)
-    results[name] = {
-        "losses": losses,
-        "time": duration,
-        "final_loss": losses[-1]
-    }
-
-# Визуализируем результаты
-fig, axes = plt.subplots(1, 2, figsize=(12, 4))
-
-# График ошибок
-for name, res in results.items():
-    axes[0].plot(res["losses"], marker='o', label=name, linewidth=2)
-
-axes[0].set_xlabel('Эпоха')
-axes[0].set_ylabel('Ошибка')
-axes[0].set_title('Сравнение скорости сходимости')
-axes[0].legend()
-axes[0].grid(True, alpha=0.3)
-
-# График времени
-names = list(results.keys())
-times = [results[name]["time"] for name in names]
-bars = axes[1].bar(names, times, color=['blue', 'green', 'red'])
-
-axes[1].set_xlabel('Стратегия')
-axes[1].set_ylabel('Время (секунды)')
-axes[1].set_title('Сравнение времени обучения')
-axes[1].grid(True, alpha=0.3, axis='y')
-
-# Добавляем значения на столбцы
-for bar, time_val in zip(bars, times):
-    axes[1].text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.1,
-                f'{time_val:.2f}s', ha='center', va='bottom')
-
-plt.tight_layout()
-plt.show()
-
-print("\n" + "=" * 60)
-print("КЛЮЧЕВЫЕ ВЫВОДЫ:")
-print("=" * 60)
-for name, res in results.items():
-    print(f"{name:15} | Время: {res['time']:6.2f}с | Финальная ошибка: {res['final_loss']:.4f}")
-
-print("\n💡 Наблюдения:")
-print("• Мини-батчи дают баланс между скоростью и стабильностью")
-print("• Обучение по одному примеру очень шумное и медленное")
-print("• Полный батч может быть медленным для больших данных")
-```
-
----
-
-🗂️ Dataset: Организуем данные правильно
-
-Что такое Dataset и зачем он нужен?
-
-Проблема: Когда у нас миллионы изображений или текстов, мы не можем загрузить их все в память сразу.
-
-Решение: Dataset — это абстракция, которая:
-
-1. Хранит информацию о данных
-2. Загружает данные по требованию (ленивая загрузка)
-3. Позволяет применять преобразования
+`Dataset` — это абстракция, которая:
+- Хранит ваши данные
+- Знает, как получить один элемент данных по индексу
+- Знает, сколько всего элементов
 
 ```python
 from torch.utils.data import Dataset
+import torch
 
 class SimpleDataset(Dataset):
-    """Простейший Dataset для табличных данных"""
+    """Простейший Dataset для понимания концепции"""
     
-    def __init__(self, features, labels):
+    def __init__(self, data, labels):
         """
         Args:
-            features: тензор или массив с признаками
-            labels: тензор или массив с метками
+            data: тензор с признаками
+            labels: тензор с метками
         """
-        self.features = torch.FloatTensor(features) if not isinstance(features, torch.Tensor) else features
-        self.labels = torch.LongTensor(labels) if not isinstance(labels, torch.Tensor) else labels
-        
-        # Проверяем согласованность размеров
-        assert len(self.features) == len(self.labels), \
-            f"Разное количество примеров: features={len(self.features)}, labels={len(self.labels)}"
+        self.data = data
+        self.labels = labels
     
     def __len__(self):
-        """Возвращает общее количество примеров"""
-        return len(self.features)
+        """Возвращает количество элементов в датасете"""
+        return len(self.data)
     
     def __getitem__(self, idx):
-        """
-        Возвращает один пример по индексу
-        Важно: этот метод вызывается при обращении dataset[idx]
-        """
-        return {
-            'features': self.features[idx],
-            'label': self.labels[idx]
-        }
-    
-    def get_stats(self):
-        """Выводит статистику о данных"""
-        print("📊 Статистика Dataset:")
-        print(f"  • Примеров: {len(self):,}")
-        print(f"  • Признаков: {self.features.shape[1]}")
-        print(f"  • Классов: {len(torch.unique(self.labels))}")
-        print(f"  • Распределение классов:")
-        unique, counts = torch.unique(self.labels, return_counts=True)
-        for cls, count in zip(unique, counts):
-            print(f"    - Класс {cls.item()}: {count} примеров ({count/len(self)*100:.1f}%)")
+        """Возвращает один элемент по индексу"""
+        return self.data[idx], self.labels[idx]
 
-# Создаем наш первый Dataset
-dataset = SimpleDataset(X[:1000], y[:1000])
-dataset.get_stats()
+# Создаём простой датасет
+simple_data = torch.tensor([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]])
+simple_labels = torch.tensor([0, 1, 0])
 
-# Проверяем работу
-print("\n🔍 Проверка доступа к данным:")
-print(f"Длина dataset: {len(dataset)}")
+simple_dataset = SimpleDataset(simple_data, simple_labels)
 
-# Получаем несколько примеров
-for i in range(3):
-    sample = dataset[i]
-    print(f"Пример {i}: features.shape = {sample['features'].shape}, label = {sample['label']}")
+print(f"Размер датасета: {len(simple_dataset)}")
+print(f"Первый элемент: {simple_dataset[0]}")
+print(f"Последний элемент: {simple_dataset[-1]}")
 ```
 
----
+### 2. Что такое DataLoader?
 
-🔄 Попробуйте сами #2: Создайте свой Dataset
-
-```python
-# СОЗДАЙТЕ И НАСТРОЙТЕ СОБСТВЕННЫЙ DATASET:
-
-class AdvancedDataset(Dataset):
-    """Расширенный Dataset с дополнительными функциями"""
-    
-    def __init__(self, features, labels, normalize=True, add_noise=False):
-        """
-        Args:
-            features: матрица признаков
-            labels: вектор меток
-            normalize: нормализовать ли данные
-            add_noise: добавлять ли случайный шум для аугментации
-        """
-        self.features = torch.FloatTensor(features).clone()
-        self.labels = torch.LongTensor(labels).clone()
-        self.normalize = normalize
-        self.add_noise = add_noise
-        
-        # Вычисляем статистики для нормализации
-        if self.normalize:
-            self.feature_mean = self.features.mean(dim=0)
-            self.feature_std = self.features.std(dim=0) + 1e-8  # Добавляем маленькое число для стабильности
-    
-    def __len__(self):
-        return len(self.features)
-    
-    def __getitem__(self, idx):
-        features = self.features[idx].clone()
-        label = self.labels[idx].clone()
-        
-        # Нормализация
-        if self.normalize:
-            features = (features - self.feature_mean) / self.feature_std
-        
-        # Добавление шума (только во время обучения)
-        if self.add_noise and torch.rand(1) > 0.5:
-            noise = torch.randn_like(features) * 0.1  # 10% шума
-            features = features + noise
-        
-        return features, label
-    
-    def split(self, train_ratio=0.8):
-        """Разделяет dataset на тренировочную и валидационную части"""
-        indices = torch.randperm(len(self))
-        split_idx = int(len(self) * train_ratio)
-        
-        train_indices = indices[:split_idx]
-        val_indices = indices[split_idx:]
-        
-        # Создаем новые датасеты
-        train_dataset = AdvancedDataset(
-            self.features[train_indices],
-            self.labels[train_indices],
-            normalize=False,  # Не нормализуем повторно
-            add_noise=self.add_noise
-        )
-        
-        val_dataset = AdvancedDataset(
-            self.features[val_indices],
-            self.labels[val_indices],
-            normalize=False,
-            add_noise=False  # На валидации шум не добавляем
-        )
-        
-        return train_dataset, val_dataset
-
-# ИЗМЕНИТЕ ЭТИ ПАРАМЕТРЫ:
-NORMALIZE_DATA = True      # Нормализовать ли данные?
-ADD_NOISE = True           # Добавлять ли шум для аугментации?
-TRAIN_RATIO = 0.8          # Доля данных для обучения
-
-# Создаем расширенный dataset с вашими параметрами
-print("=" * 60)
-print("СОЗДАНИЕ ADVANCEDDATASET")
-print("=" * 60)
-print(f"Параметры:")
-print(f"  • Нормализация: {NORMALIZE_DATA}")
-print(f"  • Добавление шума: {ADD_NOISE}")
-print(f"  • Доля тренировочных данных: {TRAIN_RATIO:.0%}")
-
-# Используем все данные
-full_dataset = AdvancedDataset(
-    features=X,
-    labels=y,
-    normalize=NORMALIZE_DATA,
-    add_noise=ADD_NOISE
-)
-
-print(f"\nПолный dataset:")
-print(f"  • Примеров: {len(full_dataset):,}")
-print(f"  • Размер features: {full_dataset.features.shape}")
-
-# Разделяем на train/val
-train_dataset, val_dataset = full_dataset.split(train_ratio=TRAIN_RATIO)
-
-print(f"\nПосле разделения:")
-print(f"  • Тренировочных примеров: {len(train_dataset):,}")
-print(f"  • Валидационных примеров: {len(val_dataset):,}")
-print(f"  • Соотношение: {len(train_dataset)/len(full_dataset):.1%} / {len(val_dataset)/len(full_dataset):.1%}")
-
-# Проверяем данные
-print("\n🔍 Проверка данных:")
-print("Тренировочный dataset (первые 3 примера):")
-for i in range(3):
-    features, label = train_dataset[i]
-    print(f"  Пример {i}: label={label}, features[0:3]={features[:3].tolist()}")
-
-print("\nВалидационный dataset (первые 3 примера):")
-for i in range(3):
-    features, label = val_dataset[i]
-    print(f"  Пример {i}: label={label}, features[0:3]={features[:3].tolist()}")
-
-# Проверяем нормализацию
-if NORMALIZE_DATA:
-    print("\n📐 Проверка нормализации:")
-    train_features = torch.stack([train_dataset[i][0] for i in range(len(train_dataset))])
-    print(f"  Среднее значение features (должно быть ~0): {train_features.mean():.6f}")
-    print(f"  Стандартное отклонение (должно быть ~1): {train_features.std():.6f}")
-
-# Вопросы для анализа:
-# 1. Что происходит, когда normalize=False?
-# 2. Как добавление шума влияет на обучение?
-# 3. Почему важно не добавлять шум на валидационных данных?
-# 4. Какое оптимальное соотношение train/val для вашей задачи?
-```
-
----
-
-🔄 DataLoader: Автоматизируем создание батчей
-
-Что такое DataLoader и зачем он нужен?
-
-DataLoader — это мощный инструмент PyTorch, который:
-
-1. Автоматически создает батчи из Dataset
-2. Перемешивает данные
-3. Параллельно загружает данные (ускорение)
-4. Обрабатывает неполные батчи
+`DataLoader` — это инструмент, который:
+- Берет `Dataset` и разбивает его на батчи
+- Перемешивает данные (опционально)
+- Загружает данные параллельно (опционально)
 
 ```python
 from torch.utils.data import DataLoader
 
-# Создаем простой DataLoader
+# Создаём DataLoader для нашего датасета
 simple_loader = DataLoader(
-    dataset=train_dataset,      # Наш Dataset
-    batch_size=32,              # Размер батча
-    shuffle=True,               # Перемешивать ли данные каждый эпоху
-    num_workers=0,              # Число процессов для загрузки (0 для отладки)
-    drop_last=False            # Отбрасывать ли неполный последний батч
+    dataset=simple_dataset,
+    batch_size=2,      # Размер батча
+    shuffle=True,      # Перемешивать ли данные
+    num_workers=0      # Число процессов для загрузки (0 для простоты)
 )
 
-print("Создан DataLoader с параметрами:")
-print(f"  • batch_size = {simple_loader.batch_size}")
-print(f"  • shuffle = {simple_loader.shuffle}")
-print(f"  • num_workers = {simple_loader.num_workers}")
-print(f"  • drop_last = {simple_loader.drop_last}")
-print(f"  • Всего батчей: {len(simple_loader)}")
-print(f"  • Примеров в последнем батче: {len(train_dataset) % simple_loader.batch_size or simple_loader.batch_size}")
-
-# Посмотрим, как работает DataLoader
-print("\n🔍 Первые 3 батча из DataLoader:")
-for batch_idx, (batch_features, batch_labels) in enumerate(simple_loader):
-    if batch_idx >= 3:
-        break
-    
-    print(f"\nБатч #{batch_idx + 1}:")
-    print(f"  Размер features: {batch_features.shape}")
-    print(f"  Размер labels: {batch_labels.shape}")
-    print(f"  Диапазон меток в батче: {torch.unique(batch_labels).tolist()}")
-    
-    # Проверяем перемешивание
-    if batch_idx == 0:
-        print(f"  Первые 5 меток: {batch_labels[:5].tolist()}")
-        if simple_loader.shuffle:
-            print("  ✓ Данные перемешаны (метки вразнобой)")
+print("Батчи из DataLoader:")
+for batch_idx, (batch_data, batch_labels) in enumerate(simple_loader):
+    print(f"Батч {batch_idx}:")
+    print(f"  Данные: {batch_data}")
+    print(f"  Метки: {batch_labels}")
+    print()
 ```
 
----
+### 3. Что такое Batch (пакет)?
 
-🔄 Попробуйте сами #3: Эксперименты с DataLoader
-
-```python
-# ЭКСПЕРИМЕНТИРУЙТЕ С РАЗНЫМИ ПАРАМЕТРАМИ DATALOADER:
-
-# НАСТРОЙТЕ ЭТИ ПАРАМЕТРЫ:
-BATCH_SIZE = 64          # Размер батча (попробуйте: 16, 32, 64, 128, 256)
-SHUFFLE = True           # Перемешивать данные? (True/False)
-NUM_WORKERS = 0          # Число процессов (0, 2, 4) - осторожно с большими значениями!
-DROP_LAST = False        # Отбрасывать неполный батч? (True/False)
-
-print("=" * 60)
-print("ЭКСПЕРИМЕНТЫ С DATALOADER")
-print("=" * 60)
-print(f"Параметры:")
-print(f"  • batch_size = {BATCH_SIZE}")
-print(f"  • shuffle = {SHUFFLE}")
-print(f"  • num_workers = {NUM_WORKERS}")
-print(f"  • drop_last = {DROP_LAST}")
-
-# Создаем DataLoader с вашими параметрами
-experiment_loader = DataLoader(
-    dataset=train_dataset,
-    batch_size=BATCH_SIZE,
-    shuffle=SHUFFLE,
-    num_workers=NUM_WORKERS,
-    drop_last=DROP_LAST
-)
-
-# Анализируем DataLoader
-print(f"\n📊 Анализ DataLoader:")
-print(f"  • Всего батчей: {len(experiment_loader)}")
-
-# Проверяем размеры батчей
-batch_sizes = []
-for batch_features, _ in experiment_loader:
-    batch_sizes.append(len(batch_features))
-
-print(f"  • Размеры батчей: {set(batch_sizes)}")
-
-if len(set(batch_sizes)) > 1:
-    print(f"  ⚠  Не все батчи одинакового размера!")
-    if DROP_LAST:
-        print("     (Но вы выбрали drop_last=True, так что последний батч отброшен)")
-
-# Измеряем скорость загрузки
-print("\n⏱️  Измерение скорости загрузки:")
-
-# Вариант 1: Без DataLoader (вручную)
-start_time = time.time()
-manual_batches = 0
-indices = torch.randperm(len(train_dataset)) if SHUFFLE else torch.arange(len(train_dataset))
-
-for i in range(0, len(train_dataset), BATCH_SIZE):
-    batch_indices = indices[i:i+BATCH_SIZE]
-    batch_features = torch.stack([train_dataset[idx][0] for idx in batch_indices])
-    batch_labels = torch.stack([train_dataset[idx][1] for idx in batch_indices])
-    manual_batches += 1
-    
-manual_time = time.time() - start_time
-
-# Вариант 2: С DataLoader
-start_time = time.time()
-loader_batches = 0
-for batch_features, batch_labels in experiment_loader:
-    loader_batches += 1
-    
-loader_time = time.time() - start_time
-
-print(f"  • Вручную: {manual_time:.3f} секунд ({manual_batches} батчей)")
-print(f"  • DataLoader: {loader_time:.3f} секунд ({loader_batches} батчей)")
-print(f"  • Ускорение: {manual_time/loader_time:.1f}x")
-
-# Обучение с использованием DataLoader
-def train_with_dataloader(model, train_loader, val_dataset, epochs=3):
-    """Обучение модели с использованием DataLoader"""
-    criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-    
-    train_losses = []
-    
-    print(f"\n🎯 Обучение с DataLoader (batch_size={BATCH_SIZE}):")
-    
-    for epoch in range(epochs):
-        model.train()
-        epoch_loss = 0
-        batch_count = 0
-        
-        # DataLoader автоматически создает батчи
-        for batch_idx, (batch_features, batch_labels) in enumerate(train_loader):
-            optimizer.zero_grad()
-            
-            predictions = model(batch_features)
-            loss = criterion(predictions, batch_labels)
-            
-            loss.backward()
-            optimizer.step()
-            
-            epoch_loss += loss.item()
-            batch_count += 1
-            
-            # Показываем прогресс
-            if (batch_idx + 1) % max(1, len(train_loader) // 4) == 0:
-                print(f"    Батч {batch_idx + 1}/{len(train_loader)}, "
-                      f"ошибка: {loss.item():.4f}")
-        
-        avg_loss = epoch_loss / batch_count
-        train_losses.append(avg_loss)
-        
-        # Оценка на валидации
-        model.eval()
-        with torch.no_grad():
-            # Для валидации можно использовать весь dataset или создавать DataLoader
-            val_features = torch.stack([val_dataset[i][0] for i in range(len(val_dataset))])
-            val_labels = torch.stack([val_dataset[i][1] for i in range(len(val_dataset))])
-            
-            val_predictions = model(val_features)
-            val_accuracy = (val_predictions.argmax(dim=1) == val_labels).float().mean().item()
-        
-        print(f"  Эпоха {epoch + 1}: train_loss={avg_loss:.4f}, val_acc={val_accuracy:.2%}")
-    
-    return train_losses, val_accuracy
-
-# Создаем и обучаем модель
-print("\n" + "=" * 60)
-print("ОБУЧЕНИЕ С ИСПОЛЬЗОВАНИЕМ DATALOADER")
-print("=" * 60)
-
-model = SimpleClassifier()
-train_losses, final_val_acc = train_with_dataloader(
-    model=model,
-    train_loader=experiment_loader,
-    val_dataset=val_dataset,
-    epochs=3
-)
-
-# Визуализируем процесс обучения
-plt.figure(figsize=(8, 4))
-plt.plot(train_losses, 'b-', linewidth=2, marker='o')
-plt.xlabel('Эпоха')
-plt.ylabel('Средняя ошибка')
-plt.title(f'Обучение с DataLoader (batch_size={BATCH_SIZE})')
-plt.grid(True, alpha=0.3)
-plt.show()
-
-print(f"\n✅ Финальная точность на валидации: {final_val_acc:.2%}")
-
-# Вопросы для анализа:
-# 1. Что происходит при очень маленьком batch_size (например, 4)?
-# 2. Как shuffle влияет на обучение?
-# 3. Что делает num_workers и когда его увеличивать?
-# 4. Когда использовать drop_last=True?
-# 5. Почему валидационные данные обычно не перемешивают?
-```
-
----
-
-🩺 Диагностика проблем с данными
-
-Чеклист для отладки Dataset и DataLoader
+**Batch** — это группа примеров, которые обрабатываются вместе за один шаг обучения.
 
 ```python
-def diagnose_data_issues(dataset, dataloader):
-    """Диагностика распространенных проблем с данными"""
+def understand_batch_concept():
+    """Понимаем концепцию батча на простом примере"""
     
-    print("=" * 60)
-    print("ДИАГНОСТИКА DATASET И DATALOADER")
-    print("=" * 60)
+    # Создаём "большой" датасет
+    big_data = torch.randn(100, 3)  # 100 примеров, 3 признака
+    big_labels = torch.randint(0, 2, (100,))
     
-    # 1. Проверка Dataset
-    print("\n1. Проверка Dataset:")
-    print(f"   • Размер: {len(dataset)} примеров")
+    dataset = SimpleDataset(big_data, big_labels)
     
-    # Проверяем несколько примеров
-    print("   • Проверка первых 3 примеров:")
-    for i in range(min(3, len(dataset))):
-        try:
-            features, label = dataset[i]
-            print(f"     Пример {i}: features.shape={features.shape}, label={label}, "
-                  f"features.dtype={features.dtype}, label.dtype={label.dtype}")
-            
-            # Проверяем на NaN/Inf
-            if torch.isnan(features).any():
-                print(f"     ⚠  В примере {i} есть NaN в features!")
-            if torch.isinf(features).any():
-                print(f"     ⚠  В примере {i} есть Inf в features!")
-                
-        except Exception as e:
-            print(f"     ⚠  Ошибка при загрузке примера {i}: {e}")
-    
-    # 2. Проверка DataLoader
-    print("\n2. Проверка DataLoader:")
-    print(f"   • Батчей: {len(dataloader)}")
-    print(f"   • Batch size: {dataloader.batch_size}")
-    
-    # Проверяем несколько батчей
-    print("   • Проверка первых 2 батчей:")
-    for batch_idx, (features, labels) in enumerate(dataloader):
-        if batch_idx >= 2:
-            break
-        
-        print(f"     Батч {batch_idx}:")
-        print(f"       • features.shape: {features.shape}")
-        print(f"       • labels.shape: {labels.shape}")
-        print(f"       • Уникальные метки: {torch.unique(labels).tolist()}")
-        
-        # Проверяем распределение меток в батче
-        unique, counts = torch.unique(labels, return_counts=True)
-        print(f"       • Распределение меток: ", end="")
-        for cls, count in zip(unique, counts):
-            print(f"класс {cls.item()}: {count} ", end="")
-        print()
-        
-        # Проверяем значения features
-        print(f"       • features: min={features.min():.3f}, max={features.max():.3f}, "
-              f"mean={features.mean():.3f}, std={features.std():.3f}")
-    
-    # 3. Проверка скорости загрузки
-    print("\n3. Проверка скорости загрузки:")
-    
-    import time
-    start_time = time.time()
-    num_batches = 0
-    total_samples = 0
-    
-    for batch_idx, (features, labels) in enumerate(dataloader):
-        num_batches += 1
-        total_samples += len(features)
-        
-        if batch_idx >= 10:  # Проверяем только первые 10 батчей
-            break
-    
-    load_time = time.time() - start_time
-    
-    print(f"   • Загружено {num_batches} батчей ({total_samples} примеров)")
-    print(f"   • Время: {load_time:.3f} секунд")
-    print(f"   • Скорость: {total_samples/load_time:.1f} примеров/сек")
-    
-    if load_time > 1.0 and dataloader.num_workers == 0:
-        print("   ⚠  Загрузка медленная, рассмотрите увеличение num_workers")
-    
-    # 4. Проверка перемешивания
-    if dataloader.shuffle:
-        print("\n4. Проверка перемешивания:")
-        
-        # Собираем метки из первых двух батчей
-        first_batch_labels = []
-        second_batch_labels = []
-        
-        for batch_idx, (_, labels) in enumerate(dataloader):
-            if batch_idx == 0:
-                first_batch_labels = labels.tolist()
-            elif batch_idx == 1:
-                second_batch_labels = labels.tolist()
-                break
-        
-        # Проверяем, отличаются ли батчи
-        if first_batch_labels and second_batch_labels:
-            if set(first_batch_labels) != set(second_batch_labels):
-                print("   ✅ Батчи содержат разные метки (перемешивание работает)")
-            else:
-                print("   ⚠  Батчи содержат одинаковые метки (проверьте shuffle)")
-    
-    print("\n" + "=" * 60)
-    print("РЕКОМЕНДАЦИИ:")
-    print("=" * 60)
-    
-    if len(dataset) < 1000:
-        print("• Маленький dataset: используйте batch_size 16-64")
-    elif len(dataset) < 10000:
-        print("• Средний dataset: используйте batch_size 32-128")
-    else:
-        print("• Большой dataset: используйте batch_size 64-256")
-    
-    if dataloader.num_workers == 0:
-        print("• num_workers=0: нормально для отладки, увеличьте для обучения")
-    
-    if not dataloader.shuffle:
-        print("• shuffle=False: нормально для валидации/теста, но для обучения лучше True")
-
-# Запускаем диагностику
-diagnose_data_issues(train_dataset, experiment_loader)
-```
-
----
-
-📊 Практическое руководство: выбор параметров
-
-Как выбрать размер батча?
-
-```python
-def find_optimal_batch_size(dataset, model_class, max_batch_size=256):
-    """Поиск оптимального размера батча"""
-    
-    print("=" * 60)
-    print("ПОИСК ОПТИМАЛЬНОГО РАЗМЕРА БАТЧА")
-    print("=" * 60)
-    
-    batch_sizes = [16, 32, 64, 128, 256]
-    results = []
+    # DataLoader с разными размерами батча
+    batch_sizes = [1, 10, 50, 100]
     
     for batch_size in batch_sizes:
-        if batch_size > len(dataset):
-            print(f"Пропускаем batch_size={batch_size} (больше размера dataset)")
-            continue
+        loader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
         
-        print(f"\nТестируем batch_size={batch_size}")
+        print(f"\nРазмер батча: {batch_size}")
+        print(f"Всего батчей: {len(loader)}")
         
-        # Создаем DataLoader
-        loader = DataLoader(
+        # Смотрим на первый батч
+        first_batch_data, first_batch_labels = next(iter(loader))
+        print(f"Форма данных в батче: {first_batch_data.shape}")
+        print(f"Форма меток в батче: {first_batch_labels.shape}")
+
+understand_batch_concept()
+```
+
+---
+
+## 🔄 Попробуйте сами 🟢 (Базовый уровень)
+
+```python
+# ИЗМЕНИТЕ ЭТИ ПАРАМЕТРЫ И НАБЛЮДАЙТЕ:
+
+TOTAL_SAMPLES = 20      # Сколько всего примеров?
+BATCH_SIZE = 4          # Какой размер батча?
+SHUFFLE_DATA = True     # Перемешивать данные?
+
+# Создаём синтетические данные
+your_data = torch.randn(TOTAL_SAMPLES, 5)  # 5 признаков
+your_labels = torch.randint(0, 3, (TOTAL_SAMPLES,))  # 3 класса
+
+# Создаём свой Dataset
+class YourDataset(Dataset):
+    def __init__(self, data, labels):
+        self.data = data
+        self.labels = labels
+    
+    def __len__(self):
+        return len(self.data)
+    
+    def __getitem__(self, idx):
+        return self.data[idx], self.labels[idx]
+
+# Создаём Dataset
+your_dataset = YourDataset(your_data, your_labels)
+
+print("=" * 50)
+print("ВАШ DATASET:")
+print("=" * 50)
+print(f"Всего примеров: {len(your_dataset)}")
+print(f"Размер одного примера: {your_dataset[0][0].shape}")
+print(f"Метка первого примера: {your_dataset[0][1]}")
+
+# Создаём DataLoader
+your_loader = DataLoader(
+    dataset=your_dataset,
+    batch_size=BATCH_SIZE,
+    shuffle=SHUFFLE_DATA,
+    num_workers=0
+)
+
+print(f"\nВАШ DATALOADER:")
+print(f"Размер батча: {BATCH_SIZE}")
+print(f"Перемешивание: {'ВКЛ' if SHUFFLE_DATA else 'ВЫКЛ'}")
+print(f"Всего батчей: {len(your_loader)}")
+
+# Просматриваем батчи
+print("\nБАТЧИ:")
+for batch_idx, (batch_data, batch_labels) in enumerate(your_loader):
+    print(f"\nБатч #{batch_idx}:")
+    print(f"  Примеров в батче: {len(batch_data)}")
+    print(f"  Форма данных: {batch_data.shape}")
+    print(f"  Форма меток: {batch_labels.shape}")
+    print(f"  Метки в батче: {batch_labels}")
+
+# Рассчитываем количество батчей вручную
+total_batches = (TOTAL_SAMPLES + BATCH_SIZE - 1) // BATCH_SIZE
+print(f"\nПРОВЕРКА:")
+print(f"Рассчитано батчей: {total_batches}")
+print(f"Получено батчей: {len(your_loader)}")
+
+if total_batches == len(your_loader):
+    print("✅ Расчёт верный!")
+else:
+    print("❌ Что-то не так!")
+
+# Вопросы для размышления:
+# 1. Что происходит, когда BATCH_SIZE > TOTAL_SAMPLES?
+# 2. Как SHUFFLE_DATA влияет на порядок данных?
+# 3. Сколько будет батчей при TOTAL_SAMPLES=17 и BATCH_SIZE=5?
+```
+
+---
+
+## 🟡 Средний уровень: Реальные примеры и трансформации
+
+### 1. Реальный Dataset для изображений
+
+```python
+from torchvision import transforms
+from PIL import Image
+import os
+
+class ImageDataset(Dataset):
+    """Dataset для работы с изображениями из папки"""
+    
+    def __init__(self, image_dir, transform=None):
+        """
+        Args:
+            image_dir: путь к папке с изображениями
+            transform: трансформации для изображений
+        """
+        self.image_dir = image_dir
+        self.transform = transform
+        
+        # Собираем все изображения
+        self.image_paths = []
+        for file_name in os.listdir(image_dir):
+            if file_name.lower().endswith(('.png', '.jpg', '.jpeg')):
+                self.image_paths.append(os.path.join(image_dir, file_name))
+    
+    def __len__(self):
+        return len(self.image_paths)
+    
+    def __getitem__(self, idx):
+        # Загружаем изображение
+        image_path = self.image_paths[idx]
+        image = Image.open(image_path).convert('RGB')
+        
+        # Применяем трансформации
+        if self.transform:
+            image = self.transform(image)
+        
+        # Для примера - создаём фиктивные метки
+        label = idx % 3  # 3 класса
+        
+        return image, label
+
+# Определяем трансформации
+image_transforms = transforms.Compose([
+    transforms.Resize((64, 64)),      # Изменяем размер
+    transforms.ToTensor(),            # Конвертируем в тензор
+    transforms.Normalize(             # Нормализуем
+        mean=[0.485, 0.456, 0.406],   # Средние значения ImageNet
+        std=[0.229, 0.224, 0.225]     # Стандартные отклонения ImageNet
+    )
+])
+
+# Пример создания датасета (закомментировано, так как нужны реальные изображения)
+# image_dataset = ImageDataset("path/to/images", transform=image_transforms)
+# print(f"Dataset содержит {len(image_dataset)} изображений")
+```
+
+### 2. Сложные трансформации и аугментации
+
+```python
+def demonstrate_transformations():
+    """Демонстрация различных трансформаций"""
+    
+    # Трансформации для обучения (с аугментацией)
+    train_transforms = transforms.Compose([
+        transforms.RandomResizedCrop(224),      # Случайное кадрирование
+        transforms.RandomHorizontalFlip(),      # Случайное отражение
+        transforms.ColorJitter(                 # Изменение цвета
+            brightness=0.2, 
+            contrast=0.2, 
+            saturation=0.2
+        ),
+        transforms.ToTensor(),
+        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    ])
+    
+    # Трансформации для валидации (без аугментации)
+    val_transforms = transforms.Compose([
+        transforms.Resize(256),                 # Фиксированный размер
+        transforms.CenterCrop(224),             # Центральное кадрирование
+        transforms.ToTensor(),
+        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    ])
+    
+    print("Трансформации для обучения:")
+    print(train_transforms)
+    print("\nТрансформации для валидации:")
+    print(val_transforms)
+    
+    return train_transforms, val_transforms
+
+train_transforms, val_transforms = demonstrate_transformations()
+```
+
+### 3. Разделение данных на train/val/test
+
+```python
+from torch.utils.data import random_split
+
+class SplitDataset(Dataset):
+    """Dataset с возможностью разделения"""
+    
+    def __init__(self, data_tensor, labels_tensor):
+        self.data = data_tensor
+        self.labels = labels_tensor
+    
+    def __len__(self):
+        return len(self.data)
+    
+    def __getitem__(self, idx):
+        return self.data[idx], self.labels[idx]
+
+def create_train_val_test_split():
+    """Создание разделения данных на train/val/test"""
+    
+    # Создаём синтетические данные
+    total_samples = 1000
+    data = torch.randn(total_samples, 10)
+    labels = torch.randint(0, 5, (total_samples,))
+    
+    # Создаём полный датасет
+    full_dataset = SplitDataset(data, labels)
+    
+    # Определяем размеры разделов
+    train_size = int(0.7 * total_samples)  # 70% для обучения
+    val_size = int(0.15 * total_samples)   # 15% для валидации
+    test_size = total_samples - train_size - val_size  # 15% для теста
+    
+    print(f"Всего примеров: {total_samples}")
+    print(f"Train: {train_size} ({train_size/total_samples:.0%})")
+    print(f"Val: {val_size} ({val_size/total_samples:.0%})")
+    print(f"Test: {test_size} ({test_size/total_samples:.0%})")
+    
+    # Разделяем датасет
+    train_dataset, val_dataset, test_dataset = random_split(
+        full_dataset, 
+        [train_size, val_size, test_size],
+        generator=torch.Generator().manual_seed(42)  # Для воспроизводимости
+    )
+    
+    # Создаём DataLoader для каждого раздела
+    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+    
+    print(f"\nБатчей в train loader: {len(train_loader)}")
+    print(f"Батчей в val loader: {len(val_loader)}")
+    print(f"Батчей в test loader: {len(test_loader)}")
+    
+    # Проверяем, что данные не пересекаются
+    train_indices = set(train_dataset.indices)
+    val_indices = set(val_dataset.indices)
+    test_indices = set(test_dataset.indices)
+    
+    print(f"\nПроверка пересечений:")
+    print(f"Train ∩ Val: {len(train_indices & val_indices)}")
+    print(f"Train ∩ Test: {len(train_indices & test_indices)}")
+    print(f"Val ∩ Test: {len(val_indices & test_indices)}")
+    
+    return train_loader, val_loader, test_loader
+
+train_loader, val_loader, test_loader = create_train_val_test_split()
+```
+
+---
+
+## 🔄 Попробуйте сами 🟡 (Средний уровень)
+
+```python
+# ЭКСПЕРИМЕНТ: СОЗДАЙТЕ СВОЙ ПОЛНЫЙ ПАЙПЛАЙН ДАННЫХ
+
+# Параметры эксперимента
+TOTAL_EXAMPLES = 1000      # Всего примеров
+FEATURES = 8               # Число признаков
+CLASSES = 5                # Число классов
+BATCH_SIZE = 64            # Размер батча
+SEED = 123                 # Seed для воспроизводимости
+
+# 1. Создаём синтетические данные с разными распределениями
+torch.manual_seed(SEED)
+
+# Данные для разных классов имеют разные распределения
+data_list = []
+labels_list = []
+
+for class_idx in range(CLASSES):
+    # Каждый класс имеет своё среднее значение
+    mean = class_idx * 2.0
+    class_data = torch.randn(TOTAL_EXAMPLES // CLASSES, FEATURES) + mean
+    class_labels = torch.full((TOTAL_EXAMPLES // CLASSES,), class_idx)
+    
+    data_list.append(class_data)
+    labels_list.append(class_labels)
+
+# Объединяем все данные
+all_data = torch.cat(data_list, dim=0)
+all_labels = torch.cat(labels_list, dim=0)
+
+print("=" * 60)
+print("СОЗДАНИЕ ДАННЫХ")
+print("=" * 60)
+print(f"Всего примеров: {len(all_data)}")
+print(f"Признаков на пример: {FEATURES}")
+print(f"Классов: {CLASSES}")
+
+# Показываем статистику по классам
+print("\nРаспределение по классам:")
+for class_idx in range(CLASSES):
+    class_mask = all_labels == class_idx
+    count = class_mask.sum().item()
+    mean_features = all_data[class_mask].mean(dim=0)
+    print(f"  Класс {class_idx}: {count} примеров, среднее признаков: {mean_features[0]:.2f}...")
+
+# 2. Создаём Dataset с дополнительной логикой
+class AdvancedDataset(Dataset):
+    """Продвинутый Dataset с предобработкой"""
+    
+    def __init__(self, data, labels, normalize=True):
+        self.data = data
+        self.labels = labels
+        self.normalize = normalize
+        
+        if normalize:
+            # Сохраняем параметры нормализации
+            self.data_mean = self.data.mean(dim=0)
+            self.data_std = self.data.std(dim=0)
+            
+            # Нормализуем данные
+            self.data = (self.data - self.data_mean) / (self.data_std + 1e-8)
+    
+    def __len__(self):
+        return len(self.data)
+    
+    def __getitem__(self, idx):
+        features = self.data[idx]
+        label = self.labels[idx]
+        
+        # Можно добавить дополнительные преобразования здесь
+        # Например, добавление шума для аугментации
+        if torch.rand(1) < 0.1:  # 10% chance
+            features = features + torch.randn_like(features) * 0.1
+        
+        return features, label
+    
+    def get_original_data(self, idx):
+        """Получить оригинальные (ненормализованные) данные"""
+        if self.normalize:
+            original = self.data[idx] * self.data_std + self.data_mean
+        else:
+            original = self.data[idx]
+        return original, self.labels[idx]
+
+# 3. Создаём и проверяем Dataset
+full_dataset = AdvancedDataset(all_data, all_labels, normalize=True)
+
+print(f"\nDataset создан:")
+print(f"  Нормализация: {'ВКЛ' if full_dataset.normalize else 'ВЫКЛ'}")
+print(f"  Размер: {len(full_dataset)}")
+
+# Проверяем нормализацию
+sample_idx = 0
+normalized_sample, label = full_dataset[sample_idx]
+original_sample, _ = full_dataset.get_original_data(sample_idx)
+
+print(f"\nПроверка нормализации (пример #{sample_idx}):")
+print(f"  Оригинальные признаки: {original_sample[:3].tolist()}...")
+print(f"  Нормализованные признаки: {normalized_sample[:3].tolist()}...")
+print(f"  Метка: {label}")
+
+# 4. Разделяем на train/val/test
+from torch.utils.data import random_split
+
+train_size = int(0.6 * len(full_dataset))
+val_size = int(0.2 * len(full_dataset))
+test_size = len(full_dataset) - train_size - val_size
+
+train_dataset, val_dataset, test_dataset = random_split(
+    full_dataset,
+    [train_size, val_size, test_size],
+    generator=torch.Generator().manual_seed(SEED)
+)
+
+print(f"\nРАЗДЕЛЕНИЕ ДАННЫХ:")
+print(f"  Train: {len(train_dataset)} ({len(train_dataset)/len(full_dataset):.0%})")
+print(f"  Val: {len(val_dataset)} ({len(val_dataset)/len(full_dataset):.0%})")
+print(f"  Test: {len(test_dataset)} ({len(test_dataset)/len(full_dataset):.0%})")
+
+# 5. Создаём DataLoader для каждого раздела
+train_loader = DataLoader(
+    train_dataset,
+    batch_size=BATCH_SIZE,
+    shuffle=True,
+    num_workers=0,
+    drop_last=True  # Отбрасываем последний неполный батч
+)
+
+val_loader = DataLoader(
+    val_dataset,
+    batch_size=BATCH_SIZE,
+    shuffle=False,
+    num_workers=0
+)
+
+test_loader = DataLoader(
+    test_dataset,
+    batch_size=BATCH_SIZE,
+    shuffle=False,
+    num_workers=0
+)
+
+print(f"\nDATALOADER НАСТРОЙКИ:")
+print(f"  Batch size: {BATCH_SIZE}")
+print(f"  Train batches: {len(train_loader)}")
+print(f"  Val batches: {len(val_loader)}")
+print(f"  Test batches: {len(test_loader)}")
+
+# 6. Анализируем батчи
+print("\nАНАЛИЗ БАТЧЕЙ:")
+for loader_name, loader in [("Train", train_loader), ("Val", val_loader)]:
+    # Берем первый батч
+    batch_data, batch_labels = next(iter(loader))
+    
+    print(f"\n{loader_name} loader - первый батч:")
+    print(f"  Форма данных: {batch_data.shape}")
+    print(f"  Форма меток: {batch_labels.shape}")
+    print(f"  Уникальные метки в батче: {torch.unique(batch_labels).tolist()}")
+    
+    # Статистика по батчу
+    print(f"  Статистика данных:")
+    print(f"    Минимум: {batch_data.min():.3f}")
+    print(f"    Максимум: {batch_data.max():.3f}")
+    print(f"    Среднее: {batch_data.mean():.3f}")
+    print(f"    Стандартное отклонение: {batch_data.std():.3f}")
+
+# Вопросы для анализа:
+# 1. Что делает параметр drop_last=True?
+# 2. Почему мы shuffle только train данные?
+# 3. Как нормализация влияет на обучение?
+# 4. Что происходит при изменении BATCH_SIZE?
+```
+
+---
+
+## 🔴 Продвинутый уровень: Кастомные DataLoader и оптимизация
+
+### 1. Кастомный DataLoader с кэшированием
+
+```python
+class CachedDataset(Dataset):
+    """Dataset с кэшированием загруженных данных"""
+    
+    def __init__(self, base_dataset, cache_size=100):
+        """
+        Args:
+            base_dataset: базовый dataset
+            cache_size: размер кэша в элементах
+        """
+        self.base_dataset = base_dataset
+        self.cache_size = cache_size
+        self.cache = {}
+        self.access_count = {}
+    
+    def __len__(self):
+        return len(self.base_dataset)
+    
+    def __getitem__(self, idx):
+        # Проверяем, есть ли в кэше
+        if idx in self.cache:
+            # Обновляем счётчик доступа
+            self.access_count[idx] += 1
+            return self.cache[idx]
+        
+        # Загружаем из базового датасета
+        data = self.base_dataset[idx]
+        
+        # Добавляем в кэш
+        if len(self.cache) >= self.cache_size:
+            # Находим наименее используемый элемент
+            lru_idx = min(self.access_count, key=self.access_count.get)
+            del self.cache[lru_idx]
+            del self.access_count[lru_idx]
+        
+        self.cache[idx] = data
+        self.access_count[idx] = 1
+        
+        return data
+    
+    def get_cache_stats(self):
+        """Получить статистику кэша"""
+        cache_hits = sum(self.access_count.values()) - len(self.access_count)
+        total_accesses = sum(self.access_count.values())
+        hit_rate = cache_hits / total_accesses if total_accesses > 0 else 0
+        
+        return {
+            'cache_size': len(self.cache),
+            'max_cache_size': self.cache_size,
+            'cache_hits': cache_hits,
+            'total_accesses': total_accesses,
+            'hit_rate': hit_rate
+        }
+
+def test_cached_dataset():
+    """Тестирование Dataset с кэшированием"""
+    
+    # Создаём базовый dataset
+    base_data = torch.randn(1000, 10)
+    base_labels = torch.randint(0, 5, (1000,))
+    base_dataset = SimpleDataset(base_data, base_labels)
+    
+    # Создаём кэшированную версию
+    cached_dataset = CachedDataset(base_dataset, cache_size=50)
+    
+    # Симулируем доступ к данным
+    print("Тестирование кэширования...")
+    
+    # Первый проход - кэш пустой
+    indices = list(range(100))
+    for idx in indices:
+        _ = cached_dataset[idx]
+    
+    stats1 = cached_dataset.get_cache_stats()
+    print(f"\nПосле первого прохода (100 элементов):")
+    print(f"  Попаданий в кэш: {stats1['cache_hits']}")
+    print(f"  Общие обращения: {stats1['total_accesses']}")
+    print(f"  Hit rate: {stats1['hit_rate']:.1%}")
+    
+    # Второй проход - некоторые данные в кэше
+    for idx in indices[:50]:  # Первые 50 уже в кэше
+        _ = cached_dataset[idx]
+    
+    stats2 = cached_dataset.get_cache_stats()
+    print(f"\nПосле второго прохода (первые 50 элементов):")
+    print(f"  Попаданий в кэш: {stats2['cache_hits']}")
+    print(f"  Общие обращения: {stats2['total_accesses']}")
+    print(f"  Hit rate: {stats2['hit_rate']:.1%}")
+    
+    return cached_dataset
+
+cached_dataset = test_cached_dataset()
+```
+
+### 2. DataLoader с балансировкой классов
+
+```python
+from torch.utils.data import WeightedRandomSampler
+
+class BalancedDataLoader:
+    """DataLoader с балансировкой классов"""
+    
+    def __init__(self, dataset, batch_size=32, num_workers=0):
+        self.dataset = dataset
+        self.batch_size = batch_size
+        
+        # Вычисляем веса для сэмплера
+        labels = []
+        for i in range(len(dataset)):
+            _, label = dataset[i]
+            labels.append(label)
+        
+        labels = torch.tensor(labels)
+        class_counts = torch.bincount(labels)
+        
+        # Вес для каждого класса обратно пропорционален его частоте
+        class_weights = 1. / class_counts.float()
+        sample_weights = class_weights[labels]
+        
+        # Создаём WeightedRandomSampler
+        self.sampler = WeightedRandomSampler(
+            weights=sample_weights,
+            num_samples=len(dataset),
+            replacement=True
+        )
+        
+        # Создаём DataLoader с сэмплером
+        self.loader = DataLoader(
+            dataset=dataset,
+            batch_size=batch_size,
+            sampler=self.sampler,
+            num_workers=num_workers
+        )
+    
+    def __iter__(self):
+        return iter(self.loader)
+    
+    def __len__(self):
+        return len(self.loader)
+
+def test_balanced_loader():
+    """Тестирование DataLoader с балансировкой"""
+    
+    # Создаём несбалансированный dataset
+    torch.manual_seed(42)
+    
+    # Классы с разным количеством примеров
+    class_counts = [100, 20, 5]  # Очень несбалансированные
+    all_data = []
+    all_labels = []
+    
+    for class_idx, count in enumerate(class_counts):
+        class_data = torch.randn(count, 5) + class_idx  # Разные средние
+        class_labels = torch.full((count,), class_idx)
+        all_data.append(class_data)
+        all_labels.append(class_labels)
+    
+    data = torch.cat(all_data, dim=0)
+    labels = torch.cat(all_labels, dim=0)
+    
+    dataset = SimpleDataset(data, labels)
+    
+    print("Исходное распределение классов:")
+    for class_idx in range(len(class_counts)):
+        count = (labels == class_idx).sum().item()
+        print(f"  Класс {class_idx}: {count} примеров ({count/len(labels):.1%})")
+    
+    # Обычный DataLoader
+    regular_loader = DataLoader(dataset, batch_size=16, shuffle=True)
+    
+    # Балансированный DataLoader
+    balanced_loader = BalancedDataLoader(dataset, batch_size=16)
+    
+    # Анализируем распределение в батчах
+    print("\nАнализ распределения в батчах:")
+    
+    for loader_name, loader in [("Обычный", regular_loader), ("Балансированный", balanced_loader)]:
+        # Собираем статистику по нескольким батчам
+        class_distribution = {0: 0, 1: 0, 2: 0}
+        total_samples = 0
+        
+        for batch_idx, (_, batch_labels) in enumerate(loader):
+            if batch_idx >= 10:  # Анализируем первые 10 батчей
+                break
+            
+            for class_idx in range(3):
+                count = (batch_labels == class_idx).sum().item()
+                class_distribution[class_idx] += count
+                total_samples += count
+        
+        print(f"\n{loader_name} loader:")
+        for class_idx in range(3):
+            percentage = class_distribution[class_idx] / total_samples
+            print(f"  Класс {class_idx}: {percentage:.1%}")
+    
+    return regular_loader, balanced_loader
+
+regular_loader, balanced_loader = test_balanced_loader()
+```
+
+### 3. Пайплайн с многопроцессорной загрузкой
+
+```python
+class OptimizedDataPipeline:
+    """Оптимизированный пайплайн загрузки данных"""
+    
+    def __init__(self, dataset, batch_size=64, num_workers=4, 
+                 pin_memory=True, prefetch_factor=2):
+        """
+        Args:
+            dataset: исходный dataset
+            batch_size: размер батча
+            num_workers: число процессов для загрузки
+            pin_memory: копировать ли данные в pinned memory
+            prefetch_factor: сколько батчей загружать заранее
+        """
+        self.dataset = dataset
+        self.batch_size = batch_size
+        self.num_workers = num_workers
+        
+        # Создаём DataLoader с оптимизациями
+        self.loader = DataLoader(
             dataset=dataset,
             batch_size=batch_size,
             shuffle=True,
-            num_workers=0
+            num_workers=num_workers,
+            pin_memory=pin_memory,
+            prefetch_factor=prefetch_factor,
+            persistent_workers=num_workers > 0
         )
+    
+    def benchmark_performance(self, num_batches=100):
+        """Бенчмарк производительности пайплайна"""
+        import time
         
-        # Создаем новую модель
-        model = model_class()
-        criterion = nn.CrossEntropyLoss()
-        optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+        print(f"Бенчмарк производительности:")
+        print(f"  Batch size: {self.batch_size}")
+        print(f"  Num workers: {self.num_workers}")
+        print(f"  Pin memory: {'Yes' if self.loader.pin_memory else 'No'}")
         
-        # Измеряем время обучения на одной эпохе
+        # Прогрев
+        warmup_batches = 10
+        for i, _ in enumerate(self.loader):
+            if i >= warmup_batches:
+                break
+        
+        # Измерение времени
         start_time = time.time()
-        model.train()
+        batch_count = 0
         
-        for batch_features, batch_labels in loader:
-            optimizer.zero_grad()
-            predictions = model(batch_features)
-            loss = criterion(predictions, batch_labels)
-            loss.backward()
-            optimizer.step()
+        for batch_idx, batch in enumerate(self.loader):
+            batch_count += 1
+            if batch_count >= num_batches:
+                break
         
-        epoch_time = time.time() - start_time
+        end_time = time.time()
+        total_time = end_time - start_time
         
-        # Измеряем использование памяти
-        import psutil
-        memory_usage = psutil.Process().memory_info().rss / 1024 / 1024  # в МБ
+        print(f"\nРезультаты:")
+        print(f"  Обработано батчей: {batch_count}")
+        print(f"  Общее время: {total_time:.2f} сек")
+        print(f"  Время на батч: {total_time/batch_count:.4f} сек")
+        print(f"  Батчей в секунду: {batch_count/total_time:.1f}")
         
-        results.append({
-            'batch_size': batch_size,
-            'time_per_epoch': epoch_time,
-            'memory_usage': memory_usage,
-            'batches_per_epoch': len(loader)
-        })
-        
-        print(f"  • Время на эпоху: {epoch_time:.2f} сек")
-        print(f"  • Использование памяти: {memory_usage:.1f} МБ")
-        print(f"  • Батчей в эпохе: {len(loader)}")
+        return total_time
+
+def compare_pipeline_configs():
+    """Сравнение разных конфигураций пайплайна"""
     
-    # Визуализируем результаты
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+    # Создаём тестовый dataset
+    test_data = torch.randn(10000, 10)
+    test_labels = torch.randint(0, 5, (10000,))
+    test_dataset = SimpleDataset(test_data, test_labels)
     
-    batch_sizes_plot = [r['batch_size'] for r in results]
-    times = [r['time_per_epoch'] for r in results]
-    memory = [r['memory_usage'] for r in results]
+    # Тестируемые конфигурации
+    configs = [
+        {'batch_size': 32, 'num_workers': 0, 'pin_memory': False},
+        {'batch_size': 32, 'num_workers': 2, 'pin_memory': False},
+        {'batch_size': 32, 'num_workers': 4, 'pin_memory': True},
+        {'batch_size': 64, 'num_workers': 4, 'pin_memory': True},
+        {'batch_size': 128, 'num_workers': 4, 'pin_memory': True},
+    ]
     
-    axes[0].plot(batch_sizes_plot, times, 'bo-', linewidth=2, markersize=8)
-    axes[0].set_xlabel('Размер батча')
-    axes[0].set_ylabel('Время на эпоху (сек)')
-    axes[0].set_title('Зависимость времени от размера батча')
-    axes[0].grid(True, alpha=0.3)
+    results = []
     
-    axes[1].plot(batch_sizes_plot, memory, 'ro-', linewidth=2, markersize=8)
-    axes[1].set_xlabel('Размер батча')
-    axes[1].set_ylabel('Использование памяти (МБ)')
-    axes[1].set_title('Зависимость памяти от размера батча')
-    axes[1].grid(True, alpha=0.3)
-    
-    plt.tight_layout()
-    plt.show()
-    
-    # Рекомендация
-    print("\n" + "=" * 60)
-    print("РЕКОМЕНДАЦИЯ ПО ВЫБОРУ BATCH_SIZE:")
+    print("Сравнение конфигураций пайплайна")
     print("=" * 60)
     
-    # Находим оптимальный batch_size (баланс времени и памяти)
-    normalized_times = [t/max(times) for t in times]
-    normalized_memory = [m/max(memory) for m in memory]
+    for config in configs:
+        print(f"\nТестируем конфигурацию:")
+        print(f"  Batch size: {config['batch_size']}")
+        print(f"  Num workers: {config['num_workers']}")
+        print(f"  Pin memory: {config['pin_memory']}")
+        
+        pipeline = OptimizedDataPipeline(
+            test_dataset,
+            batch_size=config['batch_size'],
+            num_workers=config['num_workers'],
+            pin_memory=config['pin_memory']
+        )
+        
+        time_taken = pipeline.benchmark_performance(num_batches=50)
+        
+        results.append({
+            **config,
+            'time_per_batch': time_taken / 50
+        })
     
-    # Суммарная "стоимость" (меньше = лучше)
-    costs = [t + m for t, m in zip(normalized_times, normalized_memory)]
-    best_idx = costs.index(min(costs))
-    best_batch = results[best_idx]['batch_size']
+    # Анализ результатов
+    print("\n" + "=" * 60)
+    print("СРАВНИТЕЛЬНЫЙ АНАЛИЗ")
+    print("=" * 60)
     
-    print(f"Оптимальный batch_size для этого dataset: {best_batch}")
-    print(f"\nОбъяснение:")
-    print(f"• batch_size={best_batch} дает хороший баланс между:")
-    print(f"  - Скоростью: {results[best_idx]['time_per_epoch']:.2f} сек/эпоху")
-    print(f"  - Памятью: {results[best_idx]['memory_usage']:.1f} МБ")
-    print(f"  - Количеством батчей: {results[best_idx]['batches_per_epoch']}")
+    best_config = min(results, key=lambda x: x['time_per_batch'])
+    
+    for idx, result in enumerate(results):
+        speedup = best_config['time_per_batch'] / result['time_per_batch']
+        print(f"\nКонфигурация {idx+1}:")
+        print(f"  Batch: {result['batch_size']}, Workers: {result['num_workers']}, Pin: {result['pin_memory']}")
+        print(f"  Время на батч: {result['time_per_batch']:.4f} сек")
+        print(f"  Скорость относительно лучшей: {speedup:.1f}x")
+    
+    print(f"\nЛучшая конфигурация:")
+    print(f"  Batch size: {best_config['batch_size']}")
+    print(f"  Num workers: {best_config['num_workers']}")
+    print(f"  Pin memory: {best_config['pin_memory']}")
+    print(f"  Время на батч: {best_config['time_per_batch']:.4f} сек")
+    
+    return results
 
-# Запускаем поиск оптимального batch_size (на подмножестве данных для скорости)
-small_dataset = SimpleDataset(X[:1000], y[:1000])
-find_optimal_batch_size(small_dataset, SimpleClassifier)
+# Запускаем сравнение (закомментировано для скорости)
+# pipeline_results = compare_pipeline_configs()
 ```
 
 ---
 
-🎓 Ключевые выводы
-
-Про батчи:
-
-1. Мини-батчи — золотая середина между скоростью и стабильностью
-2. Размер батча влияет на:
-   · Скорость обучения
-   · Использование памяти
-   · Качество градиентов
-3. Правило: batch_size обычно выбирают степенью двойки (32, 64, 128...)
-
-Про Dataset:
-
-1. Dataset — это интерфейс к вашим данным
-2. Ключевые методы: __len__() и __getitem__()
-3. Преимущества: ленивая загрузка, преобразования данных
-
-Про DataLoader:
-
-1. Автоматизирует создание батчей
-2. Параллелизация: num_workers ускоряет загрузку
-3. Перемешивание: shuffle=True для обучения, False для валидации/теста
-4. Обработка краев: drop_last для неполных батчей
-
-Практические рекомендации:
-
-1. Начинайте с: batch_size=32, shuffle=True, num_workers=0 (для отладки)
-2. Для больших данных: увеличивайте num_workers (2-4)
-3. Всегда проверяйте: корректность загрузки данных перед обучением
-4. Используйте разные: стратегии для train/val/test данных
-
-Типичные значения:
+## 🔄 Попробуйте сами 🔴 (Продвинутый уровень)
 
 ```python
-# Для обучения
-train_loader = DataLoader(
-    dataset=train_dataset,
-    batch_size=32,      # или 64 для больших данных
-    shuffle=True,       # важно перемешивать!
-    num_workers=2,      # ускоряет загрузку
-    drop_last=False     # обычно False
+# ВЫЗОВ: СОЗДАЙТЕ ПОЛНЫЙ ПРОИЗВОДСТВЕННЫЙ ПАЙПЛАЙН ДАННЫХ
+
+# 1. Создайте сложный Dataset с несколькими модальностями
+class MultimodalDataset(Dataset):
+    """
+    Dataset с несколькими типами данных:
+    - Числовые признаки
+    - Изображения (симулированные)
+    - Текст (симулированные эмбеддинги)
+    """
+    
+    def __init__(self, num_samples=1000, transform=None):
+        self.num_samples = num_samples
+        self.transform = transform
+        
+        # Генерируем разные типы данных
+        self.numeric_data = self._generate_numeric_data()
+        self.image_data = self._generate_image_data()
+        self.text_embeddings = self._generate_text_embeddings()
+        self.labels = self._generate_labels()
+        
+        # Кэш для быстрого доступа
+        self.cache = {}
+        self.cache_hits = 0
+        self.total_accesses = 0
+    
+    def _generate_numeric_data(self):
+        """Генерация числовых признаков (10 признаков)"""
+        numeric = torch.randn(self.num_samples, 10)
+        # Добавляем зависимости между признаками
+        numeric[:, 2] = numeric[:, 0] * 0.5 + numeric[:, 1] * 0.3 + torch.randn(self.num_samples) * 0.2
+        return numeric
+    
+    def _generate_image_data(self):
+        """Генерация симулированных изображений (1x28x28)"""
+        images = torch.randn(self.num_samples, 1, 28, 28)
+        # Добавляем структуру: разные классы имеют разные паттерны
+        for i in range(self.num_samples):
+            class_pattern = (i % 3) * 0.5
+            images[i] += class_pattern
+        return images
+    
+    def _generate_text_embeddings(self):
+        """Генерация симулированных текстовых эмбеддингов (50-мерных)"""
+        embeddings = torch.randn(self.num_samples, 50)
+        # Делаем эмбеддинги кластеризованными
+        cluster_centers = torch.randn(3, 50)
+        for i in range(self.num_samples):
+            cluster_idx = i % 3
+            embeddings[i] = cluster_centers[cluster_idx] + torch.randn(50) * 0.3
+        return embeddings
+    
+    def _generate_labels(self):
+        """Генерация сложных мульти-лейблов"""
+        labels = torch.zeros(self.num_samples, 3)  # 3 независимых задачи
+        
+        # Задача 1: бинарная классификация на основе числовых данных
+        labels[:, 0] = (self.numeric_data[:, 0] > 0).float()
+        
+        # Задача 2: мультикласс на основе изображений
+        labels[:, 1] = torch.randint(0, 3, (self.num_samples,)).float()
+        
+        # Задача 3: регрессия на основе текста
+        labels[:, 2] = self.text_embeddings.mean(dim=1)
+        
+        return labels
+    
+    def __len__(self):
+        return self.num_samples
+    
+    def __getitem__(self, idx):
+        self.total_accesses += 1
+        
+        # Проверяем кэш
+        if idx in self.cache:
+            self.cache_hits += 1
+            return self.cache[idx]
+        
+        # Получаем данные
+        numeric = self.numeric_data[idx]
+        image = self.image_data[idx]
+        text = self.text_embeddings[idx]
+        label = self.labels[idx]
+        
+        # Применяем трансформации если есть
+        if self.transform:
+            image = self.transform(image)
+        
+        # Собираем в словарь
+        sample = {
+            'numeric': numeric,
+            'image': image,
+            'text': text,
+            'label': label,
+            'index': idx
+        }
+        
+        # Сохраняем в кэш (ограничиваем размер)
+        if len(self.cache) < 100:
+            self.cache[idx] = sample
+        
+        return sample
+    
+    def get_cache_stats(self):
+        """Статистика кэша"""
+        return {
+            'cache_size': len(self.cache),
+            'cache_hits': self.cache_hits,
+            'total_accesses': self.total_accesses,
+            'hit_rate': self.cache_hits / self.total_accesses if self.total_accesses > 0 else 0
+        }
+    
+    def get_dataset_stats(self):
+        """Статистика датасета"""
+        return {
+            'total_samples': self.num_samples,
+            'numeric_shape': self.numeric_data.shape,
+            'image_shape': self.image_data.shape,
+            'text_shape': self.text_embeddings.shape,
+            'label_shape': self.labels.shape,
+            'label_stats': {
+                'task1_mean': self.labels[:, 0].mean().item(),
+                'task2_distribution': torch.bincount(self.labels[:, 1].long()).tolist(),
+                'task3_range': [self.labels[:, 2].min().item(), self.labels[:, 2].max().item()]
+            }
+        }
+
+# 2. Создайте кастомный DataLoader с продвинутыми фичами
+class AdvancedDataLoader:
+    """
+    Продвинутый DataLoader с:
+    - Динамическим батчингом
+    - Автоматической балансировкой
+    - Мониторингом производительности
+    """
+    
+    def __init__(self, dataset, base_batch_size=32, max_batch_size=128, 
+                 num_workers=2, adaptive_batching=True):
+        
+        self.dataset = dataset
+        self.base_batch_size = base_batch_size
+        self.max_batch_size = max_batch_size
+        self.adaptive_batching = adaptive_batching
+        
+        # Статистика
+        self.batch_times = []
+        self.current_batch_size = base_batch_size
+        
+        # Создаём сэмплер для балансировки по первой задаче
+        labels = torch.stack([dataset[i]['label'] for i in range(min(100, len(dataset)))])
+        task1_labels = labels[:, 0].long()
+        class_counts = torch.bincount(task1_labels)
+        class_weights = 1. / class_counts.float()
+        sample_weights = class_weights[task1_labels]
+        
+        self.sampler = WeightedRandomSampler(
+            weights=sample_weights,
+            num_samples=len(dataset),
+            replacement=True
+        )
+        
+        # Создаём DataLoader
+        self.loader = DataLoader(
+            dataset=dataset,
+            batch_size=self.current_batch_size,
+            sampler=self.sampler,
+            num_workers=num_workers,
+            pin_memory=True,
+            prefetch_factor=2,
+            collate_fn=self.custom_collate
+        )
+    
+    def custom_collate(self, batch):
+        """Кастомная функция для сборки батча"""
+        import time
+        start_time = time.time()
+        
+        # Разделяем данные по типам
+        numeric_batch = torch.stack([item['numeric'] for item in batch])
+        image_batch = torch.stack([item['image'] for item in batch])
+        text_batch = torch.stack([item['text'] for item in batch])
+        label_batch = torch.stack([item['label'] for item in batch])
+        indices = torch.tensor([item['index'] for item in batch])
+        
+        # Создаём структурированный батч
+        collated_batch = {
+            'numeric': numeric_batch,
+            'image': image_batch,
+            'text': text_batch,
+            'label': {
+                'task1': label_batch[:, 0],  # Бинарная классификация
+                'task2': label_batch[:, 1].long(),  # Мультикласс
+                'task3': label_batch[:, 2]  # Регрессия
+            },
+            'indices': indices,
+            'batch_size': len(batch)
+        }
+        
+        # Измеряем время обработки
+        process_time = time.time() - start_time
+        self.batch_times.append(process_time)
+        
+        # Адаптивный батчинг (если включен)
+        if self.adaptive_batching and len(self.batch_times) > 10:
+            avg_time = sum(self.batch_times[-10:]) / 10
+            if avg_time < 0.01 and self.current_batch_size < self.max_batch_size:
+                # Увеличиваем размер батча
+                self.current_batch_size = min(
+                    self.current_batch_size * 2,
+                    self.max_batch_size
+                )
+                print(f"Увеличиваем batch size до {self.current_batch_size}")
+            
+            elif avg_time > 0.05 and self.current_batch_size > self.base_batch_size:
+                # Уменьшаем размер батча
+                self.current_batch_size = max(
+                    self.current_batch_size // 2,
+                    self.base_batch_size
+                )
+                print(f"Уменьшаем batch size до {self.current_batch_size}")
+        
+        return collated_batch
+    
+    def __iter__(self):
+        # Обновляем DataLoader с новым batch_size
+        if self.adaptive_batching:
+            self.loader = DataLoader(
+                dataset=self.dataset,
+                batch_size=self.current_batch_size,
+                sampler=self.sampler,
+                num_workers=self.loader.num_workers,
+                pin_memory=self.loader.pin_memory,
+                prefetch_factor=self.loader.prefetch_factor,
+                collate_fn=self.custom_collate
+            )
+        
+        return iter(self.loader)
+    
+    def __len__(self):
+        return len(self.loader)
+    
+    def get_performance_stats(self):
+        """Статистика производительности"""
+        if not self.batch_times:
+            return {}
+        
+        return {
+            'avg_batch_time': sum(self.batch_times) / len(self.batch_times),
+            'total_batches': len(self.batch_times),
+            'current_batch_size': self.current_batch_size,
+            'min_batch_time': min(self.batch_times),
+            'max_batch_time': max(self.batch_times)
+        }
+
+# 3. Создайте и протестируйте пайплайн
+print("=" * 70)
+print("СОЗДАНИЕ ПРОИЗВОДСТВЕННОГО ПАЙПЛАЙНА ДАННЫХ")
+print("=" * 70)
+
+# Создаём мультимодальный датасет
+multimodal_dataset = MultimodalDataset(num_samples=5000)
+
+# Анализируем датасет
+stats = multimodal_dataset.get_dataset_stats()
+print("\nСТАТИСТИКА DATASET:")
+print(f"Всего примеров: {stats['total_samples']}")
+print(f"Числовые данные: {stats['numeric_shape']}")
+print(f"Изображения: {stats['image_shape']}")
+print(f"Текстовые эмбеддинги: {stats['text_shape']}")
+print(f"Метки: {stats['label_shape']}")
+print(f"\nСтатистика меток:")
+print(f"  Задача 1 (бинарная): среднее = {stats['label_stats']['task1_mean']:.3f}")
+print(f"  Задача 2 (мультикласс): распределение = {stats['label_stats']['task2_distribution']}")
+print(f"  Задача 3 (регрессия): диапазон = [{stats['label_stats']['task3_range'][0]:.3f}, {stats['label_stats']['task3_range'][1]:.3f}]")
+
+# Создаём продвинутый DataLoader
+advanced_loader = AdvancedDataLoader(
+    dataset=multimodal_dataset,
+    base_batch_size=16,
+    max_batch_size=64,
+    num_workers=0,  # Для демонстрации
+    adaptive_batching=True
 )
 
-# Для валидации/теста
-val_loader = DataLoader(
-    dataset=val_dataset,
-    batch_size=32,
-    shuffle=False,      # не перемешиваем!
-    num_workers=0,      # для простоты
-    drop_last=False
+print(f"\nADVANCED DATALOADER:")
+print(f"Base batch size: {advanced_loader.base_batch_size}")
+print(f"Max batch size: {advanced_loader.max_batch_size}")
+print(f"Adaptive batching: {'ВКЛ' if advanced_loader.adaptive_batching else 'ВЫКЛ'}")
+print(f"Sampler type: {type(advanced_loader.sampler).__name__}")
+
+# Тестируем пайплайн
+print("\n" + "=" * 70)
+print("ТЕСТИРОВАНИЕ ПАЙПЛАЙНА")
+print("=" * 70)
+
+# Проходим по нескольким батчам
+num_test_batches = 5
+batch_samples = []
+
+for batch_idx, batch in enumerate(advanced_loader):
+    if batch_idx >= num_test_batches:
+        break
+    
+    print(f"\nБатч #{batch_idx}:")
+    print(f"  Размер батча: {batch['batch_size']}")
+    print(f"  Числовые данные: {batch['numeric'].shape}")
+    print(f"  Изображения: {batch['image'].shape}")
+    print(f"  Текст: {batch['text'].shape}")
+    
+    # Анализируем метки
+    task1_labels = batch['label']['task1']
+    task2_labels = batch['label']['task2']
+    task3_labels = batch['label']['task3']
+    
+    print(f"  Метки задача 1 (0/1): {(task1_labels == 0).sum()}/{ (task1_labels == 1).sum()}")
+    print(f"  Метки задача 2 (0/1/2): "
+          f"{(task2_labels == 0).sum()}/{(task2_labels == 1).sum()}/{(task2_labels == 2).sum()}")
+    print(f"  Метки задача 3: среднее = {task3_labels.mean():.3f}")
+    
+    batch_samples.append(batch)
+
+# Анализ производительности
+print("\n" + "=" * 70)
+print("АНАЛИЗ ПРОИЗВОДИТЕЛЬНОСТИ")
+print("=" * 70)
+
+# Статистика кэша датасета
+cache_stats = multimodal_dataset.get_cache_stats()
+print(f"\nСтатистика кэша Dataset:")
+print(f"  Размер кэша: {cache_stats['cache_size']}")
+print(f"  Попадания в кэш: {cache_stats['cache_hits']}")
+print(f"  Всего обращений: {cache_stats['total_accesses']}")
+print(f"  Hit rate: {cache_stats['hit_rate']:.1%}")
+
+# Статистика производительности DataLoader
+perf_stats = advanced_loader.get_performance_stats()
+if perf_stats:
+    print(f"\nСтатистика производительности DataLoader:")
+    print(f"  Среднее время обработки батча: {perf_stats['avg_batch_time']:.4f} сек")
+    print(f"  Минимальное время: {perf_stats['min_batch_time']:.4f} сек")
+    print(f"  Максимальное время: {perf_stats['max_batch_time']:.4f} сек")
+    print(f"  Всего обработанных батчей: {perf_stats['total_batches']}")
+    print(f"  Текущий размер батча: {perf_stats['current_batch_size']}")
+
+# 4. Создайте систему мониторинга
+class DataPipelineMonitor:
+    """Мониторинг пайплайна данных"""
+    
+    def __init__(self, data_loader):
+        self.loader = data_loader
+        self.metrics = {
+            'batch_times': [],
+            'batch_sizes': [],
+            'data_shapes': [],
+            'label_distributions': []
+        }
+    
+    def monitor_epoch(self, num_batches=None):
+        """Мониторинг одной эпохи"""
+        batch_count = 0
+        
+        for batch in self.loader:
+            # Сохраняем метрики
+            self.metrics['batch_times'].append(
+                advanced_loader.batch_times[-1] if advanced_loader.batch_times else 0
+            )
+            self.metrics['batch_sizes'].append(batch['batch_size'])
+            self.metrics['data_shapes'].append({
+                'numeric': batch['numeric'].shape,
+                'image': batch['image'].shape,
+                'text': batch['text'].shape
+            })
+            
+            # Распределение меток
+            task1_dist = torch.bincount(batch['label']['task1'].long()).tolist()
+            task2_dist = torch.bincount(batch['label']['task2']).tolist()
+            self.metrics['label_distributions'].append({
+                'task1': task1_dist,
+                'task2': task2_dist
+            })
+            
+            batch_count += 1
+            if num_batches and batch_count >= num_batches:
+                break
+    
+    def generate_report(self):
+        """Генерация отчёта"""
+        print("\n" + "=" * 70)
+        print("ОТЧЁТ МОНИТОРИНГА ПАЙПЛАЙНА")
+        print("=" * 70)
+        
+        if not self.metrics['batch_times']:
+            print("Нет данных для анализа")
+            return
+        
+        # Анализ времени
+        avg_time = sum(self.metrics['batch_times']) / len(self.metrics['batch_times'])
+        print(f"\nПроизводительность:")
+        print(f"  Среднее время батча: {avg_time:.4f} сек")
+        print(f"  Всего батчей: {len(self.metrics['batch_times'])}")
+        print(f"  Общее время: {sum(self.metrics['batch_times']):.2f} сек")
+        
+        # Анализ размеров батчей
+        unique_sizes = set(self.metrics['batch_sizes'])
+        print(f"\nРазмеры батчей:")
+        for size in sorted(unique_sizes):
+            count = self.metrics['batch_sizes'].count(size)
+            print(f"  {size}: {count} батчей ({count/len(self.metrics['batch_sizes']):.1%})")
+        
+        # Анализ распределения меток
+        print(f"\nРаспределение меток (усреднённое):")
+        
+        # Задача 1
+        task1_total = [0, 0]
+        for dist in self.metrics['label_distributions']:
+            task1_dist = dist['task1']
+            if len(task1_dist) > 0:
+                task1_total[0] += task1_dist[0]
+            if len(task1_dist) > 1:
+                task1_total[1] += task1_dist[1]
+        
+        task1_sum = sum(task1_total)
+        if task1_sum > 0:
+            print(f"  Задача 1 (бинарная):")
+            print(f"    Класс 0: {task1_total[0]} ({task1_total[0]/task1_sum:.1%})")
+            print(f"    Класс 1: {task1_total[1]} ({task1_total[1]/task1_sum:.1%})")
+        
+        # Задача 2
+        task2_total = [0, 0, 0]
+        for dist in self.metrics['label_distributions']:
+            task2_dist = dist['task2']
+            for i in range(min(len(task2_dist), 3)):
+                task2_total[i] += task2_dist[i]
+        
+        task2_sum = sum(task2_total)
+        if task2_sum > 0:
+            print(f"  Задача 2 (мультикласс):")
+            for i, count in enumerate(task2_total):
+                print(f"    Класс {i}: {count} ({count/task2_sum:.1%})")
+
+# Тестируем мониторинг
+print("\n" + "=" * 70)
+print("ТЕСТИРОВАНИЕ МОНИТОРИНГА")
+print("=" * 70)
+
+monitor = DataPipelineMonitor(advanced_loader)
+monitor.monitor_epoch(num_batches=10)
+monitor.generate_report()
+
+# Вопросы для анализа:
+# 1. Как кэширование влияет на производительность?
+# 2. В чём преимущества адаптивного батчинга?
+# 3. Как балансировка классов влияет на распределение в батчах?
+# 4. Какие метрики мониторинга самые важные?
+```
+
+---
+
+## 📚 Резюме по уровням сложности
+
+### 🟢 Базовый уровень (Вы должны уметь):
+- Создавать простые Dataset классы
+- Использовать стандартный DataLoader
+- Понимать концепцию батчей
+- Различать параметры shuffle и batch_size
+
+### 🟡 Средний уровень (Вы должны уметь):
+- Создавать сложные Dataset с трансформациями
+- Разделять данные на train/val/test
+- Работать с несбалансированными данными
+- Использовать WeightedRandomSampler
+
+### 🔴 Продвинутый уровень (Вы должны уметь):
+- Создавать кастомные DataLoader с оптимизациями
+- Реализовывать кэширование и предзагрузку
+- Оптимизировать пайплайн для production
+- Мониторить производительность пайплайна
+- Работать с многомодальными данными
+
+---
+
+## 🎯 Ключевые выводы
+
+### Почему батчи важны?
+1. **Эффективность GPU** — GPU лучше работают с батчами
+2. **Стабильность градиентов** — усреднение по батчу дает более стабильные градиенты
+3. **Экономия памяти** — не нужно хранить все данные сразу
+
+### Лучшие практики:
+- **Dataset**: Должен быть легковесным, хранить только индексы/пути
+- **DataLoader**: Используйте num_workers > 0 для загрузки в фоне
+- **Batch size**: Начинайте с 32/64, увеличивайте пока есть память
+- **Transforms**: Применяйте аугментации только к train данным
+
+### Производительность:
+```python
+# Хорошая конфигурация для начала:
+loader = DataLoader(
+    dataset=dataset,
+    batch_size=64,
+    shuffle=True,
+    num_workers=4,      # Использовать несколько процессов
+    pin_memory=True,    # Быстрее копирование на GPU
+    prefetch_factor=2   # Предзагрузка батчей
 )
 ```
 
 ---
 
-🚀 Что дальше?
-
-Теперь вы умеете:
-
-1. Эффективно организовывать данные с помощью Dataset
-2. Автоматизировать создание батчей с помощью DataLoader
-3. Выбирать оптимальные параметры для вашей задачи
-4. Диагностировать проблемы с загрузкой данных
-
-Следующие шаги:
-
-1. Попробуйте применить эти знания к вашим данным
-2. Экспериментируйте с разными размерами батчей
-3. Изучите более сложные Dataset для изображений и текста
-4. Оптимизируйте загрузку данных для ускорения обучения
-
-Помните: Правильная организация данных — это половина успеха в машинном обучении. Хороший DataLoader может ускорить обучение в несколько раз!
-
----
-
-Для дальнейшего изучения:
-
-· Официальная документация PyTorch: Data Loading
-· Примеры Dataset для разных типов данных
-· Оптимизация загрузки данных для больших датасетов
+**Следующий шаг:** Интегрируйте ваш пайплайн данных с обучением модели! Попробуйте использовать созданные DataLoader в реальном тренировочном цикле.

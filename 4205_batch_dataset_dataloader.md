@@ -590,18 +590,18 @@ def test_cached_dataset():
     print("Тестирование кэширования...")
     
     # Первый проход - кэш пустой
-    indices = list(range(100))
+    indices = list(range(30))
     for idx in indices:
         _ = cached_dataset[idx]
     
     stats1 = cached_dataset.get_cache_stats()
-    print(f"\nПосле первого прохода (100 элементов):")
+    print(f"\nПосле первого прохода (30 элементов):")
     print(f"  Попаданий в кэш: {stats1['cache_hits']}")
     print(f"  Общие обращения: {stats1['total_accesses']}")
     print(f"  Hit rate: {stats1['hit_rate']:.1%}")
     
     # Второй проход - некоторые данные в кэше
-    for idx in indices[:50]:  # Первые 50 уже в кэше
+    for idx in indices[:50]:  # Первые 30 уже в кэше
         _ = cached_dataset[idx]
     
     stats2 = cached_dataset.get_cache_stats()

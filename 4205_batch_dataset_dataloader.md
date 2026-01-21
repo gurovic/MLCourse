@@ -49,8 +49,8 @@ class SimpleDataset(Dataset):
     def __init__(self, data, labels):
         """
         Args:
-            data: тензор с признаками
-            labels: тензор с метками
+            data: тензор с признаками (Х)
+            labels: тензор с метками (y)
         """
         self.data = data
         self.labels = labels

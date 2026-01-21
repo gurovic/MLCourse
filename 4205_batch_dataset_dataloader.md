@@ -797,7 +797,7 @@ def compare_pipeline_configs():
     
     # Тестируемые конфигурации
     configs = [
-        {'batch_size': 32, 'num_workers': 0, 'pin_memory': False},
+        {'batch_size': 32, 'num_workers': 1, 'pin_memory': False},
         {'batch_size': 32, 'num_workers': 2, 'pin_memory': False},
         {'batch_size': 32, 'num_workers': 4, 'pin_memory': True},
         {'batch_size': 64, 'num_workers': 4, 'pin_memory': True},

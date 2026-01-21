@@ -89,7 +89,7 @@ simple_loader = DataLoader(
     dataset=simple_dataset,
     batch_size=2,      # Размер батча
     shuffle=True,      # Перемешивать ли данные
-    num_workers=0      # Число процессов для загрузки (0 для простоты)
+    num_workers=1      # Число процессов для загрузки (0 для простоты)
 )
 
 print("Батчи из DataLoader:")

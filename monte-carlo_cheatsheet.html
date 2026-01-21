@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Метод Монте-Карло Cheatsheet — 3 колонки</title>
+  <style>
+    @media screen {
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+        color: #333;
+        background: #fafcff;
+        padding: 10px;
+      }
+    }
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      @page {
+        size: A4 landscape;
+        margin: 10mm;
+      }
+    }
+
+    .container {
+      column-count: 3;
+      column-gap: 20px;
+      max-width: 100%;
+    }
+
+    .block {
+      break-inside: avoid;
+      margin-bottom: 1.2em;
+      padding: 12px;
+      background: white;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    h1 {
+      font-size: 1.6em;
+      font-weight: 700;
+      color: #1a5fb4;
+      text-align: center;
+      margin: 0 0 8px;
+      column-span: all;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 0.9em;
+      margin-bottom: 12px;
+      column-span: all;
+    }
+
+    h2 {
+      font-size: 1.15em;
+      font-weight: 700;
+      color: #1a5fb4;
+      margin: 0 0 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #e0e7ff;
+    }
+
+    p, ul, ol {
+      font-size: 0.92em;
+      margin: 0.6em 0;
+    }
+
+    ul, ol {
+      padding-left: 18px;
+    }
+
+    li {
+      margin-bottom: 4px;
+    }
+
+    code {
+      font-family: 'Consolas', 'Courier New', monospace;
+      background-color: #f0f4ff;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-size: 0.88em;
+    }
+
+    pre {
+      background-color: #f0f4ff;
+      padding: 8px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 0.84em;
+      margin: 6px 0;
+    }
+
+    pre code {
+      padding: 0;
+      background: none;
+      white-space: pre-wrap;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82em;
+      margin: 6px 0;
+    }
+
+    th {
+      background-color: #e6f0ff;
+      text-align: left;
+      padding: 4px 6px;
+      font-weight: 600;
+    }
+
+    td {
+      padding: 4px 6px;
+      border-bottom: 1px solid #f0f4ff;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f8fbff;
+    }
+
+    .good-vs-bad {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .good-vs-bad div {
+      flex: 1;
+      padding: 6px 8px;
+      border-radius: 4px;
+    }
+
+    .good {
+      background-color: #f0f9f4;
+      border-left: 3px solid #2e8b57;
+    }
+
+    .bad {
+      background-color: #fdf0f2;
+      border-left: 3px solid #d32f2f;
+    }
+
+    .good h3, .bad h3 {
+      margin: 0 0 4px;
+      font-size: 1em;
+      font-weight: 700;
+    }
+
+    .good ul, .bad ul {
+      padding-left: 20px;
+      margin: 0;
+    }
+
+    .good li::before { content: "✅ "; font-weight: bold; }
+    .bad li::before { content: "❌ "; font-weight: bold; }
+
+    blockquote {
+      font-style: italic;
+      margin: 8px 0;
+      padding: 6px 10px;
+      background: #f8fbff;
+      border-left: 2px solid #1a5fb4;
+      font-size: 0.88em;
+    }
+
+    .formula {
+      font-family: 'Cambria Math', serif;
+      font-size: 0.9em;
+      background: #f8fbff;
+      padding: 6px;
+      border-radius: 4px;
+      margin: 4px 0;
+      text-align: center;
+    }
+
+    .algorithm-box {
+      background-color: #f0f9f4;
+      border: 1px solid #c1e7d3;
+      border-radius: 4px;
+      padding: 10px;
+      margin: 8px 0;
+      font-size: 0.85em;
+      font-family: 'Consolas', monospace;
+    }
+
+    .olympiad-tip {
+      background-color: #e3f2fd;
+      border-left: 3px solid #2196f3;
+      padding: 10px;
+      border-radius: 4px;
+      margin: 8px 0;
+      font-size: 0.9em;
+    }
+
+    .warning {
+      background-color: #fff3e0;
+      border-left: 3px solid #ff9800;
+      padding: 8px;
+      border-radius: 4px;
+      margin: 6px 0;
+      font-size: 0.9em;
+    }
+
+    @media print {
+      .container { column-gap: 12px; }
+      .block { box-shadow: none; }
+      code, pre, table { font-size: 0.78em; }
+      h1 { font-size: 1.4em; }
+      h2 { font-size: 1em; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <h1>🎲 Метод Монте-Карло Cheatsheet (Олимпиадный)</h1>
+  <div class="subtitle">Стохастическое моделирование • Оценка вероятностей • Оптимизация • Игры и стратегии<br>📅 17 декабря 2025</div>
+
+  <div class="block">
+    <h2>🔷 1. Основная идея метода</h2>
+    <ul>
+      <li><strong>Случайные выборки</strong>: генерируем много случайных сценариев</li>
+      <li><strong>Статистическая оценка</strong>: приближаем решение через усреднение</li>
+      <li><strong>Закон больших чисел</strong>: точность ∝ √N (увеличивается с числом испытаний)</li>
+      <li><strong>Применение</strong>: когда аналитическое решение сложно или невозможно</li>
+    </ul>
+    <div class="formula">
+      Оценка = (1/N) Σ f(xᵢ), где xᵢ ~ случайное распределение
+    </div>
+    <div class="olympiad-tip">
+      <strong>Олимпиадный лайфхак:</strong> Метод Монте-Карло часто позволяет быстро получить приближенное решение (3-4 знака точности), когда точное решение требует сложных вычислений.
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>🔷 2. Типичные олимпиадные задачи</h2>
+    <table>
+      <tr><th>Тип задачи</th><th>Пример</th><th>Подход Монте-Карло</th></tr>
+      <tr><td><strong>Вероятности</strong></td><td>Вероятность выигрыша в игре</td><td>Сыграть N раз, посчитать долю побед</td></tr>
+      <tr><td><strong>Интегрирование</strong></td><td>∫₀¹ sin(x²)dx</td><td>Бросать случайные точки в область</td></tr>
+      <tr><td><strong>Оптимизация</strong></td><td>Найти max f(x) на сложной области</td><td>Случайный поиск + локальное улучшение</td></tr>
+      <tr><td><strong>Игровые стратегии</strong></td><td>Оптимальная стратегия в покере</td><td>Моделировать игру, оценивать ожидаемый выигрыш</td></tr>
+      <tr><td><strong>Оценка π</strong></td><td>Классическая задача</td><td>Бросать точки в квадрат, считать долю в круге</td></tr>
+      <tr><td><strong>Случайные блуждания</strong></td><td>Достижение границы</td><td>Смоделировать много траекторий</td></tr>
+      <tr><td><strong>Симуляция систем</strong></td><td>Очереди, сети, физические системы</td><td>Дискретное событийное моделирование</td></tr>
+    </table>
+  </div>
+
+  <div class="block">
+    <h2>🔷 3. Базовые шаблоны кода (Python)</h2>
+    <pre><code># 1. Оценка вероятности события
+import random
+import math
+
+def estimate_probability(event_func, n_trials=100000):
+    """Оценка вероятности события"""
+    successes = 0
+    for _ in range(n_trials):
+        if event_func():  # функция возвращает True если событие произошло
+            successes += 1
+    return successes / n_trials
+
+# Пример: вероятность что сумма двух кубиков > 7
+def dice_sum_gt_7():
+    return random.randint(1, 6) + random.randint(1, 6) > 7
+
+prob = estimate_probability(dice_sum_gt_7, 100000)
+print(f"P(sum > 7) ≈ {prob:.5f}")
+
+# 2. Интегрирование методом Монте-Карло
+def monte_carlo_integral(func, a, b, n_points=100000):
+    """∫ₐᵇ f(x)dx методом Монте-Карло"""
+    total = 0
+    for _ in range(n_points):
+        x = random.uniform(a, b)
+        total += func(x)
+    return (b - a) * total / n_points
+
+# Пример: ∫₀¹ x² dx = 1/3
+result = monte_carlo_integral(lambda x: x**2, 0, 1, 100000)
+print(f"∫₀¹ x² dx ≈ {result:.5f} (точное = 0.33333)")
+
+# 3. Многомерное интегрирование
+def monte_carlo_integral_nd(func, bounds, n_points=100000):
+    """∫ f(x) dx на гиперпрямоугольнике"""
+    dim = len(bounds)
+    total = 0
+    for _ in range(n_points):
+        point = [random.uniform(a, b) for a, b in bounds]
+        total += func(point)
+    volume = math.prod(b - a for a, b in bounds)
+    return volume * total / n_points</code></pre>
+  </div>
+
+  <div class="block">
+    <h2>🔷 4. Уменьшение дисперсии (Variance Reduction)</h2>
+    <div class="olympiad-tip">
+      <strong>Критически важно для олимпиад:</strong> Методы уменьшения дисперсии позволяют достичь той же точности с меньшим числом испытаний (быстрее работает!).
+    </div>
+    <table>
+      <tr><th>Метод</th><th>Идея</th><th>Когда использовать</th><th>Выигрыш в точности</th></tr>
+      <tr><td><strong>Антетические переменные</strong></td><td>Использовать симметрию</td><td>Симметричные распределения</td><td>2-10x</td></tr>
+      <tr><td><strong>Стратификация</strong></td><td>Разбить область на части</td><td>Известна структура области</td><td>2-5x</td></tr>
+      <tr><td><strong>Важное выборочное</strong></td><td>Сэмплировать чаще важные области</td><td>Редкие события</td><td>10-100x</td></tr>
+      <tr><td><strong>Условный Монте-Карло</strong></td><td>Условные математические ожидания</td><td>Есть аналитическая часть</td><td>2-20x</td></tr>
+      <tr><td><strong>Контрольные переменные</strong></td><td>Вычесть известное математическое ожидание</td><td>Есть коррелированная известная величина</td><td>2-10x</td></tr>
+    </table>
+    <pre><code># 1. Антетические переменные (для симметричных распределений)
+def estimate_pi_antithetic(n=50000):
+    """Оценка π с антетическими переменными"""
+    inside = 0
+    for i in range(n//2):  # только половину итераций
+        x1, y1 = random.random(), random.random()
+        x2, y2 = 1 - x1, 1 - y1  # антетическая пара
+        
+        if x1*x1 + y1*y1 <= 1:
+            inside += 1
+        if x2*x2 + y2*y2 <= 1:
+            inside += 1
+    return 4 * inside / n
+
+# 2. Стратификация
+def estimate_pi_stratified(k=100, m=500):
+    """Оценка π со стратификацией (k×m точек)"""
+    total_inside = 0
+    for i in range(k):
+        for j in range(k):
+            # Страта (i/k, (i+1)/k) × (j/k, (j+1)/k)
+            inside_strata = 0
+            for _ in range(m):
+                x = (i + random.random()) / k
+                y = (j + random.random()) / k
+                if x*x + y*y <= 1:
+                    inside_strata += 1
+            total_inside += inside_strata
+    return 4 * total_inside / (k*k*m)
+
+# 3. Важное выборочное (importance sampling)
+def estimate_rare_event(threshold=5, n=100000):
+    """Оценка P(X > 5) для X ~ N(0,1)"""
+    # Стандартный Монте-Карло (очень неэффективно)
+    # count = sum(1 for _ in range(n) if random.gauss(0, 1) > threshold)
+    
+    # Важное выборочное: сэмплируем из N(threshold, 1)
+    count = 0
+    for _ in range(n):
+        x = random.gauss(threshold, 1)  # смещаем распределение
+        if x > threshold:
+            # Вес = f_original(x) / f_proposal(x)
+            weight = math.exp(-0.5*x*x) / math.exp(-0.5*(x-threshold)*(x-threshold))
+            count += weight
+    return count / n</code></pre>
+  </div>
+
+  <div class="block">
+    <h2>🔷 5. Игровые стратегии и MCTS</h2>
+    <div class="algorithm-box">
+      <strong>Monte Carlo Tree Search (MCTS):</strong><br>
+      1. Selection: Выбор узла для расширения<br>
+      2. Expansion: Добавление нового узла<br>
+      3. Simulation: Случайная игра до конца<br>
+      4. Backpropagation: Обновление статистики
+    </div>
+    <pre><code>class MCTSNode:
+    def __init__(self, state, parent=None):
+        self.state = state
+        self.parent = parent
+        self.children = []
+        self.visits = 0
+        self.wins = 0
+    
+    def ucb1(self, exploration=1.414):
+        if self.visits == 0:
+            return float('inf')
+        return self.wins/self.visits + exploration*math.sqrt(
+            math.log(self.parent.visits)/self.visits
+        )
+
+def mcts(root_state, iterations=1000):
+    root = MCTSNode(root_state)
+    
+    for _ in range(iterations):
+        # 1. Selection
+        node = root
+        while node.children:
+            node = max(node.children, key=lambda n: n.ucb1())
+        
+        # 2. Expansion (если игра не закончена)
+        if not is_terminal(node.state):
+            legal_moves = get_legal_moves(node.state)
+            for move in legal_moves:
+                new_state = make_move(node.state, move)
+                node.children.append(MCTSNode(new_state, node))
+            node = random.choice(node.children) if node.children else node
+        
+        # 3. Simulation
+        state = node.state
+        while not is_terminal(state):
+            move = random.choice(get_legal_moves(state))
+            state = make_move(state, move)
+        result = get_result(state)
+        
+        # 4. Backpropagation
+        while node:
+            node.visits += 1
+            if (node.parent and 
+                ((result == 1 and node.parent.state.current_player != state.current_player) or
+                 (result == 0 and node.parent.state.current_player == state.current_player))):
+                node.wins += 1
+            node = node.parent
+    
+    # Выбор лучшего хода
+    best_child = max(root.children, key=lambda n: n.visits)
+    return best_child.state.last_move</code></pre>
+  </div>
+
+  <div class="block">
+    <h2>🔷 6. Оценка точности и доверительные интервалы</h2>
+    <div class="formula">
+      Стандартная ошибка: SE = σ / √N<br>
+      95% Доверительный интервал: оценка ± 1.96 × SE
+    </div>
+    <pre><code>import numpy as np
+from scipy import stats
+
+def monte_carlo_with_ci(func, n_trials=10000, confidence=0.95):
+    """Монте-Карло с доверительным интервалом"""
+    results = []
+    batch_size = 1000
+    
+    # Используем батчи для оценки дисперсии
+    for _ in range(n_trials // batch_size):
+        batch_results = [func() for _ in range(batch_size)]
+        results.append(np.mean(batch_results))
+    
+    mean_estimate = np.mean(results)
+    std_estimate = np.std(results)
+    se = std_estimate / np.sqrt(len(results))
+    
+    # Доверительный интервал
+    z = stats.norm.ppf((1 + confidence) / 2)
+    ci_lower = mean_estimate - z * se
+    ci_upper = mean_estimate + z * se
+    
+    return {
+        'estimate': mean_estimate,
+        'std': std_estimate,
+        'se': se,
+        'ci': (ci_lower, ci_upper),
+        'relative_error': se / mean_estimate if mean_estimate != 0 else float('inf')
+    }
+
+# Адаптивный Монте-Карло (останавливается когда достигнута точность)
+def adaptive_monte_carlo(func, target_relative_error=0.01, max_trials=1000000):
+    """Адаптивный Монте-Карло с автоматическим выбором N"""
+    batch_size = 1000
+    results = []
+    
+    for i in range(1, max_trials // batch_size + 1):
+        batch_results = [func() for _ in range(batch_size)]
+        results.extend(batch_results)
+        
+        if i >= 10:  # Минимум 10 батчей
+            mean_val = np.mean(results)
+            std_val = np.std(results)
+            se = std_val / np.sqrt(len(results))
+            relative_error = se / abs(mean_val) if mean_val != 0 else float('inf')
+            
+            if relative_error < target_relative_error:
+                print(f"Достигнута точность {relative_error:.4f} за {len(results)} испытаний")
+                break
+    
+    return np.mean(results), len(results)</code></pre>
+  </div>
+
+  <div class="block">
+    <h2>🔷 7. Решение оптимизационных задач</h2>
+    <div class="olympiad-tip">
+      <strong>Для олимпиад:</strong> Случайный поиск часто позволяет быстро найти хорошее приближенное решение комбинаторных задач.
+    </div>
+    <pre><code># 1. Случайный поиск с улучшением
+def random_search_optimization(objective_func, bounds, iterations=10000):
+    """Случайный поиск для непрерывной оптимизации"""
+    best_point = None
+    best_value = float('-inf')
+    dim = len(bounds)
+    
+    for _ in range(iterations):
+        point = [random.uniform(a, b) for a, b in bounds]
+        value = objective_func(point)
+        
+        if value > best_value:
+            best_value = value
+            best_point = point
+    
+    return best_point, best_value
+
+# 2. Имитация отжига (Simulated Annealing)
+def simulated_annealing(objective_func, initial_point, 
+                        temperature=1000, cooling_rate=0.99,
+                        iterations=10000):
+    """Имитация отжига для глобальной оптимизации"""
+    current_point = initial_point
+    current_value = objective_func(current_point)
+    best_point = current_point.copy()
+    best_value = current_value
+    
+    for i in range(iterations):
+        # Генерируем соседа
+        neighbor = [x + random.uniform(-0.1, 0.1) for x in current_point]
+        neighbor_value = objective_func(neighbor)
+        
+        # Принимаем или отвергаем
+        delta = neighbor_value - current_value
+        if delta > 0 or random.random() < math.exp(delta / temperature):
+            current_point = neighbor
+            current_value = neighbor_value
+            
+            if current_value > best_value:
+                best_point = current_point.copy()
+                best_value = current_value
+        
+        # Охлаждение
+        temperature *= cooling_rate
+    
+    return best_point, best_value
+
+# 3. Кросс-энтропийный метод (Cross-Entropy)
+def cross_entropy_method(objective_func, bounds, pop_size=100, 
+                         elite_size=20, iterations=100):
+    """Кросс-энтропийный метод для оптимизации"""
+    dim = len(bounds)
+    
+    # Инициализация распределения
+    mu = [(a + b) / 2 for a, b in bounds]
+    sigma = [(b - a) / 4 for a, b in bounds]  # начальное отклонение
+    
+    for iteration in range(iterations):
+        # Генерация популяции
+        population = []
+        for _ in range(pop_size):
+            point = [random.gauss(mu[d], sigma[d]) for d in range(dim)]
+            # Обрезаем до границ
+            point = [max(bounds[d][0], min(bounds[d][1], point[d])) 
+                    for d in range(dim)]
+            population.append(point)
+        
+        # Оценка и отбор элиты
+        scores = [(objective_func(p), p) for p in population]
+        scores.sort(reverse=True)
+        elite = [p for _, p in scores[:elite_size]]
+        
+        # Обновление параметров распределения
+        mu = [np.mean([p[d] for p in elite]) for d in range(dim)]
+        sigma = [np.std([p[d] for p in elite]) for d in range(dim)]
+        
+        # Добавляем шум чтобы избежать схлопывания
+        sigma = [max(s, 0.01) for s in sigma]
+    
+    return mu, objective_func(mu)</code></pre>
+  </div>
+
+  <div class="block">
+    <h2>🔷 8. Классические олимпиадные задачи</h2>
+    <div class="olympiad-tip">
+      <strong>Запомните эти задачи!</strong> Они часто встречаются в различных формах на олимпиадах.
+    </div>
+    <pre><code># 1. Задача о встрече (rendezvous problem)
+def meeting_probability(arrival_window=60, wait_time=15, n=100000):
+    """Два человека приходят случайно в промежутке [0, T].
+       Какова вероятность что они встретятся, если каждый ждет W минут?"""
+    meetings = 0
+    for _ in range(n):
+        a = random.uniform(0, arrival_window)
+        b = random.uniform(0, arrival_window)
+        if abs(a - b) <= wait_time:
+            meetings += 1
+    return meetings / n
+
+# 2. Задача о разрыве шнура (broken stick problem)
+def triangle_probability(n=100000):
+    """Разламываем шнур длины 1 в двух случайных точках.
+       Какова вероятность что из трех частей можно составить треугольник?"""
+    triangles = 0
+    for _ in range(n):
+        x, y = random.random(), random.random()
+        a = min(x, y)
+        b = abs(x - y)
+        c = 1 - max(x, y)
+        # Условие треугольника
+        if a + b > c and a + c > b and b + c > a:
+            triangles += 1
+    return triangles / n
+
+# 3. Задача о коллекционере (coupon collector)
+def expected_coupons(n_types=10, n=10000):
+    """Сколько в среднем нужно купить товаров чтобы собрать все n_types купонов?"""
+    totals = []
+    for _ in range(n):
+        collected = set()
+        purchases = 0
+        while len(collected) < n_types:
+            collected.add(random.randint(1, n_types))
+            purchases += 1
+        totals.append(purchases)
+    return np.mean(totals)
+
+# 4. Задача о побеге из лабиринта
+def escape_maze_probability(grid_size=10, n=10000):
+    """Случайное блуждание в сетке N×N. Вероятность выйти за границы?"""
+    escapes = 0
+    for _ in range(n):
+        x, y = grid_size//2, grid_size//2
+        while 0 <= x < grid_size and 0 <= y < grid_size:
+            dx, dy = random.choice([(1,0), (-1,0), (0,1), (0,-1)])
+            x += dx
+            y += dy
+        escapes += 1
+    return escapes / n
+
+# 5. Задача Buffon's Needle (оценка π)
+def buffon_needle(length=1, line_spacing=2, n=100000):
+    """Бросаем иглу длины L на пол с параллельными линиями через D.
+       Вероятность пересечения ≈ (2L)/(πD)"""
+    crosses = 0
+    for _ in range(n):
+        # Центр иглы
+        x = random.uniform(0, line_spacing)
+        # Угол
+        theta = random.uniform(0, math.pi)
+        # Проекция на вертикаль
+        projection = (length/2) * math.sin(theta)
+        # Пересекает линию?
+        if x - projection <= 0 or x + projection >= line_spacing:
+            crosses += 1
+    prob = crosses / n
+    estimated_pi = (2 * length) / (prob * line_spacing) if prob > 0 else 0
+    return estimated_pi</code></pre>
+  </div>
+
+  <div class="block">
+    <h2>🔷 9. Параллельный Монте-Карло</h2>
+    <div class="warning">
+      <strong>Для олимпиад с ограничением времени:</strong> Параллелизация может ускорить вычисления в N раз (по числу ядер).
+    </div>
+    <pre><code>import multiprocessing as mp
+import numpy as np
+from functools import partial
+
+# 1. Использование multiprocessing
+def parallel_monte_carlo(func, n_total=1000000, n_processes=None):
+    """Параллельный Монте-Карло"""
+    if n_processes is None:
+        n_processes = mp.cpu_count()
+    
+    n_per_process = n_total // n_processes
+    
+    # Функция для каждого процесса
+    def worker(n):
+        return sum(func() for _ in range(n))
+    
+    # Запуск процессов
+    with mp.Pool(processes=n_processes) as pool:
+        results = pool.map(partial(worker, n_per_process), 
+                          [n_per_process] * n_processes)
+    
+    total = sum(results)
+    return total / n_total
+
+# 2. Использование numpy векторизации (быстрее чем multiprocessing!)
+def vectorized_monte_carlo(func_vectorized, n=1000000):
+    """Векторизованный Монте-Карло (самый быстрый!)"""
+    # func_vectorized должна принимать размер выборки и возвращать массив
+    results = func_vectorized(n)
+    return np.mean(results)
+
+# Пример векторной реализации задачи о π
+def estimate_pi_vectorized(n=1000000):
+    x = np.random.random(n)
+    y = np.random.random(n)
+    inside = np.sum(x*x + y*y <= 1)
+    return 4 * inside / n
+
+# 3. Использование numba для JIT компиляции
+from numba import jit, prange
+import numpy as np
+
+@jit(nopython=True, parallel=True)
+def monte_carlo_pi_numba(n=1000000):
+    count = 0
+    for i in prange(n):
+        x = np.random.random()
+        y = np.random.random()
+        if x*x + y*y <= 1:
+            count += 1
+    return 4 * count / n
+
+# 4. Асинхронное выполнение с asyncio
+import asyncio
+import random
+
+async def async_monte_carlo_task(func, n):
+    """Асинхронная задача Монте-Карло"""
+    count = 0
+    for _ in range(n):
+        if await func():  # func должна быть async
+            count += 1
+    return count
+
+async def run_async_monte_carlo(func, n_total=1000000, n_tasks=10):
+    """Запуск асинхронного Монте-Карло"""
+    n_per_task = n_total // n_tasks
+    tasks = [async_monte_carlo_task(func, n_per_task) for _ in range(n_tasks)]
+    results = await asyncio.gather(*tasks)
+    total = sum(results)
+    return total / n_total</code></pre>
+  </div>
+
+  <div class="block">
+    <h2>🔷 10. Работа с ограничениями по времени</h2>
+    <div class="olympiad-tip">
+      <strong>Стратегия для олимпиад:</strong> Начинать с малого N, оценивать скорость, адаптивно увеличивать N до исчерпания времени.
+    </div>
+    <pre><code>import time
+from contextlib import contextmanager
+
+@contextmanager
+def time_limit(seconds):
+    """Контекстный менеджер для ограничения времени"""
+    def signal_handler(signum, frame):
+        raise TimeoutError("Time limit exceeded")
+    
+    import signal
+    signal.signal(signal.SIGALRM, signal_handler)
+    signal.alarm(seconds)
+    try:
+        yield
+    finally:
+        signal.alarm(0)
+
+def adaptive_monte_carlo_timed(func, time_limit_seconds=2, 
+                              initial_n=1000, growth_factor=2):
+    """Адаптивный Монте-Карло с учетом времени"""
+    n = initial_n
+    total_results = []
+    total_time = 0
+    
+    try:
+        with time_limit(time_limit_seconds):
+            while total_time < time_limit_seconds * 0.9:  # 90% времени
+                start_time = time.time()
+                
+                # Выполняем батч
+                batch_results = [func() for _ in range(n)]
+                total_results.extend(batch_results)
+                
+                batch_time = time.time() - start_time
+                total_time += batch_time
+                
+                # Оцениваем точность
+                if len(total_results) >= 100:
+                    mean_val = np.mean(total_results)
+                    std_val = np.std(total_results)
+                    se = std_val / np.sqrt(len(total_results))
+                    relative_error = se / abs(mean_val) if mean_val != 0 else float('inf')
+                    
+                    print(f"N={len(total_results):,}, "
+                          f"estimate={mean_val:.6f}, "
+                          f"error={relative_error:.4f}, "
+                          f"time={total_time:.2f}s")
+                
+                # Адаптируем размер батча
+                if batch_time > 0:
+                    # Цель: чтобы следующий батч занял ~20% оставшегося времени
+                    remaining_time = time_limit_seconds - total_time
+                    target_batch_time = remaining_time * 0.2
+                    n = max(initial_n, int(n * target_batch_time / batch_time))
+    
+    except TimeoutError:
+        print(f"Время истекло. Выполнено {len(total_results):,} испытаний")
+    
+    finally:
+        if total_results:
+            final_mean = np.mean(total_results)
+            final_std = np.std(total_results)
+            final_se = final_std / np.sqrt(len(total_results))
+            
+            return {
+                'estimate': final_mean,
+                'std': final_std,
+                'se': final_se,
+                'n': len(total_results),
+                'time': total_time,
+                'efficiency': len(total_results) / total_time if total_time > 0 else 0
+            }
+        return None
+
+# Быстрая оценка нужного N для заданной точности
+def estimate_required_n(func, target_se=0.001, pilot_n=1000):
+    """Оценка необходимого N для достижения target_se"""
+    # Пилотный запуск
+    pilot_results = [func() for _ in range(pilot_n)]
+    sample_std = np.std(pilot_results)
+    
+    # Формула: N = (z * σ / SE)²
+    required_n = (1.96 * sample_std / target_se) ** 2
+    
+    # Оценка времени
+    import time
+    start = time.time()
+    for _ in range(100):
+        func()
+    time_per_call = (time.time() - start) / 100
+    
+    estimated_time = required_n * time_per_call
+    
+    return {
+        'required_n': int(required_n),
+        'estimated_time_seconds': estimated_time,
+        'sample_std': sample_std,
+        'time_per_call': time_per_call
+    }</code></pre>
+  </div>
+
+  <div class="block">
+    <h2>🔷 11. Чек-лист для олимпиадных задач</h2>
+    <ul>
+      <li>[ ] Определить, что оцениваем (вероятность, матожидание, интеграл)</li>
+      <li>[ ] Написать функцию одного испытания (быструю!)</li>
+      <li>[ ] Выбрать начальное N (1000-10000 для быстрой оценки)</li>
+      <li>[ ] Оценить стандартное отклонение после пилотного запуска</li>
+      <li>[ ] Рассчитать необходимое N для нужной точности</li>
+      <li>[ ] Проверить укладываемся ли в лимит времени</li>
+      <li>[ ] Применить методы уменьшения дисперсии если возможно</li>
+      <li>[ ] Реализовать адаптивный алгоритм если время ограничено</li>
+      <li>[ ] Добавить доверительный интервал в ответ</li>
+      <li>[ ] Оптимизировать код (векторизация, кэширование)</li>
+      <li>[ ] Протестировать на известных примерах (π, задачи из секции 8)</li>
+      <li>[ ] Подготовить шаблонные функции заранее</li>
+    </ul>
+  </div>
+
+  <div class="block">
+    <h2>🔷 12. Стратегии решения на олимпиаде</h2>
+    <div class="olympiad-tip">
+      <strong>Золотые правила олимпиадного Монте-Карло:</strong>
+    </div>
+    <ol>
+      <li><strong>Начинать просто</strong>: сначала наивная реализация, потом оптимизации</li>
+      <li><strong>Быстрая оценка точности</strong>: после 10^4 испытаний уже видна точность</li>
+      <li><strong>Приоритет скорости</strong>: лучше 10^6 быстрых испытаний чем 10^4 точных</li>
+      <li><strong>Проверка на известных задачах</strong>: сначала решить задачу о π</li>
+      <li><strong>Адаптивность</strong>: код должен работать при любом лимите времени</li>
+      <li><strong>Документация в коде</strong>: комментарии что и как оценивается</li>
+      <li><strong>Валидация</strong>: проверка что вероятность ∈ [0,1], интеграл разумен</li>
+      <li><strong>Резервные методы</strong>: если Монте-Карло не работает, перейти к аналитике</li>
+    </ol>
+    <blockquote>
+      «На олимпиаде метод Монте-Карло — это ваш секретный инструмент. 
+      Когда другие мучаются с аналитическими выкладками, вы пишете 20 строк кода 
+      и получаете ответ с точностью 0.1% за секунды. Ключ — в правильном балансе 
+      между точностью, скоростью и надежностью оценки.»
+    </blockquote>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -268,44 +268,7 @@ image_transforms = transforms.Compose([
 # print(f"Dataset содержит {len(image_dataset)} изображений")
 ```
 
-### 2. Сложные трансформации и аугментации
-
-```python
-def demonstrate_transformations():
-    """Демонстрация различных трансформаций"""
-    
-    # Трансформации для обучения (с аугментацией)
-    train_transforms = transforms.Compose([
-        transforms.RandomResizedCrop(224),      # Случайное кадрирование
-        transforms.RandomHorizontalFlip(),      # Случайное отражение
-        transforms.ColorJitter(                 # Изменение цвета
-            brightness=0.2, 
-            contrast=0.2, 
-            saturation=0.2
-        ),
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-    ])
-    
-    # Трансформации для валидации (без аугментации)
-    val_transforms = transforms.Compose([
-        transforms.Resize(256),                 # Фиксированный размер
-        transforms.CenterCrop(224),             # Центральное кадрирование
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-    ])
-    
-    print("Трансформации для обучения:")
-    print(train_transforms)
-    print("\nТрансформации для валидации:")
-    print(val_transforms)
-    
-    return train_transforms, val_transforms
-
-train_transforms, val_transforms = demonstrate_transformations()
-```
-
-### 3. Разделение данных на train/val/test
+### 2. Разделение данных на train/val/test
 
 ```python
 from torch.utils.data import random_split

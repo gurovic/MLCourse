@@ -337,6 +337,7 @@
   - Практика: Image-Text retrieval ([Flickr30k](http://shannon.cs.illinois.edu/DenotationGraph/), [COCO](https://cocodataset.org/))
 
 **Блок 7: Продвинутые соревновательные методы и алгоритмы**  
+- 🔴 [Метод Монте-Карло: cheatsheet](https://html-preview.github.io/?url=https://github.com/gurovic/MLCourse/blob/main/monte-carlo_cheatsheet.html)
 - ◯ Гиперпараметры: Optuna для CatBoost. Практика: [Santander Customer Transaction Prediction](https://www.kaggle.com/c/santander-customer-transaction-prediction) (Kaggle).  
 - ◯ AutoML: H2O, TPOT. Практика: Сравнение с ручными моделями.  
 - ◯ Кастомные метрики: QWK, MAP@K. Практика: [PetFinder.my Adoption Prediction](https://www.kaggle.com/c/petfinder-adoption-prediction) (Kaggle).  

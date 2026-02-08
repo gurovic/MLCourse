@@ -333,6 +333,9 @@ Deep Learning
 - 🔴 [MLOps для нейросетей](493_mlops.md): Tracking экспериментов (Weights & Biases, MLflow), версионирование моделей
   - 🔴 [Задачи](493_mlops_tasks.md)
   - Практика: Настройка MLOps пайплайна ([Fashion-MNIST](https://github.com/zalandoresearch/fashion-mnist))
+- 🔴 [Повторяемость экспериментов](494_reproducibility.md): Random seed, воспроизводимость в NumPy/PyTorch, детерминизм на GPU, влияние на производительность
+  - 🔴 [Задачи](494_reproducibility_tasks.md)
+  - Практика: Создание полностью воспроизводимого пайплайна обучения ([MNIST](https://pytorch.org/vision/stable/datasets.html#mnist))
 
 **6.9 Интерпретируемость и продвинутые темы**
 - 🔴 [Интерпретируемость нейросетей](500_interpretability.md): Saliency Maps, Grad-CAM, SHAP, LIME, Integrated Gradients

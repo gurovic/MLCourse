@@ -42,7 +42,7 @@ lf = pl.scan_csv('large_dataset.csv')  # Файл не читается сраз
 # Построение плана запроса
 query = (lf
     .filter(pl.col('age') > 27)
-    .select(['name', 'salary'])
+    .select(['name', 'salary', 'department'])
     .groupby('department')
     .agg(pl.col('salary').mean())
 )

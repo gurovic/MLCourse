@@ -113,7 +113,7 @@ grouped = df.groupby('product').agg([
 ])
 ```
 
-## 3. Контекстные операции: transform, apply, и map
+## 3. Контекстные операции: select, with_columns и filter
 
 Polars различает три вида трансформаций в зависимости от контекста:
 

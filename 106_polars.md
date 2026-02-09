@@ -161,7 +161,7 @@ df = pl.DataFrame({
 # Приведение типов
 df = df.with_columns([
     pl.col('id').cast(pl.Int64),
-    pl.col('price').cast(pl.Int32)  # Округление до целых
+    pl.col('price').cast(pl.Int32)  # Приведение к целому (усечение дробной части)
 ])
 ```
 

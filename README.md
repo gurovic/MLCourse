@@ -118,6 +118,8 @@ Deep Learning
 
 **Блок 1.5: Вспомогательные темы и приемы**
 * 🔴 [Особенности синтаксиса pandas](105_pandas_syntax.md)
+* 🔴 [Polars — современная альтернатива pandas](106_polars.md): Eager vs Lazy API, выражения, оптимизация запросов
+  * 🔴 [Задачи](106_polars_tasks.md)
 * 🟡 [Предобработка для моделей](107_scaling.ipynb): концепция масштабирования (StandardScaler/MinMaxScaler)
   * 🔴 [Практика](107_scaling_practice.md): Показать разницу в качестве kNN с масштабированием и без на moons/iris.
 * 🔴 [Градиентный спуск](080_gradient_descent.md)

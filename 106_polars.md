@@ -259,9 +259,6 @@ df = pl.read_json('data.json')
 df = pl.read_excel('data.xlsx', sheet_name='Sheet1')
 
 # SQL базы данных
-import polars as pl
-import connectorx as cx
-
 df = pl.read_database("SELECT * FROM table", connection_uri="postgresql://...")
 ```
 

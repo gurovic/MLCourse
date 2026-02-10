@@ -28,6 +28,7 @@
 ```python
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import torchvision
 import torchvision.models as models
 import time
@@ -156,10 +157,10 @@ def measure_latency(model, num_samples=100):
 
 ```python
 models_family = {
-    'B0': models.efficientnet_b0(pretrained=True),
-    'B2': models.efficientnet_b2(pretrained=True),
-    'B4': models.efficientnet_b4(pretrained=True),
-    'B6': models.efficientnet_b6(pretrained=True),
+    'B0': models.efficientnet_b0(weights=models.EfficientNet_B0_Weights.IMAGENET1K_V1),
+    'B2': models.efficientnet_b2(weights=models.EfficientNet_B2_Weights.IMAGENET1K_V1),
+    'B4': models.efficientnet_b4(weights=models.EfficientNet_B4_Weights.IMAGENET1K_V1),
+    'B6': models.efficientnet_b6(weights=models.EfficientNet_B6_Weights.IMAGENET1K_V1),
 }
 
 # TODO: обучите все модели
@@ -370,7 +371,7 @@ class HybridModel(nn.Module):
         super().__init__()
         
         # CNN backbone
-        resnet = models.resnet18(pretrained=True)
+        resnet = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
         self.backbone = nn.Sequential(*list(resnet.children())[:-2])  # до avgpool
         
         # Transformer

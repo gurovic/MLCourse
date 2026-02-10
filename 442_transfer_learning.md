@@ -3,6 +3,7 @@
 ```python
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import torch.optim as optim
 import torchvision
 import torchvision.models as models
@@ -51,7 +52,7 @@ ImageNet модель              Ваша задача
 
 ```python
 # Загружаем предобученную модель
-model = models.resnet18(pretrained=True)
+model = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
 
 # Замораживаем все параметры
 for param in model.parameters():
@@ -82,7 +83,7 @@ print(f"Обучаемых параметров: {trainable_params:,} из {tota
 
 ```python
 # Загружаем предобученную модель
-model = models.resnet18(pretrained=True)
+model = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
 
 # Меняем последний слой
 num_features = model.fc.in_features
@@ -108,7 +109,7 @@ print(f"Обучаемых параметров: {trainable_params:,}")
 #### **Стратегия 1: Заморозить ранние слои, обучать поздние**
 
 ```python
-model = models.resnet18(pretrained=True)
+model = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
 
 # Замораживаем первые N слоев
 for name, param in model.named_parameters():
@@ -164,7 +165,7 @@ train_dataset = torchvision.datasets.ImageFolder('data/train', transform=transfo
 train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
 
 # Шаг 2: Модель
-model = models.resnet18(pretrained=True)
+model = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
 num_features = model.fc.in_features
 model.fc = nn.Linear(num_features, 2)
 
@@ -237,9 +238,9 @@ for epoch in range(5):
 
 ```python
 # Примеры загрузки
-model_resnet = models.resnet50(pretrained=True)
-model_efficient = models.efficientnet_b0(pretrained=True)
-model_mobilenet = models.mobilenet_v2(pretrained=True)
+model_resnet = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V2)
+model_efficient = models.efficientnet_b0(weights=models.EfficientNet_B0_Weights.IMAGENET1K_V1)
+model_mobilenet = models.mobilenet_v2(weights=models.MobileNet_V2_Weights.IMAGENET1K_V2)
 ```
 
 ---
@@ -310,7 +311,7 @@ def visualize_activations(model, image, layer_name):
     plt.show()
 
 # Пример использования
-model = models.resnet18(pretrained=True)
+model = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
 image = transform(Image.open('cat.jpg'))
 visualize_activations(model, image, 'layer1.0.conv1')
 ```
@@ -358,7 +359,7 @@ class MultiTaskModel(nn.Module):
     def __init__(self):
         super().__init__()
         # Общий feature extractor
-        self.backbone = models.resnet18(pretrained=True)
+        self.backbone = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
         self.backbone.fc = nn.Identity()  # Убираем последний слой
         
         # Задача 1: классификация (5 классов)
@@ -424,8 +425,8 @@ def distillation_loss(student_logits, teacher_logits, labels, T=3.0, alpha=0.5):
     return alpha * soft_loss + (1 - alpha) * hard_loss
 
 # Обучение
-teacher = models.resnet152(pretrained=True).eval()  # Большая модель
-student = models.resnet18(pretrained=False)         # Маленькая модель
+teacher = models.resnet152(weights=models.ResNet152_Weights.IMAGENET1K_V2).eval()  # Большая модель
+student = models.resnet18(weights=None)  # Маленькая модель (обучаем с нуля)
 
 for inputs, labels in train_loader:
     # Teacher inference (без градиентов)
@@ -458,7 +459,7 @@ for inputs, labels in train_loader:
 class DomainAdversarialNetwork(nn.Module):
     def __init__(self):
         super().__init__()
-        self.feature_extractor = models.resnet18(pretrained=True)
+        self.feature_extractor = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
         self.feature_extractor.fc = nn.Identity()
         
         # Классификатор задачи

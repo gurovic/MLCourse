@@ -243,8 +243,7 @@ Deep Learning
 
 **6.3 Сверточные нейронные сети (CNN)**
 - 🔴 [Основы CNN](440_cnn_basics.md): Сверточные слои, pooling, stride, padding
-  - 🔴 [Задачи](440_cnn_basics_tasks.md)
-  - Практика: Простая CNN для [MNIST](https://pytorch.org/vision/stable/datasets.html#mnist)
+  - 🟢 [Задачи](440_cnn_basics_tasks.md)
 - 🔴 [Архитектуры CNN](441_cnn_architectures.md): LeNet, AlexNet, VGG, ResNet, Inception
   - 🔴 [Задачи](441_cnn_architectures_tasks.md)
   - Практика: [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) (University of Toronto)

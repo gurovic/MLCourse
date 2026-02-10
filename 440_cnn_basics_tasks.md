@@ -37,7 +37,7 @@ from PIL import Image
 from torchvision import datasets, transforms
 mnist_dataset = datasets.MNIST('./data', train=True, download=True, 
                               transform=transforms.ToTensor())
-img = mnist_dataset[0][0].squeeze().numpy()  # первое изображение из MNIST
+img = mnist_dataset[0][0].squeeze().numpy()  # первое изображение (попробуйте разные индексы)
 
 # Тестируйте разные kernels
 kernels = {
@@ -676,4 +676,4 @@ def calculate_rf(layers):
 flops = out_channels * in_channels * kernel_h * kernel_w * out_h * out_w
 ```
 
-> **"CNN revolutionized computer vision. Понимание базовых принципов CNN — это foundation для современного deep learning!"** — Geoffrey Hinton et al.
+> **"CNN revolutionized computer vision. Понимание базовых принципов CNN — это foundation для современного deep learning!"**

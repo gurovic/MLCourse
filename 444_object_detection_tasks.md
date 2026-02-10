@@ -152,7 +152,7 @@ def visualize_detection(image, boxes, labels, scores):
     pass
 
 # Загрузка модели
-model = fasterrcnn_resnet50_fpn(pretrained=True)
+model = fasterrcnn_resnet50_fpn(weights='DEFAULT')
 model.eval()
 
 # TODO: протестируйте на изображениях
@@ -294,7 +294,7 @@ def train_one_epoch(model, dataloader, optimizer, device):
     return total_loss / len(dataloader)
 
 # Адаптация модели
-model = fasterrcnn_resnet50_fpn(pretrained=True)
+model = fasterrcnn_resnet50_fpn(weights='DEFAULT')
 num_classes = 3 + 1  # 3 класса + background
 in_features = model.roi_heads.box_predictor.cls_score.in_features
 model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
@@ -472,7 +472,7 @@ class SimpleDetector(nn.Module):
         super().__init__()
         
         # Backbone
-        resnet = torchvision.models.resnet18(pretrained=True)
+        resnet = torchvision.models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
         self.backbone = nn.Sequential(*list(resnet.children())[:-2])
         
         # Detection head

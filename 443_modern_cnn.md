@@ -390,7 +390,7 @@ class TransformerBlock(nn.Module):
         super().__init__()
         
         self.norm1 = nn.LayerNorm(embed_dim)
-        self.attn = nn.MultiheadAttention(embed_dim, num_heads, dropout=dropout)
+        self.attn = nn.MultiheadAttention(embed_dim, num_heads, dropout=dropout, batch_first=True)
         
         self.norm2 = nn.LayerNorm(embed_dim)
         self.mlp = nn.Sequential(

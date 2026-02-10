@@ -265,6 +265,7 @@ class TransformerBlock(nn.Module):
     def __init__(self, embed_dim, num_heads, mlp_ratio=4.0):
         super().__init__()
         # TODO: реализуйте self-attention + MLP
+        # Подсказка: используйте nn.MultiheadAttention с batch_first=True
         pass
     
     def forward(self, x):

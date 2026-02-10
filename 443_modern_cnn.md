@@ -474,6 +474,9 @@ print(f"Параметров: {sum(p.numel() for p in model.parameters()):,}")
 
 import timm
 
+# Примечание: библиотека timm использует параметр pretrained=True
+# (это отличается от torchvision, которая перешла на weights)
+
 # Доступные модели
 available = timm.list_models('vit*', pretrained=True)
 print(f"Доступно {len(available)} предобученных ViT моделей")
@@ -519,6 +522,7 @@ print(f"Output shape: {output.shape}")  # [1, 10]
 ```python
 import timm
 
+# timm использует pretrained=True (не weights, как torchvision)
 model = timm.create_model('swin_base_patch4_window7_224', pretrained=True)
 
 print(f"Параметров: {sum(p.numel() for p in model.parameters()):,}")

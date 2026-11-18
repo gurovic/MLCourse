@@ -3,6 +3,7 @@
 ```python
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import torchvision
 import torchvision.transforms as transforms
 from torchvision.models.detection import fasterrcnn_resnet50_fpn, retinanet_resnet50_fpn
@@ -225,7 +226,7 @@ anchors = [
 **Обучение Faster R-CNN:**
 ```python
 # Загружаем предобученную модель
-model = fasterrcnn_resnet50_fpn(pretrained=True)
+model = fasterrcnn_resnet50_fpn(weights='DEFAULT')
 
 # Адаптируем под свои классы (например, 10 классов + фон)
 num_classes = 11  # 10 классов + background
@@ -449,7 +450,7 @@ def focal_loss(predictions, targets, alpha=0.25, gamma=2.0):
 
 ```python
 # Загрузка предобученной модели
-model = retinanet_resnet50_fpn(pretrained=True)
+model = retinanet_resnet50_fpn(weights='DEFAULT')
 
 # Адаптация под свои классы
 num_classes = 10

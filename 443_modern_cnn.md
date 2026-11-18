@@ -3,6 +3,7 @@
 ```python
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import torchvision.models as models
 import matplotlib.pyplot as plt
 
@@ -167,8 +168,8 @@ print(f"Input: {x.shape}, Output: {output.shape}")
 import torchvision.models as models
 
 # Загрузка предобученных моделей
-model_b0 = models.efficientnet_b0(pretrained=True)
-model_b7 = models.efficientnet_b7(pretrained=True)
+model_b0 = models.efficientnet_b0(weights=models.EfficientNet_B0_Weights.IMAGENET1K_V1)
+model_b7 = models.efficientnet_b7(weights=models.EfficientNet_B7_Weights.IMAGENET1K_V1)
 
 # Адаптация под свою задачу (10 классов)
 num_features = model_b0.classifier[1].in_features
@@ -315,8 +316,8 @@ MobileNetV3 использует **Neural Architecture Search (NAS)** для а�
 
 ```python
 # Использование MobileNetV3
-model_large = models.mobilenet_v3_large(pretrained=True)
-model_small = models.mobilenet_v3_small(pretrained=True)
+model_large = models.mobilenet_v3_large(weights=models.MobileNet_V3_Large_Weights.IMAGENET1K_V2)
+model_small = models.mobilenet_v3_small(weights=models.MobileNet_V3_Small_Weights.IMAGENET1K_V1)
 
 # Адаптация
 model_small.classifier[3] = nn.Linear(model_small.classifier[3].in_features, 10)
@@ -389,7 +390,7 @@ class TransformerBlock(nn.Module):
         super().__init__()
         
         self.norm1 = nn.LayerNorm(embed_dim)
-        self.attn = nn.MultiheadAttention(embed_dim, num_heads, dropout=dropout)
+        self.attn = nn.MultiheadAttention(embed_dim, num_heads, dropout=dropout, batch_first=True)
         
         self.norm2 = nn.LayerNorm(embed_dim)
         self.mlp = nn.Sequential(
@@ -473,17 +474,16 @@ print(f"Параметров: {sum(p.numel() for p in model.parameters()):,}")
 
 import timm
 
+# Примечание: библиотека timm использует параметр pretrained=True
+# (это отличается от torchvision, которая перешла на weights)
+
 # Доступные модели
 available = timm.list_models('vit*', pretrained=True)
 print(f"Доступно {len(available)} предобученных ViT моделей")
 
 # Загрузка
-model = timm.create_model('vit_base_patch16_224', pretrained=True)
+model = timm.create_model('vit_base_patch16_224', pretrained=True, num_classes=10)
 model.eval()
-
-# Адаптация под свою задачу
-num_classes = 10
-model.head = nn.Linear(model.head.in_features, num_classes)
 
 # Inference
 x = torch.randn(1, 3, 224, 224)
@@ -522,6 +522,7 @@ print(f"Output shape: {output.shape}")  # [1, 10]
 ```python
 import timm
 
+# timm использует pretrained=True (не weights, как torchvision)
 model = timm.create_model('swin_base_patch4_window7_224', pretrained=True)
 
 print(f"Параметров: {sum(p.numel() for p in model.parameters()):,}")

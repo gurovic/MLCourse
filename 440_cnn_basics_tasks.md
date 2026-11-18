@@ -1,4 +1,4 @@
-### **Задачи: Основы CNN (Convolutional Neural Networks)**
+# Задачи: Основы CNN (Convolutional Neural Networks)
 
 **Цель:** Понять архитектуру сверточных нейронных сетей, научиться строить и обучать CNN для задач компьютерного зрения.
 
@@ -6,7 +6,7 @@
 
 ## 🟢 Базовый уровень
 
-### **Задача 1: Понимание свертки**
+## **Задача 1: Понимание свертки**
 
 **Условие:** Реализуйте операцию свертки вручную и сравните с PyTorch.
 
@@ -21,7 +21,7 @@
 2. Создайте различные kernels и примените к изображению:
    - Вертикальные границы: `[[1, 0, -1], [1, 0, -1], [1, 0, -1]]`
    - Горизонтальные границы: `[[1, 1, 1], [0, 0, 0], [-1, -1, -1]]`
-   - Blur: `[[1/9]*3]*3`
+   - Blur: `np.ones((3, 3)) / 9.0`
    - Sharpen: `[[0, -1, 0], [-1, 5, -1], [0, -1, 0]]`
 3. Визуализируйте результаты для каждого kernel
 4. Сравните с `F.conv2d` из PyTorch
@@ -33,8 +33,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
 
-# Загрузите простое изображение
-img = np.array(Image.open('test_image.jpg').convert('L'))
+# Загрузите изображение из MNIST или создайте тестовое
+from torchvision import datasets, transforms
+mnist_dataset = datasets.MNIST('./data', train=True, download=True, 
+                              transform=transforms.ToTensor())
+img = mnist_dataset[0][0].squeeze().numpy()  # первое изображение (попробуйте разные индексы)
 
 # Тестируйте разные kernels
 kernels = {
@@ -47,7 +50,7 @@ kernels = {
 
 ---
 
-### **Задача 2: Первая CNN для MNIST**
+## **Задача 2: Первая CNN для MNIST**
 
 **Условие:** Создайте и обучите простую CNN на MNIST.
 
@@ -63,6 +66,13 @@ kernels = {
 4. Подсчитайте количество параметров
 5. Сравните с MLP той же размерности
 
+**Пояснение к архитектуре:**
+- После Conv2d(1,32,3) на входе 28×28: выход 28×28 (с padding=1)
+- После MaxPool2d(2): 14×14
+- После Conv2d(32,64,3): выход 14×14 (с padding=1)
+- После MaxPool2d(2): 7×7
+- Flatten: 64 * 7 * 7 = 3136 признаков для FC слоя
+
 **Ожидаемый результат:** CNN быстрее сходится и имеет меньше параметров, чем MLP.
 
 ```python
@@ -73,10 +83,14 @@ import torch.nn.functional as F
 class SimpleCNN(nn.Module):
     def __init__(self):
         super(SimpleCNN, self).__init__()
-        # TODO: определите слои
+        self.conv1 = nn.Conv2d(1, 32, kernel_size=3, padding=1)
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
+        self.fc1 = nn.Linear(64 * 7 * 7, 128)
+        self.fc2 = nn.Linear(128, 10)
         
     def forward(self, x):
         # TODO: реализуйте forward pass
+        # Используйте F.relu, F.max_pool2d, view для преобразований
         # Не забудьте про activations и pooling!
         pass
 
@@ -87,7 +101,7 @@ def count_parameters(model):
 
 ---
 
-### **Задача 3: Влияние stride и padding**
+## **Задача 3: Влияние stride и padding**
 
 **Условие:** Исследуйте, как stride и padding влияют на размер выходного тензора.
 
@@ -104,6 +118,7 @@ def count_parameters(model):
 5. Визуализируйте, как разные параметры влияют на receptive field
 
 **Вопрос:** Когда использовать stride > 1 вместо pooling?
+**Подсказка:** Stride > 1 экономит вычисления, но теряет информацию более агрессивно. MaxPooling сохраняет максимум в окне, что может быть важно для классификации.
 
 ```python
 x = torch.randn(1, 1, 28, 28)
@@ -112,7 +127,8 @@ configs = [
     {'kernel_size': 3, 'stride': 1, 'padding': 0},
     {'kernel_size': 3, 'stride': 1, 'padding': 1},
     {'kernel_size': 3, 'stride': 2, 'padding': 0},
-    # TODO: добавьте остальные
+    {'kernel_size': 3, 'stride': 2, 'padding': 1},
+    {'kernel_size': 5, 'stride': 1, 'padding': 2},
 ]
 
 for config in configs:
@@ -123,14 +139,16 @@ for config in configs:
 
 ---
 
+---
+
 ## 🟡 Продвинутый уровень
 
-### **Задача 4: Сравнение Max Pooling vs Average Pooling**
+## **Задача 4: Сравнение Max Pooling vs Average Pooling**
 
 **Условие:** Сравните влияние разных типов pooling на качество модели.
 
 **Требования:**
-1. Обучите три CNN на CIFAR-10:
+1. Обучите три CNN на CIFAR-10 (используйте одинаковую архитектуру, меняя только тип pooling):
    - С MaxPool2d
    - С AvgPool2d
    - Со Strided Convolution (stride=2 вместо pooling)
@@ -140,7 +158,7 @@ for config in configs:
    - Robustness к noise (добавьте Gaussian noise на test)
 3. Визуализируйте feature maps после каждого pooling слоя
 
-**Ожидаемый результат:** MaxPool обычно лучше для классификации.
+**Ожидаемый результат:** MaxPool обычно показывает лучшие результаты для классификации благодаря сохранению наиболее выраженных признаков.
 
 ```python
 class CNN_MaxPool(nn.Module):
@@ -148,24 +166,37 @@ class CNN_MaxPool(nn.Module):
         super().__init__()
         self.conv1 = nn.Conv2d(3, 32, 3, padding=1)
         self.pool = nn.MaxPool2d(2, 2)
-        # TODO: остальные слои
+        self.conv2 = nn.Conv2d(32, 64, 3, padding=1)
+        self.conv3 = nn.Conv2d(64, 64, 3, padding=1)
+        self.fc = nn.Linear(64 * 4 * 4, 10)
 
 class CNN_AvgPool(nn.Module):
-    # TODO: то же, но с AvgPool2d
+    def __init__(self):
+        super().__init__()
+        self.conv1 = nn.Conv2d(3, 32, 3, padding=1)
+        self.pool = nn.AvgPool2d(2, 2)  # используем AvgPool вместо MaxPool
+        self.conv2 = nn.Conv2d(32, 64, 3, padding=1)
+        self.conv3 = nn.Conv2d(64, 64, 3, padding=1)
+        self.fc = nn.Linear(64 * 4 * 4, 10)
 
 class CNN_StridedConv(nn.Module):
-    # TODO: Conv2d со stride=2 вместо pooling
+    def __init__(self):
+        super().__init__()
+        self.conv1 = nn.Conv2d(3, 32, 3, stride=2, padding=1)  # stride=2 вместо pooling
+        self.conv2 = nn.Conv2d(32, 64, 3, stride=2, padding=1)
+        self.conv3 = nn.Conv2d(64, 64, 3, padding=1)
+        self.fc = nn.Linear(64 * 8 * 8, 10)
 ```
 
 ---
 
-### **Задача 5: Визуализация feature maps**
+## **Задача 5: Визуализация feature maps**
 
 **Условие:** Визуализируйте, что изучают сверточные слои.
 
 **Требования:**
 1. Обучите CNN на MNIST или CIFAR-10
-2. Для тестового изображения извлеките активации после каждого conv слоя
+2. Для тестового изображения извлеките активации после каждого conv слоя (используйте hooks)
 3. Визуализируйте:
    - Все feature maps первого слоя (32 канала)
    - Несколько feature maps второго слоя
@@ -211,7 +242,7 @@ def visualize_feature_maps(model, image, layer_name):
 
 ---
 
-### **Задача 6: Receptive Field Analysis**
+## **Задача 6: Receptive Field Analysis**
 
 **Условие:** Вычислите и визуализируйте receptive field вашей сети.
 
@@ -233,16 +264,19 @@ def visualize_feature_maps(model, image, layer_name):
    ```
 2. Вычислите receptive field для вашей CNN
 3. Создайте несколько архитектур с одинаковым receptive field, но разным количеством слоев
-4. Сравните их производительность
-5. Визуализируйте receptive field на изображении
+4. Сравните с обычной CNN той же размерности
+5. Визуализируйте, как разные параметры влияют на receptive field
 
 **Вопрос:** Почему глубокие сети с малыми kernel'ами часто лучше мелких с большими?
+**Подсказка:** Стек из нескольких 3×3 сверток имеет тот же receptive field, что и одна 7×7, но меньше параметров и больше нелинейностей. Например: 2 слоя 3×3 = 2×(3×3×C²) = 18C² параметров vs 1 слой 7×7 = 49C² параметров.
+
+---
 
 ---
 
 ## 🔴 Экспертный уровень
 
-### **Задача 7: Dilated (Atrous) Convolutions**
+## **Задача 7: Dilated (Atrous) Convolutions**
 
 **Условие:** Реализуйте и исследуйте dilated convolutions.
 
@@ -255,7 +289,7 @@ def visualize_feature_maps(model, image, layer_name):
            self.conv1 = nn.Conv2d(3, 32, 3, padding=1, dilation=1)
            self.conv2 = nn.Conv2d(32, 64, 3, padding=2, dilation=2)
            self.conv3 = nn.Conv2d(64, 128, 3, padding=4, dilation=4)
-           # Receptive field растет экспоненциально!
+           # Receptive field растет быстрее без увеличения параметров!
    ```
 2. Сравните с обычной CNN:
    - Receptive field при одинаковом количестве параметров
@@ -263,11 +297,11 @@ def visualize_feature_maps(model, image, layer_name):
    - Скорость обучения
 3. Визуализируйте, как dilation влияет на receptive field
 
-**Применение:** Dilated conv популярны в semantic segmentation.
+**Применение:** Dilated conv популярны в semantic segmentation, medical imaging, и задачах, требующих большой контекст.
 
 ---
 
-### **Задача 8: Depthwise Separable Convolutions**
+## **Задача 8: Depthwise Separable Convolutions**
 
 **Условие:** Реализуйте MobileNet-style separable convolutions.
 
@@ -299,11 +333,11 @@ def visualize_feature_maps(model, image, layer_name):
    - Test accuracy на CIFAR-10
    - Скорость inference
 
-**Ожидаемый результат:** Separable conv ~8x меньше параметров с небольшой потерей accuracy.
+**Ожидаемый результат:** Separable conv имеет ~8x меньше параметров (формула: (C_in×k² + C_in×C_out) vs (C_in×C_out×k²), где k=3: (C_in×9 + C_in×C_out) / (C_in×C_out×9) ≈ 1/8 при C_out >> 1) с небольшой потерей accuracy (~1-2%).
 
 ---
 
-### **Задача 9: 1x1 Convolutions**
+## **Задача 9: 1x1 Convolutions**
 
 **Условие:** Исследуйте роль 1x1 convolutions в архитектурах.
 
@@ -332,14 +366,14 @@ def visualize_feature_maps(model, image, layer_name):
 3. Объясните, зачем нужны 1x1 convolutions
 
 **Применения 1x1 conv:**
-- Уменьшение размерности (bottleneck)
-- Увеличение размерности
-- Добавление нелинейности
-- Cross-channel interactions
+- Уменьшение размерности (bottleneck) — сокращает вычисления
+- Увеличение размерности — расширяет пространство признаков
+- Добавление нелинейности — после 1×1 conv + ReLU получаем дополнительную нелинейность
+- Cross-channel interactions — смешивание информации между каналами без изменения пространственных размеров
 
 ---
 
-### **Задача 10: Global Average Pooling vs Flatten + FC**
+## **Задача 10: Global Average Pooling vs Flatten + FC**
 
 **Условие:** Сравните два подхода к финальным слоям CNN.
 
@@ -371,10 +405,11 @@ def visualize_feature_maps(model, image, layer_name):
 4. Протестируйте на изображениях разных размеров
 
 **Вопрос:** Почему GAP менее склонен к переобучению?
+**Ответ:** GAP усредняет все spatial locations в каждом канале, что создает структурное регуляризирующее ограничение. Fully connected слои после flatten имеют гораздо больше параметров и могут легко запомнить обучающие данные. GAP также делает модель независимой от входного размера.
 
 ---
 
-### **Задача 11: CNN для разных разрешений**
+## **Задача 11: CNN для разных разрешений**
 
 **Условие:** Создайте CNN, работающую с входами разных размеров.
 
@@ -397,7 +432,14 @@ class FlexibleCNN(nn.Module):
             nn.Conv2d(3, 64, 3, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(2),
-            # TODO: добавьте слои
+            nn.Conv2d(64, 128, 3, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(2),
+            nn.Conv2d(128, 256, 3, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(2),
+            nn.Conv2d(256, 512, 3, padding=1),
+            nn.ReLU(),
         )
         
         self.classifier = nn.Sequential(
@@ -423,6 +465,29 @@ for size in [32, 64, 128, 224]:
 
 ## 💎 Заключение
 
+### **Чек-лист понимания CNN:**
+
+✅ **Базовый уровень:**
+- [ ] Понимаю, как работает операция свертки (convolution)
+- [ ] Могу вычислить размер выхода после Conv2d с разными stride и padding
+- [ ] Умею строить простую CNN для MNIST
+- [ ] Понимаю разницу между MaxPooling и AveragePooling
+- [ ] Знаю формулу подсчета параметров в Conv2d
+
+✅ **Продвинутый уровень:**
+- [ ] Умею визуализировать и интерпретировать feature maps
+- [ ] Понимаю концепцию receptive field и могу его вычислить
+- [ ] Знаю, когда использовать stride вместо pooling
+- [ ] Умею анализировать поведение разных типов pooling
+- [ ] Могу оптимизировать CNN для разных размеров входа
+
+✅ **Экспертный уровень:**
+- [ ] Понимаю dilated convolutions и их применение
+- [ ] Умею реализовывать depthwise separable convolutions
+- [ ] Знаю роль 1x1 convolutions в современных архитектурах
+- [ ] Понимаю преимущества Global Average Pooling
+- [ ] Могу создавать CNN, работающую с входами разных размеров
+
 ### **Архитектурные принципы CNN:**
 
 ✅ **Базовые компоненты:**
@@ -445,12 +510,12 @@ for size in [32, 64, 128, 224]:
 
 ### **Рекомендации по архитектуре:**
 
-| Задача | Рекомендуемая архитектура | Особенности |
-|--------|--------------------------|-------------|
-| **MNIST (28x28, grayscale)** | 2-3 conv слоя, 32-64 каналов | Простая архитектура |
-| **CIFAR-10 (32x32, RGB)** | 3-4 conv слоя, 64-128 каналов | ResNet-style |
-| **ImageNet (224x224, RGB)** | Deep CNN (ResNet, EfficientNet) | Transfer learning |
-| **High-res images (>512x512)** | Dilated conv, Global pooling | Memory-efficient |
+| Задача | Рекомендуемая архитектура | Особенности | Связанные задачи |
+|--------|--------------------------|-------------|------------------|
+| **MNIST (28x28, grayscale)** | 2-3 conv слоя, 32-64 каналов | Простая архитектура | Задача 2 |
+| **CIFAR-10 (32x32, RGB)** | 3-4 conv слоя, 64-128 каналов | ResNet-style | Задачи 4, 8 |
+| **ImageNet (224x224, RGB)** | Deep CNN (ResNet, EfficientNet) | Transfer learning | Задача 11 |
+| **High-res images (>512x512)** | Dilated conv, Global pooling | Memory-efficient | Задачи 7, 10 |
 
 ### **Типичная архитектура:**
 
@@ -522,6 +587,22 @@ class TypicalCNN(nn.Module):
 - Data Augmentation
 - L2 regularization
 
+### **Типичные ошибки:**
+
+❌ **Не делайте так:**
+- Не забывайте про padding, иначе изображение будет быстро уменьшаться
+- Не используйте слишком большие kernels (7x7+) без необходимости
+- Не применяйте pooling после каждой свертки (слишком быстрое уменьшение)
+- Не забывайте flatten/view перед fully connected слоями
+- Не используйте Sigmoid/Tanh в скрытых слоях CNN (используйте ReLU)
+
+✅ **Делайте так:**
+- Используйте padding=1 с kernel_size=3 для сохранения размера
+- Применяйте Batch Normalization после сверточных слоев
+- Постепенно увеличивайте количество каналов при уменьшении размера
+- Используйте Global Average Pooling вместо больших FC слоев
+- Визуализируйте feature maps для понимания работы сети
+
 ### **Debugging CNN:**
 
 ```python
@@ -566,9 +647,33 @@ debug_cnn(model)
    - `netron` — визуализация графа модели
 
 3. **Практика:**
-   - Начните с простых архитектур
-   - Постепенно добавляйте сложность
+   - Начните с простых архитектур (Задачи 1-3)
+   - Постепенно добавляйте сложность (Задачи 4-6)
+   - Изучите продвинутые техники (Задачи 7-11)
    - Используйте transfer learning для реальных задач
-   - Всегда визуализируйте feature maps
+   - Всегда визуализируйте feature maps (Задача 5)
+
+### **Формулы для справки:**
+
+```python
+# Размер после свертки
+output_size = (input_size - kernel_size + 2*padding) / stride + 1
+
+# Количество параметров в Conv2d
+params = out_channels * (in_channels * kernel_h * kernel_w + 1)
+#                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^   bias
+
+# Receptive field после нескольких слоев
+def calculate_rf(layers):
+    rf = 1
+    stride_prod = 1
+    for k, s in layers:
+        rf = rf + (k - 1) * stride_prod
+        stride_prod *= s
+    return rf
+
+# Количество FLOPs для Conv2d
+flops = out_channels * in_channels * kernel_h * kernel_w * out_h * out_w
+```
 
 > **"CNN revolutionized computer vision. Понимание базовых принципов CNN — это foundation для современного deep learning!"**

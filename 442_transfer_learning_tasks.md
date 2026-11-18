@@ -42,7 +42,7 @@ test_dataset = torchvision.datasets.CIFAR10(root='./data', train=False,
 train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=64, shuffle=True)
 test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=64)
 
-# TODO: Загрузите ResNet18 (pretrained=True)
+# TODO: Загрузите ResNet18 с предобученными весами (weights=models.ResNet18_Weights.IMAGENET1K_V1)
 # TODO: Заморозьте все параметры
 # TODO: Замените последний слой
 # TODO: Обучите модель
@@ -128,10 +128,10 @@ def train_model(model, train_loader, val_loader, epochs, lr):
 
 ```python
 models_to_test = {
-    'ResNet18': models.resnet18(pretrained=True),
-    'ResNet50': models.resnet50(pretrained=True),
-    'EfficientNet-B0': models.efficientnet_b0(pretrained=True),
-    'MobileNetV2': models.mobilenet_v2(pretrained=True),
+    'ResNet18': models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1),
+    'ResNet50': models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V2),
+    'EfficientNet-B0': models.efficientnet_b0(weights=models.EfficientNet_B0_Weights.IMAGENET1K_V1),
+    'MobileNetV2': models.mobilenet_v2(weights=models.MobileNet_V2_Weights.IMAGENET1K_V2),
 }
 
 results = []

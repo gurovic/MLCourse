@@ -12,7 +12,8 @@
 * [Олимпиады и соревнования](olympiads.md)
 * [GPU-замены в коде](gpu.md)
 
-**Список уроков (2025/26)**
+
+**АРХИВ - Список уроков (2025/26)**
 
 <details>
 <summary><b>Первое полугодие</b></summary>
@@ -88,6 +89,13 @@
 Deep Learning
 
 * **Пара 4. Pytorch. MLP**
+* **Пара 5. Pytorch. MLP: решение задач**
+* **Пара 6. Pytorch. MLP: решение задач. CNN**
+* **Пара 7. CNN: решение задач**
+* **Пара 8. LeNet, AlexNet. Решение задач на архитектуры**
+* **Пара 9. VGG, ResNet. Решение задач на архитектуры**
+* **Пара 10. Знакомство с Yolov1. Решение задач на архитектуры**
+* далее см. другой репозиторий https://github.com/gurovic/NLPCourse и далее NLP
 </details>
 
 **Теоретический материал, задачи, датасеты**
@@ -118,6 +126,8 @@ Deep Learning
 
 **Блок 1.5: Вспомогательные темы и приемы**
 * 🔴 [Особенности синтаксиса pandas](105_pandas_syntax.md)
+* 🔴 [Polars — современная альтернатива pandas](106_polars.md): Eager vs Lazy API, выражения, оптимизация запросов
+  * 🔴 [Задачи](106_polars_tasks.md)
 * 🟡 [Предобработка для моделей](107_scaling.ipynb): концепция масштабирования (StandardScaler/MinMaxScaler)
   * 🔴 [Практика](107_scaling_practice.md): Показать разницу в качестве kNN с масштабированием и без на moons/iris.
 * 🔴 [Градиентный спуск](080_gradient_descent.md)
@@ -243,19 +253,18 @@ Deep Learning
 
 **6.3 Сверточные нейронные сети (CNN)**
 - 🔴 [Основы CNN](440_cnn_basics.md): Сверточные слои, pooling, stride, padding
-  - 🔴 [Задачи](440_cnn_basics_tasks.md)
-  - Практика: Простая CNN для [MNIST](https://pytorch.org/vision/stable/datasets.html#mnist)
+  - 🟢 [Задачи](440_cnn_basics_tasks.md)
 - 🔴 [Архитектуры CNN](441_cnn_architectures.md): LeNet, AlexNet, VGG, ResNet, Inception
   - 🔴 [Задачи](441_cnn_architectures_tasks.md)
   - Практика: [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) (University of Toronto)
-- 🔴 [Transfer Learning](442_transfer_learning.md): Fine-tuning, feature extraction, предобученные модели
-  - 🔴 [Задачи](442_transfer_learning_tasks.md)
+- 🟢 [Transfer Learning](442_transfer_learning.md): Fine-tuning, feature extraction, предобученные модели
+  - 🟢 [Задачи](442_transfer_learning_tasks.md)
   - Практика: [Dogs vs Cats](https://www.kaggle.com/c/dogs-vs-cats-redux-kernels-edition) (Kaggle)
-- 🔴 [Современные архитектуры](443_modern_cnn.md): EfficientNet, MobileNet, Vision Transformer (ViT)
-  - 🔴 [Задачи](443_modern_cnn_tasks.md)
+- 🟢 [Современные архитектуры](443_modern_cnn.md): EfficientNet, MobileNet, Vision Transformer (ViT)
+  - 🟢 [Задачи](443_modern_cnn_tasks.md)
   - Практика: Сравнение производительности разных архитектур ([ImageNet subset](https://www.kaggle.com/c/imagenet-object-localization-challenge))
-- 🔴 [Object Detection](444_object_detection.md): YOLO, R-CNN, SSD
-  - 🔴 [Задачи](444_object_detection_tasks.md)
+- 🟢 [Object Detection](444_object_detection.md): YOLO, R-CNN, SSD
+  - 🟢 [Задачи](444_object_detection_tasks.md)
   - Практика: Детекция объектов на пользовательских данных ([COCO Dataset](https://cocodataset.org/))
 
 **6.4 Рекуррентные нейронные сети (RNN)**
@@ -333,6 +342,9 @@ Deep Learning
 - 🔴 [MLOps для нейросетей](493_mlops.md): Tracking экспериментов (Weights & Biases, MLflow), версионирование моделей
   - 🔴 [Задачи](493_mlops_tasks.md)
   - Практика: Настройка MLOps пайплайна ([Fashion-MNIST](https://github.com/zalandoresearch/fashion-mnist))
+- 🔴 [Повторяемость экспериментов](494_reproducibility.md): Random seed, воспроизводимость в NumPy/PyTorch, детерминизм на GPU, влияние на производительность
+  - 🔴 [Задачи](494_reproducibility_tasks.md)
+  - Практика: Создание полностью воспроизводимого пайплайна обучения ([MNIST](https://pytorch.org/vision/stable/datasets.html#mnist))
 
 **6.9 Интерпретируемость и продвинутые темы**
 - 🔴 [Интерпретируемость нейросетей](500_interpretability.md): Saliency Maps, Grad-CAM, SHAP, LIME, Integrated Gradients
